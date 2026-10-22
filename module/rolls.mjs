@@ -64,7 +64,7 @@ export async function lancerTest(actor, type, cle, { rapide = false } = {}) {
   if (!infos) return null;
 
   // États préjudiciables (p. 112-115) : Handicap, blocage, plus d'Inspiration.
-  const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique });
+  const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique, fx: actor.system.derive?.effets ?? {}, cle: type === "competence" ? cle : null });
   infos.bloque = infos.bloque || etat.bloque;
   const nexusDispo = etat.sansInspiration ? 0 : (actor.system.nexus?.value ?? 0);
   const params = rapide

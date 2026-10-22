@@ -2,6 +2,7 @@
  * Attaque, réactions, dégâts, états et Dernier soupir dans Foundry (règles pures dans combat.mjs).
  * Flux : fenêtre d'attaque → carte du jet → réaction de la cible (Esquive, Parade) ou « Subir » → carte de dégâts → « Appliquer ».
  */
+import { degatsArme } from "./effets.mjs";
 import { SYSTEM_ID, COMPETENCES, COMPETENCES_ARMES } from "./config.mjs";
 import { resoudreTest } from "./jets.mjs";
 import { carteHTML } from "./rolls-html.mjs";
@@ -36,7 +37,7 @@ function infosAttaque(actor, item) {
     const cle = item.system.competence;
     const c = actor.system.derive?.competences?.[cle];
     if (!c) return null;
-    return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats, cleCompetence: cle };
+    return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }), cleCompetence: cle };
   }
   const a = actor.system.attaque;
   if (!a) return null;
@@ -77,7 +78,7 @@ export async function attaquer(actor, item = null) {
   const cible = game.user.targets.first()?.actor ?? null;
   const st = cible ? statsActeur(cible) : null;
   const etatsCible = etatsDe(cible);
-  const eff = effetsDesEtats(etatsDe(actor), { physique: info.physique });
+  const eff = effetsDesEtats(etatsDe(actor), { physique: info.physique, fx: actor.system.derive?.effets ?? {}, cle: info.cleCompetence });
   const nexusDispo = actor.system.nexus?.value ?? 0;
   const auSolEtat = etatsCible.has("faceContreTerre");
 
@@ -180,7 +181,7 @@ export async function reagir(message, mode) {
     if (!p) return;
     ({ score, nom, bloque = false } = p);
   }
-  const eff = effetsDesEtats(etatsDe(cible), { physique: true });
+  const eff = effetsDesEtats(etatsDe(cible), { physique: true, fx: cible.system?.derive?.effets ?? {} });
   const handicap = eff.handicap || etatsDe(cible).has("faceContreTerre");
   await cible.update({ "system.endurance.value": Math.max(0, st.endurance - COUT_REACTION) });
 

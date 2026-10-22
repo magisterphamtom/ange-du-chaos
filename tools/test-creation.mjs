@@ -1,6 +1,6 @@
 // Banc d'essai de l'assistant de création (logique pure). Usage : node tools/test-creation.mjs [contenu.json]
 import fs from "node:fs";
-import { etatInitial, erreursEtape, rangs, coutMerite, coutRang, caracsBase, appliquer, REGLES, aPlat, listeMaison, listeVoie } from "../module/creation-data.mjs";
+import { agir, etatInitial, erreursEtape, rangs, coutMerite, coutRang, caracsBase, appliquer, REGLES, aPlat, listeMaison, listeVoie } from "../module/creation-data.mjs";
 import { FORMATION_BASE_COMP } from "../module/formations.mjs";
 import { documentsItems } from "../module/contenu-data.mjs";
 import { COMPETENCES } from "../module/config.mjs";
@@ -48,6 +48,9 @@ t(erreursEtape(e, 4).some(x => /dépasse/.test(x)), "10 > 9 refusé");
 e.pts.libres = { artsEtranges: 9, enquete: 9, serrurerie: 2 };
 
 e.fortune = "Guerrier né"; e.malediction = "Naïf"; e.art = "Wush’in";
+t(erreursEtape(e, 5).length === 1, "Guerrier né : 3 compétences requises");
+agir(e, "guerrier", { val: "lames1" }); agir(e, "guerrier", { val: "armesDHast" }); agir(e, "guerrier", { val: "force" }); agir(e, "guerrier", { val: "esquive" }); agir(e, "guerrier", { val: "lames2" });
+t(e.guerrierNe.join() === "lames1,armesDHast,esquive", "Guerrier né : seulement les compétences autorisées, 3 au plus : " + e.guerrierNe);
 t(erreursEtape(e, 5).length === 0 && erreursEtape(e, 6).length === 0, "étapes 5 et 6");
 
 // Mérite : +1 caractéristique (5) + 3 rangs 0→3 en Nature (3) + une compétence 6→7 (2) + Art martial (3) = 13 ≤ 15
@@ -70,11 +73,25 @@ if (fs.existsSync(chemin)) {
   const { update, items } = appliquer(e, c, documentsItems);
   const s = update.system;
   t(s.caracs.vol.base === 4 + 2 + 1 && s.caracs.ref.base === 7, "caractéristiques de base");
-  t(Object.values(s.competences).reduce((a, x) => a + x.rang, 0) === 20 + 20 + 20 + 20 + 3 + (cl ? 1 : 0), "total des rangs");
+  t(Object.values(s.competences).reduce((a, x) => a + x.rang, 0) === 20 + 20 + 20 + 20 + 3 + 3 + (cl ? 1 : 0), "total des rangs (dont 3 de Guerrier né)");
   t(s.merite === 15 && s.monnaie.argent === 300, "mérite et monnaie");
   const types = items.map(i => i.type).sort();
   t(items.some(i => i.name === "Sang fendyr") && items.some(i => i.name === "Mon corps est une arme") && items.some(i => i.name === "Guerrier né"), "talents et fortune");
   t(items.filter(i => i.type === "artmartial").length === 2, "deux Arts martiaux");
+  // équipement de départ
+  const cuir = items.find(i => i.type === "armure");
+  t(cuir?.name === "Cuir gras" && cuir.system.equipee === true && cuir.img.includes("armure-legere"), "armure de départ portée, avec icône");
+  t(items.every(i => i.img && /assets\/(icones|runes|voies)\//.test(i.img)), "toutes les icônes présentes : " + items.filter(i => !i.img).map(i => i.name));
+  e.armes = []; agir(e, "arme", { val: "Épée longue" }, c);
+  const armeNoms = c.armes.filter(a => rangs(e, "merite")[a.competence] > 0).map(a => a.nom);
+  for (const n of armeNoms.slice(0, 6)) agir(e, "arme", { val: n }, c);
+  t(e.armes.length === REGLES.armesDepart, "armes plafonnées à " + REGLES.armesDepart + " : " + e.armes.length);
+  const vide = etatInitial(); agir(vide, "arme", { val: c.armes[0].nom }, c);
+  t(vide.armes.length === 0, "arme d'une compétence sans rang refusée");
+  const ap = appliquer(e, c, documentsItems);
+  t(ap.items.filter(i => i.type === "arme").length === e.armes.length && ap.items.filter(i => i.type === "arme").every(i => i.system.equipee), "armes choisies créées");
+  t(ap.update.system.monnaie.or === 0, "pas de Richesse : pas d'or");
+  e.fortune = "Richesse"; t(appliquer(e, c, documentsItems).update.system.monnaie.or === 100, "Richesse : 100 £A d'or"); e.fortune = "Guerrier né";
   t(!items.some(i => i.type === "sort"), "pas de sorts pour un non-Sorcier");
   console.log({ nom: update.name, items: types, bio: s.biographie.historique });
   // Sorcier : 5 sorts + 3 communs

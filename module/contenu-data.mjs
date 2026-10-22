@@ -2,6 +2,7 @@
  * Contenu du livre → données de documents Foundry. Fonctions pures (testables sans Foundry).
  * Les textes viennent de `assets/contenu/contenu.json` (pack d'assets privé, jamais dans le dépôt).
  */
+import { iconeObjet } from "./icones.mjs";
 export const DOSSIER_RACINE = "L'Ange du Chaos — Contenu";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -16,7 +17,7 @@ const TITRES_SORTS = { apprenti: "Apprenti", expert: "Expert", maitre: "Maître"
 /** Chaque entrée : { dossier: [chemin…], doc: données du document }. */
 export function documentsItems(c) {
   const out = [];
-  const add = (type, chemin, name, system, extra = {}) => out.push({ doc: "Item", chemin, data: { name, type, system, ...extra } });
+  const add = (type, chemin, name, system, extra = {}) => out.push({ doc: "Item", chemin, data: { name, type, img: iconeObjet(type, system, name), system, ...extra } });
 
   for (const a of c.armes ?? []) {
     add("arme", ["Armes", a.categorie === "tir" ? "À distance" : "De contact"], a.nom, {

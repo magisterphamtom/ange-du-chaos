@@ -120,14 +120,19 @@ export const CARACS_PHYSIQUES = ["ref", "con", "pui"];
  * Effets des états sur un test (p. 112-115).
  * @param {Set<string>} etats  identifiants des états actifs
  * @param {boolean} physique   le test dépend de REF, CON ou PUI
+ * @param {object} [fx]        effets de Talents/Fortunes : { ignoreEpuise, immunise:[états], handicap:[compétences] } + cle de la compétence testée
  */
-export function effetsDesEtats(etats, { physique }) {
+export function effetsDesEtats(etats, { physique, fx = {}, cle = null }) {
   const has = (e) => etats.has(e);
   const notes = [];
   let handicap = false, bloque = false, sansInspiration = false;
-  if (physique && has("epuise")) { handicap = true; notes.push("Épuisé : Handicap"); }
+  if (physique && has("epuise")) {
+    if (fx.ignoreEpuise) notes.push("Même pas mal : pas de Handicap dû à l'Épuisement");
+    else { handicap = true; notes.push("Épuisé : Handicap"); }
+  }
   if (physique && has("aveugle")) { handicap = true; notes.push("Aveuglé : Handicap"); }
-  if (has("trouilleBleue")) { bloque = true; notes.push("Trouille bleue : bloqué"); }
+  if (cle && (fx.handicap ?? []).includes(cle)) { handicap = true; notes.push("Fortune ou Malédiction : Handicap"); }
+  if (has("trouilleBleue") && !(fx.immunise ?? []).includes("trouilleBleue")) { bloque = true; notes.push("Trouille bleue : bloqué"); }
   if (has("demoralise")) { sansInspiration = true; notes.push("Démoralisé : pas d'Inspiration"); }
   return { handicap, bloque, sansInspiration, notes };
 }

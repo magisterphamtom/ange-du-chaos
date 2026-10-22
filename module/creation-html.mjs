@@ -5,9 +5,10 @@ import { CARACS, COMPETENCES, MAISONS, VOIES } from "./config.mjs";
 import { FORMATION_BASE_COMP, COMP_MAISONS, COMP_VOIES } from "./formations.mjs";
 import {
   ETAPES, REGLES, erreursEtape, rangs, caracsBase, coutMerite, coutRang, estLoki, estSorcier, somme,
-  bonusCaracsDe, traitsDe, listeMaison, listeVoie, aPlat
+  bonusCaracsDe, traitsDe, listeMaison, listeVoie, aPlat, FORTUNE_GUERRIER, CHOIX_GUERRIER, normaliser, nomsAvecEffets, ARMURE_DEPART
 } from "./creation-data.mjs";
 import { deriver } from "./calc.mjs";
+import { cumulerEffets } from "./effets.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const lbl = (k) => COMPETENCES[k]?.label ?? k;
@@ -115,6 +116,7 @@ function etape5(e, c) {
   const esp = (c.maledictions ?? []).find(x => x.nom === "Esprit protecteur");
   return `<p>Une Fortune et une Malédiction définissent ce qui distingue ton agent.</p>
     <h4>Fortune</h4>${loki ? "<p><em>Un personnage Loki ne peut pas choisir de Fortune.</em></p>" : selection("fortune", fortunes, e.fortune, "— Choisir une Fortune —")}
+    ${!loki && e.fortune === FORTUNE_GUERRIER ? `<h4>Guerrier né <small>+1 rang dans 3 compétences (${e.guerrierNe.length}/3)</small></h4><div class="adc-asst-choix">${CHOIX_GUERRIER.map(k => `<button type="button" class="adc-asst-carte ${e.guerrierNe.includes(k) ? "choisi" : ""}" data-act="guerrier" data-val="${k}"><strong>${esc(lbl(k))}</strong></button>`).join("")}</div>` : ""}
     <h4>Malédiction</h4>${loki ? `<p><strong>Esprit protecteur</strong> (obligatoire).</p><div class="adc-asst-texte">${esc(esp?.description)}</div>` : selection("malediction", mal, e.malediction, "— Choisir une Malédiction —")}`;
 }
 
@@ -167,29 +169,44 @@ function etape7(e, c) {
     <div class="adc-asst-grille">${blocs}</div>${lesArts}${sorts}`;
 }
 
-function etape8(e) {
-  const d = traitsDe(e, deriver);
+function etape8(e, c = {}) {
+  const d = traitsDe(e, deriver, c);
+  const fx = cumulerEffets(nomsAvecEffets(e, c), "maraudeur");
   const cb = caracsBase(e), bc = bonusCaracsDe(e);
   const car = GROUPES.map(k => `<div class="adc-asst-trait"><span>${CARACS[k].label}</span><b>${cb[k] + bc[k]}</b><small>${cb[k]} + ${bc[k]}</small></div>`).join("");
   const t = (nom, v, note = "") => `<div class="adc-asst-trait"><span>${nom}</span><b>${v}</b>${note ? `<small>${note}</small>` : ""}</div>`;
   return `<p>Calculés automatiquement à partir de tes choix, comme sur la fiche.</p><h4>Caractéristiques finales</h4><div class="adc-asst-traits">${car}</div>
     <h4>Traits secondaires</h4><div class="adc-asst-traits">${t("Endurance", d.enduranceMax, `Seuil de fatigue ${d.seuilFatigue}`)}${t("Initiative", d.initiative)}${t("Mouvement", d.mouvement)}${t("Défense passive", d.defensePassive)}${t("Bonus aux dégâts", d.bonusDegats >= 0 ? `+${d.bonusDegats}` : d.bonusDegats)}${t("Mana", d.manaMax)}${t("Nexus", d.nexusMax)}${t("Hors-Destin", d.horsDestinMax)}${t("Encombrement", d.encombrement)}</div>
-    <p class="adc-asst-aide">Grade de départ : ${esc(d.gradeLabel)}. Les bonus des Talents (Initiative, dégâts…) ne sont pas encore appliqués automatiquement : ajoute-les dans les bonus de la fiche.</p>`;
+    <p class="adc-asst-aide">Grade de départ : ${esc(d.gradeLabel)}. ${fx.sources.length ? `Effets chiffrés pris en compte : ${esc(fx.sources.join(", "))}. Les bonus conditionnels (arc, armes naturelles, armures) s'appliquent sur la fiche et dans les jets.` : "Aucun de tes Talents, Fortunes ou Malédictions n'a d'effet chiffré permanent."}</p>`;
 }
 
-function etape9(e) {
+function equipement(e, c) {
+  const r = rangs(e, "merite");
+  const armes = (c.armes ?? []).filter(a => r[a.competence] > 0);
+  const par = {};
+  for (const a of armes) (par[a.competence] ??= []).push(a);
+  const groupes = Object.entries(par).map(([k, l]) => `<div class="adc-asst-groupe"><h5>${esc(lbl(k))}</h5><div class="adc-asst-choix">${l.map(a => `<button type="button" class="adc-asst-carte ${e.armes.includes(a.nom) ? "choisi" : ""}" data-act="arme" data-val="${esc(a.nom)}"><strong>${esc(a.nom)}</strong><small>${esc(a.degats)} · ${esc(a.cout)}</small></button>`).join("")}</div></div>`).join("");
+  const armure = (c.armures ?? []).find(a => a.nom === ARMURE_DEPART);
+  return `<h4>Équipement de départ</h4>
+    <p>Tout agent possède l'armure de cuir gras standard${armure ? ` (Protection ${esc(armure.protection)})` : ""}, déjà portée, et toute arme qu'il sait manier. Choisis jusqu'à ${REGLES.armesDepart} armes à emporter (${e.armes.length}/${REGLES.armesDepart}) ; le reste du matériel (tenue d'infiltration, mailles pour un sangh…) est fourni par mission.</p>
+    ${groupes || "<em>Aucune arme disponible (contenu du livre introuvable, ou aucune compétence d'arme).</em>"}`;
+}
+
+function etape9(e, c = {}) {
   const i = e.infos;
   const champ = (k, nom, ph = "") => `<label>${nom}<input type="text" data-info="${k}" value="${esc(i[k])}" placeholder="${esc(ph)}"></label>`;
   const zone = (k, nom, ph) => `<label>${nom}<textarea data-info="${k}" rows="4" placeholder="${esc(ph)}">${esc(i[k])}</textarea></label>`;
-  return `<p>Il te faut un nom, une histoire, une personnalité. Tu auras 300 £A de pécule : l'équipement se choisit sur la fiche (armes maniées et armure de cuir gras fournies).</p>
+  return `<p>Il te faut un nom, une histoire, une personnalité. Ton pécule : ${e.fortune === "Richesse" && !estLoki(e) ? "300 £A d'argent et 100 licornes d'or (Richesse)" : "300 £A"}.</p>
     ${champ("nom", "Nom du personnage", "Nom")}
     <div class="adc-asst-ligne4">${champ("genre", "Genre")}${champ("age", "Âge")}${champ("taille", "Taille")}${champ("poids", "Poids")}${champ("cheveux", "Cheveux")}${champ("yeux", "Yeux")}${champ("peau", "Peau")}</div>
-    ${zone("historique", "Historique", "Naissance, enfance, ce qui t'a mené au Chaos…")}${zone("physionomie", "Physionomie", "Apparence, style, ce qui émane de lui…")}${zone("personnalite", "Personnalité", "Traits de caractère, valeurs, défauts…")}`;
+    ${zone("historique", "Historique", "Naissance, enfance, ce qui t'a mené au Chaos…")}${zone("physionomie", "Physionomie", "Apparence, style, ce qui émane de lui…")}${zone("personnalite", "Personnalité", "Traits de caractère, valeurs, défauts…")}
+    ${equipement(e, c)}`;
 }
 
 const CORPS = { 1: etape1, 2: etape2, 3: etape3, 4: etape4, 5: etape5, 6: etape6, 7: etape7, 8: etape8, 9: etape9 };
 
 export function vueHTML(e, contenu = {}) {
+  normaliser(e);
   const n = e.etape;
   const erreurs = erreursEtape(e, n, contenu);
   const pills = ETAPES.map(s => `<button type="button" class="adc-asst-pill ${s.id === n ? "actif" : ""} ${s.id < n ? "fait" : ""}" data-act="aller" data-n="${s.id}" ${s.id > n ? "disabled" : ""}><span>${s.id}</span>${esc(s.titre)}</button>`).join("");

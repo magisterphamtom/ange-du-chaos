@@ -93,11 +93,12 @@ export function gradeSelonMerite(merite) {
  * un objet « source » et un objet « contexte » (bonus venant d'objets possédés).
  *
  * @param {object} src  {caracs:{ref:{base},...}, competences:{cle:{rang}}, merite, bonus:{...}}
- * @param {object} ctx  {bonusCaracs:{ref:n,...}, encombrement:n, bonusDefense:n}
+ * @param {object} ctx  {bonusCaracs:{ref:n,...}, encombrement:n, bonusDefense:n, effets:{…cumulerEffets}}
  */
 export function deriver(src, ctx = {}) {
   const bonusCaracs = ctx.bonusCaracs ?? {};
   const out = { caracs: {}, competences: {} };
+  const fx = ctx.effets ?? {};
 
   for (const cle of Object.keys(CARACS)) {
     const base = src.caracs?.[cle]?.base ?? 0;
@@ -106,9 +107,12 @@ export function deriver(src, ctx = {}) {
   }
 
   for (const [cle, def] of Object.entries(COMPETENCES)) {
-    const rang = src.competences?.[cle]?.rang ?? 0;
-    const score = out.caracs[def.carac].valeur + rang;
-    out.competences[cle] = { rang, score, libelle: libelleRang(rang), inapte: rang <= 0 };
+    const rangBase = src.competences?.[cle]?.rang ?? 0;
+    const rangBonus = fx.rang?.[cle] ?? 0;
+    const rang = rangBase + rangBonus;
+    const scoreBonus = fx.score?.[cle] ?? 0;
+    const score = out.caracs[def.carac].valeur + rang + scoreBonus;
+    out.competences[cle] = { rang, rangBase, rangBonus, scoreBonus, score, libelle: libelleRang(rang), inapte: rang <= 0 };
   }
 
   const b = src.bonus ?? {};
@@ -117,18 +121,18 @@ export function deriver(src, ctx = {}) {
   const base = enduranceBase(out.caracs.con.valeur + out.caracs.vol.valeur);
 
   out.encombrement = enc;
-  out.enduranceMax = base + carrure + (b.endurance ?? 0);
+  out.enduranceMax = base + carrure + (b.endurance ?? 0) + (fx.endurance ?? 0);
   out.seuilFatigue = seuilFatigue(out.enduranceMax);
-  out.bonusDegats = bonusDegats(out.caracs.pui.valeur) + (b.degats ?? 0);
-  out.initiative = out.competences.artsDuCombat.score + (b.initiative ?? 0) - enc;
-  out.mouvement = mouvement(out.caracs.ref.valeur, out.caracs.pui.valeur, enc) + (b.mouvement ?? 0);
+  out.bonusDegats = bonusDegats(out.caracs.pui.valeur) + (b.degats ?? 0) + (fx.degats ?? 0);
+  out.initiative = out.competences.artsDuCombat.score + (b.initiative ?? 0) + (fx.initiative ?? 0) - enc;
+  out.mouvement = mouvement(out.caracs.ref.valeur, out.caracs.pui.valeur, enc) + (b.mouvement ?? 0) + (fx.mouvement ?? 0);
   out.defensePassive = out.competences.esquive.score + (b.defense ?? 0) + (ctx.bonusDefense ?? 0) - enc;
   out.manaMax = manaMax(out.competences.artsEtranges.score) + (b.mana ?? 0);
 
   const grade = gradeSelonMerite(src.merite ?? 0);
   out.grade = grade.id;
   out.gradeLabel = grade.label;
-  out.horsDestinMax = grade.horsDestin + (b.horsDestin ?? 0);
+  out.horsDestinMax = grade.horsDestin + (b.horsDestin ?? 0) + (fx.horsDestin ?? 0);
   out.nexusMax = (src.nexus?.max ?? 5) + (b.nexus ?? 0);
   return out;
 }

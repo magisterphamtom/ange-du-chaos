@@ -7,7 +7,8 @@ import {
   CARACS, COMPETENCES, MAISONS, VOIES, TYPES_DEGATS, DISPONIBILITES,
   CATEGORIES_ADVERSAIRE, NIVEAUX_SORT, COMPETENCES_ARMES, NEXUS_DEPART
 } from "./config.mjs";
-import { deriver, enduranceBase, seuilFatigue } from "./calc.mjs";
+import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
+import { cumulerEffets } from "./effets.mjs";
 
 const f = foundry.data.fields;
 
@@ -78,25 +79,33 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
 
   prepareDerivedData() {
     const items = this.parent?.items ?? [];
+    // Effets chiffrés des Talents, Fortunes et Malédictions possédés (au grade du personnage).
+    const effets = cumulerEffets(
+      [...items].filter(it => ["talent", "fortune", "malediction"].includes(it.type)).map(it => it.name),
+      gradeSelonMerite(this.merite ?? 0).id
+    );
     let encombrement = 0;
-    let protectionMax = 0;
+    let protectionMax = 0, protectionBase = 0;
     let bonusDefense = 0;
     for (const it of items) {
       if (!it.system.equipee) continue;
       if (it.type === "armure") {
-        encombrement += it.system.encombrement ?? 0;
-        protectionMax = Math.max(protectionMax, it.system.protection ?? 0);
+        encombrement += Math.max(0, (it.system.encombrement ?? 0) + effets.encombrementArmures);
+        protectionBase = Math.max(protectionBase, it.system.protection ?? 0);
+        protectionMax = Math.max(protectionMax, (it.system.protection ?? 0) + effets.protectionArmures);
       }
       if (it.type === "bouclier") bonusDefense += it.system.bonusDefense ?? 0;
     }
 
     // Armure trop lourde pour le porteur : +3 d'Encombrement (p. 135).
-    const pre = deriver(this, { bonusCaracs: this._bonusCaracs(), encombrement });
-    if (protectionMax > pre.competences.armures.score) encombrement += 3;
+    const ctxBase = { bonusCaracs: this._bonusCaracs(), effets };
+    const pre = deriver(this, { ...ctxBase, encombrement });
+    if (protectionBase > pre.competences.armures.score) encombrement += 3;
 
-    const d = deriver(this, { bonusCaracs: this._bonusCaracs(), encombrement, bonusDefense });
-    d.protection = protectionMax;
-    d.armureTropLourde = protectionMax > pre.competences.armures.score;
+    const d = deriver(this, { ...ctxBase, encombrement, bonusDefense });
+    d.protection = protectionMax + effets.protectionNaturelle;
+    d.armureTropLourde = protectionBase > pre.competences.armures.score;
+    d.effets = effets;
     this.derive = d;
 
     // Plafonne les jauges à leur maximum.

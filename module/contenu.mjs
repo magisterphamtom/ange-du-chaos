@@ -5,6 +5,7 @@
  * création les remplace (les modifications faites dessus sont perdues).
  */
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
+import { iconeObjet } from "./icones.mjs";
 import { DOSSIER_RACINE, documentsItems, documentsActeurs, cheminsDistincts } from "./contenu-data.mjs";
 
 export const CONTENU_VERSION = 1;
@@ -68,6 +69,22 @@ export async function creerContenu({ confirmer = false } = {}) {
   return true;
 }
 
+const IMG_DEFAUT = (img) => !img || /^icons\/svg\//.test(img);
+
+/** Donne leur icône aux objets du monde (et des fiches) qui ont encore l'image par défaut de Foundry. */
+export async function corrigerIcones() {
+  if (!game.user.isGM) return 0;
+  const maj = (it) => ({ _id: it.id, img: iconeObjet(it.type, it.system, it.name) });
+  const monde = game.items.filter(i => IMG_DEFAUT(i.img)).map(maj);
+  if (monde.length) await Item.updateDocuments(monde);
+  let n = monde.length;
+  for (const a of game.actors) {
+    const l = a.items.filter(i => IMG_DEFAUT(i.img)).map(maj);
+    if (l.length) { await a.updateEmbeddedDocuments("Item", l); n += l.length; }
+  }
+  return n;
+}
+
 export function initialiserContenu() {
   game.adc = Object.assign(game.adc ?? {}, { creerContenu: (opts = { confirmer: true }) => creerContenu(opts) });
 
@@ -95,5 +112,6 @@ export function initialiserContenu() {
       if (game.user.isGM && game.settings.get(SYSTEM_ID, "contenuVersion") < CONTENU_VERSION
         && !game.items.some(estContenu)) await creerContenu();
     } catch (e) { console.error(`${SYSTEM_ID} | Contenu`, e); }
+    try { await corrigerIcones(); } catch (e) { console.error(`${SYSTEM_ID} | Icônes`, e); }
   });
 }

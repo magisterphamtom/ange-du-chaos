@@ -22,7 +22,7 @@ globalThis.foundry = {
   data: { fields: { DataField, StringField, HTMLField, NumberField, BooleanField, ArrayField, SchemaField } },
   abstract: { TypeDataModel },
   applications: {
-    api: { HandlebarsApplicationMixin: (B) => class extends B {}, DialogV2: {} },
+    api: { HandlebarsApplicationMixin: (B) => class extends B {}, DialogV2: {}, ApplicationV2: class { static DEFAULT_OPTIONS = {}; } },
     sheets: { ActorSheetV2: class { static DEFAULT_OPTIONS = {}; }, ItemSheetV2: class { static DEFAULT_OPTIONS = {}; } },
     apps: { DocumentSheetConfig: { registerSheet: (...a) => enregistrements.push(a) } },
     handlebars: { loadTemplates: async (t) => { globalThis.__partiels = t; } },
@@ -35,8 +35,9 @@ globalThis.Hooks = { once: (n, f) => (crochets[n] = f), on: (n, f) => (crochets[
 globalThis.CONFIG = { Actor: { dataModels: {}, documentClass: class Actor {} }, Item: { dataModels: {}, documentClass: class Item {} } };
 const aides = {};
 globalThis.Handlebars = { registerHelper: (n, f) => (aides[n] = f) };
-globalThis.game = { i18n: { localize: (s) => s } };
+globalThis.game = { i18n: { localize: (s) => s }, settings: { register: () => {}, get: () => 0, set: async () => {} }, items: [], actors: [], folders: [], user: { isGM: false } };
 globalThis.ui = { notifications: {} };
+globalThis.CONST = { DOCUMENT_OWNERSHIP_LEVELS: { NONE: 0, LIMITED: 1, OBSERVER: 2, OWNER: 3 }, JOURNAL_ENTRY_PAGE_FORMATS: { HTML: 1, MARKDOWN: 2 } };
 
 /* ---- 1. init ---------------------------------------------------------------- */
 await import(join(racine, "module/ange-du-chaos.mjs"));

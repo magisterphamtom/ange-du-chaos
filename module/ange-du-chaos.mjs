@@ -14,6 +14,8 @@ import { initialiserCombat } from "./attaque.mjs";
 import { initialiserCreation } from "./creation.mjs";
 import { enregistrerReglagesContenu, initialiserContenu } from "./contenu.mjs";
 
+import { iconeObjet } from "./icones.mjs";
+
 Hooks.once("init", () => {
   console.log(`${SYSTEM_ID} | Initialisation du système L'Ange du Chaos`);
 
@@ -40,6 +42,12 @@ Hooks.once("init", () => {
     const maj = { "prototypeToken.texture.src": a.jeton, "prototypeToken.name": data.name ?? actor.name };
     if (defaut) maj.img = a.illustration;
     actor.updateSource(maj);
+  });
+
+  // --- Icône par défaut d'un objet créé à la main ou glissé depuis un compendium vide -----
+  Hooks.on("preCreateItem", (item, data) => {
+    if (data.img && !/^icons\/svg\//.test(data.img)) return;
+    item.updateSource({ img: iconeObjet(item.type, data.system ?? {}, data.name ?? item.name) });
   });
 
   // --- Fiches --------------------------------------------------------------

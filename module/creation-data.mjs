@@ -3,6 +3,7 @@
  * Fonctions pures, testables sans Foundry.
  */
 import { CARACS, COMPETENCES, MAISONS, VOIES } from "./config.mjs";
+import { cumulerEffets } from "./effets.mjs";
 import { FORMATION_BASE_COMP, COMP_MAISONS, COMP_VOIES } from "./formations.mjs";
 
 export const ETAPES = [
@@ -20,7 +21,7 @@ export const ETAPES = [
 export const REGLES = {
   caracDepart: 4, caracPoints: 15, caracMaxCreation: 7, caracMaxMerite: 10,
   ptsMaison: 20, maxMaison: 7, ptsBase: 20, maxBase: 7, ptsVoie: 20, maxVoie: 9, ptsLibres: 20, maxLibres: 9,
-  merite: 15, sortsSorcier: 5, sourcesSorcier: ["Éléments", "Cycles", "Ombres"]
+  merite: 15, armesDepart: 4, sortsSorcier: 5, sourcesSorcier: ["Éléments", "Cycles", "Ombres"]
 };
 
 const zero = (cles) => Object.fromEntries(cles.map(k => [k, 0]));
@@ -32,12 +33,19 @@ export function etatInitial() {
     maison: "", talentsMaison: [],
     voie: "",
     pts: { maison: {}, base: {}, voie: {}, libres: {} },
-    fortune: "", malediction: "", art: "", sorts: [],
+    fortune: "", malediction: "", art: "", sorts: [], guerrierNe: [], armes: [],
     merite: { comps: {}, caracs: zero(Object.keys(CARACS)), nexus: 0, arts: [], sorts: [] },
     infos: { nom: "", genre: "", age: "", taille: "", poids: "", cheveux: "", yeux: "", peau: "", historique: "", physionomie: "", personnalite: "" }
   };
 }
 
+export const FORTUNE_GUERRIER = "Guerrier né";
+export const FORTUNE_RICHESSE = "Richesse";
+/** Compétences au choix de la Fortune « Guerrier né » (p. 52). */
+export const CHOIX_GUERRIER = ["esquive", "lames1", "armesDHast", "corpsACorps", "lames2", "massesEtHaches"];
+export const ARMURE_DEPART = "Cuir gras";
+/** Brouillons enregistrés avant l'ajout de Guerrier né / équipement : champs manquants. */
+export function normaliser(e) { e.guerrierNe ??= []; e.armes ??= []; return e; }
 export const estLoki = (e) => e.maison === "loki";
 export const estSorcier = (e) => e.voie === "sorcier";
 export const somme = (o) => Object.values(o ?? {}).reduce((a, b) => a + (Number(b) || 0), 0);
@@ -58,6 +66,8 @@ export function rangs(e, jusqua = "merite") {
   for (const [k, v] of Object.entries(e.merite.comps)) r[k] += Number(v) || 0;
   // Sorcier (académie d'Eodh) : +1 rang en Beau-parleur.
   if (estSorcier(e)) r.beauParleur += 1;
+  // Fortune « Guerrier né » : +1 rang dans trois compétences d'armes au choix.
+  if (e.fortune === FORTUNE_GUERRIER && !estLoki(e)) for (const k of e.guerrierNe ?? []) r[k] += 1;
   return r;
 }
 
@@ -139,6 +149,7 @@ export function erreursEtape(e, n, contenu = {}) {
     case 5:
       if (!estLoki(e) && !e.fortune) err.push("Choisis une Fortune.");
       if (!e.malediction && !estLoki(e)) err.push("Choisis une Malédiction.");
+      if (e.fortune === FORTUNE_GUERRIER && (e.guerrierNe ?? []).length !== 3) err.push(`Guerrier né : choisis 3 compétences (${(e.guerrierNe ?? []).length}/3).`);
       break;
     case 6:
       if (!e.art) err.push("Choisis un Art martial.");
@@ -151,6 +162,7 @@ export function erreursEtape(e, n, contenu = {}) {
       break;
     }
     case 9:
+      if ((e.armes ?? []).length > REGLES.armesDepart) err.push(`Pas plus de ${REGLES.armesDepart} armes à emporter.`);
       if (!e.infos.nom.trim()) err.push("Donne un nom à ton personnage.");
       break;
   }
@@ -178,7 +190,7 @@ export function appliquer(e, contenu, docsItems) {
       biographie: {
         historique: paragraphes(e.infos.historique), physionomie: paragraphes(e.infos.physionomie), personnalite: paragraphes(e.infos.personnalite)
       },
-      monnaie: { or: 0, argent: 300, bronze: 0 }
+      monnaie: { or: e.fortune === FORTUNE_RICHESSE && !estLoki(e) ? 100 : 0, argent: 300, bronze: 0 }
     }
   };
   // Nexus maximum dérivé = nexus.max (5) + bonus.nexus (achats de Mérite).
@@ -192,9 +204,12 @@ export function appliquer(e, contenu, docsItems) {
     maledictions: (contenu.maledictions ?? []).filter(x => x.nom === (estLoki(e) ? "Esprit protecteur" : e.malediction)),
     artsmartiaux: (contenu.artsmartiaux ?? []).filter(x => x.nom === e.art || e.merite.arts.includes(x.nom)),
     sorts: (contenu.sorts ?? []).filter(x => e.sorts.includes(x.nom) || e.merite.sorts.includes(x.nom) || (estSorcier(e) && x.source === "Communs")),
-    // Armes de départ : le livre dit que le personnage possède toute arme qu'il sait manier : rien à créer ici.
+    // Équipement de départ (p. 62) : armure de cuir gras standard (portée) et armes maniées choisies.
+    armures: (contenu.armures ?? []).filter(x => x.nom === ARMURE_DEPART),
+    armes: (contenu.armes ?? []).filter(x => (e.armes ?? []).includes(x.nom) && r[x.competence] > 0)
   };
   const items = docsItems(sousContenu).map(d => d.data);
+  for (const it of items) if (["armure", "arme"].includes(it.type)) it.system.equipee = true;
   return { update, items };
 }
 
@@ -219,18 +234,26 @@ export function bonusCaracsDe(e) {
 }
 
 /** Traits secondaires du brouillon (étape 8), calculés par le même moteur que la fiche. */
-export function traitsDe(e, deriver) {
+/** Noms des objets de l'assistant qui portent des effets chiffrés (Talents, Fortune, Malédiction). */
+export function nomsAvecEffets(e, contenu = {}) {
+  const voie = nomVoie(contenu, e.voie);
+  const talents = (contenu.talents ?? []).filter(t => (e.talentsMaison ?? []).includes(t.nom) || (voie && t.origine === voie)).map(t => t.nom);
+  return [...talents, ...(!estLoki(e) && e.fortune ? [e.fortune] : []), ...(estLoki(e) ? ["Esprit protecteur"] : e.malediction ? [e.malediction] : [])];
+}
+
+export function traitsDe(e, deriver, contenu = {}) {
   const r = rangs(e, "merite"), cb = caracsBase(e);
   const src = {
     caracs: Object.fromEntries(Object.keys(CARACS).map(k => [k, { base: cb[k] }])),
     competences: Object.fromEntries(Object.keys(COMPETENCES).map(k => [k, { rang: r[k] }])),
     merite: REGLES.merite, bonus: { nexus: e.merite.nexus || 0 }, nexus: { max: 5 }
   };
-  return deriver(src, { bonusCaracs: bonusCaracsDe(e), encombrement: 0 });
+  return deriver(src, { bonusCaracs: bonusCaracsDe(e), encombrement: 0, effets: cumulerEffets(nomsAvecEffets(e, contenu), "maraudeur") });
 }
 
 /** Applique une action de l'interface au brouillon (mutation). Les garde-fous répètent ceux de l'affichage. */
 export function agir(e, act, d = {}, contenu = {}) {
+  normaliser(e);
   const delta = Number(d.d) || 0;
   switch (act) {
     case "pt": {
@@ -299,9 +322,24 @@ export function agir(e, act, d = {}, contenu = {}) {
       else if (estSorcier(e) && REGLES.merite - coutMerite(e) >= 3) e.merite.sorts.push(d.val);
       break;
     }
+    case "guerrier": {
+      if (e.fortune !== FORTUNE_GUERRIER || !CHOIX_GUERRIER.includes(d.val)) break;
+      const i = e.guerrierNe.indexOf(d.val);
+      if (i >= 0) e.guerrierNe.splice(i, 1);
+      else if (e.guerrierNe.length < 3) e.guerrierNe.push(d.val);
+      break;
+    }
+    case "arme": {
+      const i = e.armes.indexOf(d.val);
+      if (i >= 0) { e.armes.splice(i, 1); break; }
+      const a = (contenu.armes ?? []).find(x => x.nom === d.val);
+      if (a && e.armes.length < REGLES.armesDepart && rangs(e, "merite")[a.competence] > 0) e.armes.push(d.val);
+      break;
+    }
     case "champ":
       if (["fortune", "malediction", "art"].includes(d.champ)) {
         e[d.champ] = d.val;
+        if (d.champ === "fortune" && d.val !== FORTUNE_GUERRIER) e.guerrierNe = [];
         if (d.champ === "art") e.merite.arts = e.merite.arts.filter(x => x !== d.val);
       }
       break;
