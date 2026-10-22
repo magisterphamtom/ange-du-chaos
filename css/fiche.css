@@ -8,58 +8,54 @@
   --f-corps: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
 }
 .ange-du-chaos.feuille .window-content {
-  position: relative; padding: 0; gap: 0; overflow: hidden;
+  position: relative; padding: 0; gap: 0; overflow: visible;
   background: var(--f-papier) !important; color: #1b1b1b;
 }
 .ange-du-chaos.feuille .window-content::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 20;
   background: url("../assets/fiche/bords.webp") center / 100% 100% no-repeat; opacity: 0.85;
 }
-.adc-feuille { display: flex; flex-direction: column; height: 100%; min-height: 0; font-family: var(--f-corps); font-size: 13.5px; color: #1b1b1b; }
+.ange-du-chaos.feuille.application { overflow: visible; }
+.adc-feuille { position: static; display: flex; flex-direction: column; height: 100%; min-height: 0; font-family: var(--f-corps); font-size: 13.5px; color: #1b1b1b; }
 .adc-feuille * { box-sizing: border-box; }
 
 /* ---- Entête ---- */
 .adc-f-entete {
-  position: relative; flex: none; display: flex; align-items: center; gap: 12px; height: 74px; padding: 6px 22px 6px 14px;
+  position: relative; flex: none; display: flex; align-items: center; gap: 16px; height: 150px; padding: 10px 24px 10px 16px;
   background: #23272d center / cover no-repeat; border-bottom: 3px solid var(--f-encre);
 }
-.adc-f-logo { height: 54px; width: auto; border: 0; filter: drop-shadow(0 1px 2px #000); }
-.adc-f-portrait { width: 52px; height: 52px; object-fit: cover; border: 2px solid #8d96a0; border-radius: 3px; background: #111; cursor: pointer; }
+.adc-f-logo { height: 96px; width: auto; border: 0; filter: drop-shadow(0 1px 2px #000); }
+
+.adc-f-portrait { width: 128px; height: 128px; box-shadow: 0 0 0 2px #23272d, 0 0 0 4px #8d96a0, 0 4px 12px rgba(0,0,0,.7); object-fit: cover; border: 2px solid #8d96a0; border-radius: 3px; background: #111; cursor: pointer; }
 .adc-feuille input.adc-f-nomperso[type="text"] {
-  flex: 1; min-width: 0; height: 38px; font: 600 24px var(--f-titre); color: #ece6d6; letter-spacing: 0.02em;
+  flex: 1; min-width: 0; height: 52px; font: 600 34px var(--f-titre); color: #ece6d6; letter-spacing: 0.02em;
   background: rgba(8, 11, 14, 0.82); border: 0; border-bottom: 1px solid #8d96a0; text-shadow: 0 1px 2px #000; border-radius: 0; padding: 0 8px;
 }
 .adc-f-outils { display: flex; flex-direction: column; gap: 3px; }
-.adc-f-outils a { color: #d9d2c0; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; }
+.adc-f-outils a { color: #d9d2c0; font-size: 12.5px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; }
 .adc-f-outils a:hover { color: #fff; }
 
-/* ---- Onglets (colonne de gauche) ---- */
-.adc-feuille { display: grid; grid-template-columns: 138px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
-.adc-feuille > .adc-f-entete { grid-column: 1 / -1; }
+/* ---- Onglets (collés à l'extérieur du bord gauche de la fiche) ---- */
 .adc-f-onglets {
-  grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 5px; padding: 12px 0 12px 8px; background: #e9e3d4; border-right: 3px solid var(--f-encre); overflow: hidden;
+  position: absolute; right: 100%; top: 168px; z-index: 30; display: flex; flex-direction: column; gap: 6px; width: 128px; padding: 0;
 }
 .adc-feuille .adc-tab.adc-f-onglet {
-  all: unset; box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 7px; cursor: pointer; padding: 7px 8px 5px 10px; min-height: 46px;
-  font: 400 21px/1.1 var(--f-titre); color: var(--f-encre);
-  background: var(--f-bande) url("../assets/fiche/bande.webp") right center / auto 100% no-repeat; border: 1px solid #a39b88; border-right: 0;
-  transition: transform .15s, background-color .15s, box-shadow .15s;
+  all: unset; box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 7px; cursor: pointer; padding: 7px 14px 5px 9px; min-height: 48px;
+  font: 400 21px/1.1 var(--f-titre); color: var(--f-encre); text-shadow: 0 1px 0 rgba(255,255,255,.35);
+  background: var(--f-bande) url("../assets/fiche/bande.webp") right center / auto 100% no-repeat; border: 1px solid #6f6a5c; border-right: 0; border-radius: 8px 0 0 8px;
+  box-shadow: -3px 3px 8px rgba(0,0,0,.55); transform: translateX(8px); transition: transform .15s, box-shadow .15s, filter .15s;
 }
 .adc-feuille .adc-tab.adc-f-onglet img { width: 24px; height: 24px; object-fit: contain; flex: none; opacity: .75; filter: grayscale(.6) contrast(.9); }
 .adc-feuille .adc-tab.adc-f-onglet span::first-letter { font-family: var(--f-cap); font-size: 1.18em; }
-.adc-feuille .adc-tab.adc-f-onglet:hover { filter: brightness(1.08); transform: translateX(3px); }
+.adc-feuille .adc-tab.adc-f-onglet:hover { filter: brightness(1.1); transform: translateX(2px); }
 .adc-feuille .adc-tab.adc-f-onglet.active {
-  background: var(--f-encre); color: var(--f-creme); border-color: var(--f-encre); filter: none; transform: translateX(3px);
-  margin-right: -3px; padding-right: 11px; box-shadow: inset 5px 0 0 var(--f-or, #c6a24c), -2px 2px 8px rgba(0,0,0,.45), 0 0 14px rgba(198,162,76,.45);
-  text-shadow: 0 1px 2px #000;
-}
-.adc-feuille .adc-tab.adc-f-onglet.active::after {
-  content: ""; position: absolute; right: 0; top: 50%; margin-top: -8px; border: 8px solid transparent; border-right-color: var(--f-papier); border-left: 0;
+  background: var(--f-encre); color: var(--f-creme); border-color: #23272d; filter: none; transform: translateX(-3px); min-height: 54px;
+  box-shadow: inset 5px 0 0 var(--f-or, #c6a24c), -4px 3px 10px rgba(0,0,0,.65), 0 0 16px rgba(198,162,76,.55); text-shadow: 0 1px 2px #000;
 }
 .adc-feuille .adc-tab.adc-f-onglet.active img { opacity: 1; filter: brightness(1.6) drop-shadow(0 0 4px rgba(198,162,76,.8)); }
 
 /* ---- Pages ---- */
-.adc-f-pages { grid-column: 2; grid-row: 2; min-height: 0; overflow-y: auto; padding: 12px 26px 30px; scrollbar-width: thin; }
+.adc-f-pages { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 26px 30px; scrollbar-width: thin; }
 .adc-feuille .adc-onglet { display: none; padding: 0; }
 .adc-feuille .adc-onglet.active { display: block; }
 
