@@ -10,7 +10,7 @@
 </header>
 <nav class="adc-f-onglets">
   {{#each onglets}}
-  <a class="adc-tab adc-f-onglet {{#if this.actif}}active{{/if}}" data-action="adcOnglet" data-tab="{{this.id}}">{{this.label}}</a>
+  <a class="adc-tab adc-f-onglet {{#if this.actif}}active{{/if}}" data-action="adcOnglet" data-tab="{{this.id}}"><img src="{{this.icone}}" alt="" onerror="this.remove()"><span>{{this.label}}</span></a>
   {{/each}}
 </nav>
 <div class="adc-contenu adc-f-pages">
