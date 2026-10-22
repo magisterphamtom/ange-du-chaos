@@ -5,10 +5,11 @@
 
 import {
   CARACS, COMPETENCES, MAISONS, VOIES, TYPES_DEGATS, DISPONIBILITES,
-  CATEGORIES_ADVERSAIRE, NIVEAUX_SORT, COMPETENCES_ARMES, NEXUS_DEPART
+  CATEGORIES_ADVERSAIRE, NIVEAUX_SORT, COMPETENCES_ARMES, NEXUS_DEPART, SYSTEM_ID
 } from "./config.mjs";
 import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
+import { effetsDrogues } from "./drogues.mjs";
 import { ACADEMIES, FORTUNE_SOEUR_GRISE, academieDe, nomEffetAcademie } from "./academies.mjs";
 
 const f = foundry.data.fields;
@@ -88,6 +89,11 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
       [...objetsEffets, nomEffetAcademie(academie)].filter(Boolean),
       gradeSelonMerite(this.merite ?? 0).id
     );
+    // Drogues absorbées et dépendances (drapeau de l'acteur) : effets positifs, négatifs, manque.
+    const dr = effetsDrogues(this.parent?.getFlag?.(SYSTEM_ID, "drogues"));
+    if (dr.ignoreEpuise) effets.ignoreEpuise = true;
+    for (const i of dr.immunise) if (!effets.immunise.includes(i)) effets.immunise.push(i);
+    effets.drogues = dr;
     let encombrement = 0;
     let protectionMax = 0, protectionBase = 0;
     let bonusDefense = 0;
@@ -110,6 +116,7 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
     d.protection = protectionMax + effets.protectionNaturelle;
     d.armureTropLourde = protectionBase > pre.competences.armures.score;
     d.effets = effets;
+    if (dr.seuilZero) d.seuilFatigue = 0;
     d.academie = academie;
     this.derive = d;
 

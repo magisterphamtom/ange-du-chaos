@@ -3,6 +3,7 @@
  * Livre de base, chap. « Combat » (p. 98-111) et « Santé et conditions physiques » (p. 112-116).
  */
 import { resoudreTest, d10, SEUIL_MAJEURE, SEUIL_CRITIQUE } from "./jets.mjs";
+import { modifsDrogues } from "./drogues.mjs";
 
 /** Table d'attaque localisée (p. 105) : bonus à la Défense passive, dés de dégâts en plus, effet. */
 export const LOCALISATIONS = {
@@ -122,17 +123,22 @@ export const CARACS_PHYSIQUES = ["ref", "con", "pui"];
  * @param {boolean} physique   le test dépend de REF, CON ou PUI
  * @param {object} [fx]        effets de Talents/Fortunes : { ignoreEpuise, immunise:[états], handicap:[compétences] } + cle de la compétence testée
  */
-export function effetsDesEtats(etats, { physique, fx = {}, cle = null }) {
+export function effetsDesEtats(etats, { physique, fx = {}, cle = null, carac = null, init = false }) {
   const has = (e) => etats.has(e);
   const notes = [];
-  let handicap = false, bloque = false, sansInspiration = false;
+  let handicap = false, bloque = false, sansInspiration = false, inspire = false;
   if (physique && has("epuise")) {
     if (fx.ignoreEpuise) notes.push("Même pas mal : pas de Handicap dû à l'Épuisement");
     else { handicap = true; notes.push("Épuisé : Handicap"); }
   }
   if (physique && has("aveugle")) { handicap = true; notes.push("Aveuglé : Handicap"); }
   if (cle && (fx.handicap ?? []).includes(cle)) { handicap = true; notes.push("Fortune ou Malédiction : Handicap"); }
+  // Drogues : dé d'Inspiration (effet positif) ou de Handicap (effet négatif, manque).
+  const dr = modifsDrogues(fx.drogues, { carac, cle, physique, init });
+  for (const src of dr.handicap) { handicap = true; notes.push(`${src} : Handicap`); }
+  for (const src of dr.inspire) { inspire = true; notes.push(`${src} : Inspiration`); }
   if (has("trouilleBleue") && !(fx.immunise ?? []).includes("trouilleBleue")) { bloque = true; notes.push("Trouille bleue : bloqué"); }
-  if (has("demoralise")) { sansInspiration = true; notes.push("Démoralisé : pas d'Inspiration"); }
-  return { handicap, bloque, sansInspiration, notes };
+  if (has("demoralise") && !(fx.immunise ?? []).includes("demoralise")) { sansInspiration = true; notes.push("Démoralisé : pas d'Inspiration"); }
+  if (sansInspiration) inspire = false;
+  return { handicap, inspire, bloque, sansInspiration, notes };
 }

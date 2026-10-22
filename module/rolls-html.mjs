@@ -103,7 +103,7 @@ export function dialogueHTML({ infos, nd = null, etat = { handicap: false, notes
     <fieldset><legend>Niveau de difficulté</legend><div class="adc-nd-rangee">${puces}</div></fieldset>
     <fieldset><legend>Le regard du Seigneur Destin</legend>
       <div class="adc-bascules">
-        <label class="adc-bascule inspire"><input type="checkbox" name="inspire"><span><b>Inspiration</b><small>2 dés, on garde le meilleur</small></span></label>
+        <label class="adc-bascule inspire"><input type="checkbox" name="inspire" ${etat.inspire ? "checked" : ""}><span><b>Inspiration</b><small>2 dés, on garde le meilleur</small></span></label>
         <label class="adc-bascule handicap"><input type="checkbox" name="handicap" ${etat.handicap ? "checked" : ""}><span><b>Handicap</b><small>2 dés, on garde le pire</small></span></label>
       </div>
       <p class="adc-note">${etat.notes.length ? esc(etat.notes.join(" · ")) + ". " : ""}Inspiration et Handicap s'annulent.</p>

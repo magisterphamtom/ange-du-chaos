@@ -19,6 +19,7 @@ const bornes = (n, min, max) => Math.max(min, Math.min(max, n));
 /** Dépense 1 Nexus (hors jet) : choix de l'usage, mise à jour, carte de chat. */
 export async function depenserNexus(actor) {
   const dispo = actor.system.nexus.value;
+  if (actor.system.derive?.effets?.drogues?.nexusBloque) return ui.notifications.warn(`${actor.name} est sous Mithass noir : le Nexus (et le Zen) est inaccessible.`);
   if (dispo < 1) return ui.notifications.warn(`${actor.name} n'a plus de point de Nexus.`);
 
   const talents = actor.items.filter(i => ["talent", "artmartial"].includes(i.type));

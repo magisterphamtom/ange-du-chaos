@@ -300,3 +300,12 @@
 .adc-f-repli.replie .adc-f-chev { transform: rotate(-90deg); }
 .adc-f-repli.replie > h2 { margin-bottom: 0; }
 [data-repli="richesse"] .adc-f-case-val { min-width: 96px; } [data-repli="richesse"] .adc-f-case-val input { width: 5em; }
+
+/* ---- Drogues : effets en cours et dépendances ---- */
+.adc-f-dr-etat { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.adc-f-dr-puce { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1.5px solid var(--f-encre); background: #fff; font: 12px var(--f-corps); }
+.adc-f-dr-puce.neg { border-color: #a4452c; }
+.adc-f-dr-puce.dep { background: var(--f-creme, #ebe5d6); }
+.adc-f-dr-puce.manque { border-color: #a4452c; color: #a4452c; font-weight: 700; }
+.adc-f-dr-puce em { font-style: italic; opacity: .8; }
+.adc-f-dr-puce a { cursor: pointer; text-decoration: underline dotted; }

@@ -13,6 +13,8 @@ import { lancerTest } from "../rolls.mjs";
 import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
+import { esc } from "../rolls-html.mjs";
+import { etatVide, ndDrogue, prendreDose, terminer, finPositif, basculerManque, appliquerSevrage, trouverDrogue } from "../drogues.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
@@ -50,6 +52,11 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       adcOnglet: BaseActorSheet.#changerOnglet,
       basculerHaut: BaseActorSheet.#basculerHaut,
       lancerSort: BaseActorSheet.#lancerSort,
+      prendreDrogue: BaseActorSheet.#prendreDrogue,
+      finDrogue: BaseActorSheet.#finDrogue,
+      finPositifDrogue: BaseActorSheet.#finPositifDrogue,
+      basculerManque: BaseActorSheet.#basculerManque,
+      sevrage: BaseActorSheet.#sevrage,
       replier: BaseActorSheet.#replier,
       jet: BaseActorSheet.#jet,
       attaquer: BaseActorSheet.#attaquer,
@@ -126,6 +133,67 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rapide: event.shiftKey,
       sort: { nom: it.name, source: sys.source, mana: sys.mana, difficulte: sys.difficulte, portee: sys.portee, cible: sys.cible, duree: sys.duree, incantation: sys.incantation, effet: String(sys.effet ?? "").replace(/<[^>]*>/g, "") }
     });
+  }
+
+
+  /** État des drogues de l'acteur (drapeau). */
+  _etatDrogues() { return foundry.utils.deepClone(this.actor.getFlag(SYSTEM_ID, "drogues") ?? etatVide()); }
+
+  async _majDrogues(etat) {
+    await this.actor.setFlag(SYSTEM_ID, "drogues", etat);
+    const manque = etat.dependances.some(d => d.manque);
+    if ((this.actor.statuses?.has("enManque") ?? false) !== manque) await this.actor.toggleStatusEffect?.("enManque", { active: manque });
+  }
+
+  /** Prend une dose : test de Résilience (ND selon le rang) ; échec = effet négatif aussi, catastrophe = dépendance. */
+  static async #prendreDrogue(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    const it = id ? this.actor.items.get(id) : null;
+    if (!it || it.type !== "drogue") return;
+    const nd = ndDrogue(it.system.toxicite, it.system.addiction);
+    const msg = await lancerTest(this.actor, "competence", "resilience", { rapide: event.shiftKey, nd, titre: `Résilience : ${it.name}` });
+    if (!msg) return;
+    const degre = msg.getFlag(SYSTEM_ID, "jet")?.resultat?.degre;
+    const negatif = degre === "echec" || degre === "catastrophe";
+    const dependant = degre === "catastrophe";
+    const avant = this._etatDrogues();
+    const etat = prendreDose(avant, { nom: it.name, negatif, dependant });
+    await this._majDrogues(etat);
+    const known = !!trouverDrogue(it.name);
+    const ligne = !known ? "Effets à appliquer à la main (drogue non reconnue)."
+      : negatif ? "Effet positif ET effet négatif." : "Effet positif seul.";
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+      content: `<div class="adc-c-sort"><b>${esc(this.actor.name)}</b> absorbe <b>${esc(it.name)}</b>. ${ligne}${dependant ? " <b>Dépendance !</b> Une dose par période (" + esc(it.system.dependance || "?") + ") ou « En manque ! »." : ""}</div>`
+    });
+  }
+
+  static async #finDrogue(event, target) {
+    await this._majDrogues(terminer(this._etatDrogues(), target.dataset.nom));
+  }
+
+  static async #finPositifDrogue(event, target) {
+    await this._majDrogues(finPositif(this._etatDrogues(), target.dataset.nom));
+  }
+
+  static async #basculerManque(event, target) {
+    await this._majDrogues(basculerManque(this._etatDrogues(), target.dataset.nom));
+  }
+
+  /** Sevrage : on s'est abstenu une période entière ; test de Résilience (aide d'un guérisseur : Inspiration à cocher). */
+  static async #sevrage(event, target) {
+    const nom = target.dataset.nom;
+    const it = this.actor.items.find(i => i.type === "drogue" && i.name === nom);
+    const d = trouverDrogue(nom);
+    const nd = it ? ndDrogue(it.system.toxicite, it.system.addiction) : 10;
+    const msg = await lancerTest(this.actor, "competence", "resilience", { nd, titre: `Sevrage : ${nom}` });
+    if (!msg) return;
+    const degre = msg.getFlag(SYSTEM_ID, "jet")?.resultat?.degre;
+    const r = appliquerSevrage(this._etatDrogues(), nom, degre);
+    await this._majDrogues(r.etat);
+    const txt = r.sevre ? (r.degoute ? "Sevré, et si dégoûté qu'il n'y touchera plus." : "Sevré.")
+      : r.permanente ? "Catastrophe : la dépendance devient permanente." : "Échec : il faut tenir une nouvelle période et retenter.";
+    await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this.actor }), content: `<div class="adc-c-sort"><b>${esc(this.actor.name)}</b> — sevrage de ${esc(nom)} : ${txt}</div>` });
   }
 
   /** Masque ou réaffiche le haut du Profil pour donner toute la hauteur aux compétences. */
@@ -415,6 +483,12 @@ export class PersonnageSheet extends BaseActorSheet {
       rarete: i.system.rarete, prix: i.system.prix, inoculation: i.system.inoculation, effets: txt(i.system.effets, 220),
       duree: i.system.duree, manque: i.system.manque
     }));
+    const etatDr = this.actor.getFlag(SYSTEM_ID, "drogues") ?? etatVide();
+    const drogueEtat = {
+      actives: (etatDr.actives ?? []).map(a => ({ ...a, effet: [a.positif ? "effet positif" : "", a.negatif ? "effet négatif" : ""].filter(Boolean).join(" + "), inconnue: !trouverDrogue(a.nom) })),
+      dependances: (etatDr.dependances ?? []).map(d => ({ ...d })),
+      vide: !(etatDr.actives?.length || etatDr.dependances?.length)
+    };
     const idAcademieSorts = this.actor.system.derive?.academie ?? academieDe({ voie: this.actor.system.voie, academie: this.actor.system.academie });
     const sorts = de("sort")
       .sort((a, b) => Object.keys(NIVEAUX_SORT).indexOf(a.system.niveau) - Object.keys(NIVEAUX_SORT).indexOf(b.system.niveau))
@@ -436,7 +510,7 @@ export class PersonnageSheet extends BaseActorSheet {
     const academiesChoix = { "": "— (par défaut)", ...Object.fromEntries(Object.entries(ACADEMIES).filter(([, a]) => !a.inaccessible).map(([k, a]) => [k, a.court])) };
 
     return {
-      blocsTraits, etatsFiche, armes, armureLoc, arts, drogues, sorts, voieLigne: voie ? { name: voie.name } : null,
+      blocsTraits, etatsFiche, armes, armureLoc, arts, drogues, drogueEtat, sorts, voieLigne: voie ? { name: voie.name } : null,
       voieTalent, academie, academiesChoix, sections: secs
     };
   }

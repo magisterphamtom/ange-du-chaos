@@ -79,7 +79,8 @@ export async function attaquer(actor, item = null) {
   const cible = game.user.targets.first()?.actor ?? null;
   const st = cible ? statsActeur(cible) : null;
   const etatsCible = etatsDe(cible);
-  const eff = effetsDesEtats(etatsDe(actor), { physique: info.physique, fx: actor.system.derive?.effets ?? {}, cle: info.cleCompetence });
+  const eff = effetsDesEtats(etatsDe(actor), { physique: info.physique, fx: actor.system.derive?.effets ?? {}, cle: info.cleCompetence, carac: info.cleCompetence ? COMPETENCES[info.cleCompetence]?.carac : null });
+  const nexusBloque = !!actor.system.derive?.effets?.drogues?.nexusBloque;
   const nexusDispo = actor.system.nexus?.value ?? 0;
   const auSolEtat = etatsCible.has("faceContreTerre");
 
@@ -89,7 +90,7 @@ export async function attaquer(actor, item = null) {
     position: { width: 480 },
     content: attaqueHTML({
       nom: info.nom, score: info.score, formule: info.formule, cible: cible?.name ?? null,
-      defense: st ? st.defense - (auSolEtat ? 10 : 0) : null, protection: st?.protection ?? 0, notes: eff.notes, nexus: eff.sansInspiration ? 0 : nexusDispo, auto: { sol: auSolEtat }
+      defense: st ? st.defense - (auSolEtat ? 10 : 0) : null, protection: st?.protection ?? 0, notes: eff.notes, nexus: (eff.sansInspiration || nexusBloque) ? 0 : nexusDispo, auto: { sol: auSolEtat }
     }),
     render: (e, dialog) => brancherPas(dialog),
     ok: {
@@ -110,10 +111,10 @@ export async function attaquer(actor, item = null) {
   const action = ACTIONS_ATTAQUE[params.action];
   const loc = LOCALISATIONS[params.loc];
   const nd = params.nd + loc.defense;
-  let inspire = params.inspire || params.dos || params.sol || params.submerge || action.inspire;
+  let inspire = eff.inspire || params.inspire || params.dos || params.sol || params.submerge || action.inspire;
   let handicap = params.handicap || action.handicap || eff.handicap;
   if (eff.sansInspiration) inspire = false;
-  if (params.nexus && nexusDispo > 0 && !eff.sansInspiration) {
+  if (params.nexus && nexusDispo > 0 && !eff.sansInspiration && !nexusBloque) {
     if (handicap) handicap = false; else inspire = true;
     await actor.update({ "system.nexus.value": nexusDispo - 1 });
   }
@@ -183,7 +184,7 @@ export async function reagir(message, mode) {
     if (!p) return;
     ({ score, nom, bloque = false } = p);
   }
-  const eff = effetsDesEtats(etatsDe(cible), { physique: true, fx: cible.system?.derive?.effets ?? {} });
+  const eff = effetsDesEtats(etatsDe(cible), { physique: true, fx: cible.system?.derive?.effets ?? {}, carac: "ref", cle: "esquive" });
   const handicap = eff.handicap || etatsDe(cible).has("faceContreTerre");
   await cible.update({ "system.endurance.value": Math.max(0, st.endurance - COUT_REACTION) });
 
@@ -294,13 +295,13 @@ function brancherInitiative() {
     const actor = this.actor;
     if (!actor || !["personnage", "pnj", "creature"].includes(actor.type)) return originale.call(this, formula);
     const score = actor.type === "personnage" ? (actor.system.derive?.initiative ?? 0) : (actor.system.initiative ?? 0);
-    const eff = effetsDesEtats(etatsDe(actor), { physique: false });
+    const eff = effetsDesEtats(etatsDe(actor), { physique: false, fx: actor.system?.derive?.effets ?? {}, init: true });
     const r = initiativeActeur(score, actor, eff);
     return new Roll(String(r));
   };
 }
 function initiativeActeur(score, actor, eff) {
-  const r = calculInitiative({ score, joueur: actor.hasPlayerOwner, bloque: eff.bloque });
+  const r = calculInitiative({ score, joueur: actor.hasPlayerOwner, bloque: eff.bloque, inspire: eff.inspire, handicap: eff.handicap });
   return r.valeur;
 }
 

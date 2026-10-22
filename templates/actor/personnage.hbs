@@ -228,10 +228,25 @@
   </div>
   <div class="adc-f-repli" data-repli="drogues">
   <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="drogues" data-tooltip="Cliquer pour replier / déplier">Drogues &amp; dépendances <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
+  {{#unless drogueEtat.vide}}
+  <div class="adc-f-dr-etat">
+    {{#each drogueEtat.actives}}
+    <div class="adc-f-dr-puce {{#if this.negatif}}neg{{/if}}"><i class="fa-solid fa-flask-vial"></i> <b>{{this.nom}}</b> <em>{{this.effet}}</em>
+      {{#if this.positif}}{{#if this.negatif}}<a data-action="finPositifDrogue" data-nom="{{this.nom}}" data-tooltip="Fin de l'effet positif (le négatif continue)">fin du positif</a>{{/if}}{{/if}}
+      <a data-action="finDrogue" data-nom="{{this.nom}}" data-tooltip="Terminer tous les effets"><i class="fa-solid fa-xmark"></i></a></div>
+    {{/each}}
+    {{#each drogueEtat.dependances}}
+    <div class="adc-f-dr-puce dep {{#if this.manque}}manque{{/if}}"><i class="fa-solid fa-link"></i> Dépendant : <b>{{this.nom}}</b>{{#if this.permanente}} <em>(permanente)</em>{{/if}}
+      <a data-action="basculerManque" data-nom="{{this.nom}}" data-tooltip="Une période s'est écoulée sans dose : Handicap (cliquer à nouveau pour retirer)">{{#if this.manque}}En manque !{{else}}pas en manque{{/if}}</a>
+      {{#unless this.permanente}}<a data-action="sevrage" data-nom="{{this.nom}}" data-tooltip="Test de Résilience de sevrage">sevrage</a>{{/unless}}</div>
+    {{/each}}
+  </div>
+  {{/unless}}
   <div class="adc-f-drogues" data-type="drogue">
     {{#each drogues}}
     <div class="adc-f-drogue" data-item-id="{{this.id}}" draggable="true">
       <div class="adc-f-artentete"><span class="adc-f-sous">Drogue</span><a class="adc-f-case-val inline" data-action="openItem">{{this.name}}</a>
+        <a class="adc-f-btn adc-f-lancer" data-action="prendreDrogue" data-tooltip="Prendre une dose (test de Résilience ; Maj : sans fenêtre)"><i class="fa-solid fa-flask-vial"></i></a>
         <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></div>
       <div class="adc-f-pt"><b>Toxicité :</b> {{this.toxicite}} &nbsp; <b>Addiction :</b> {{this.addiction}}</div>
       <div class="adc-f-pt"><b>Dépendance :</b> {{this.dependance}} &nbsp; <b>Origine :</b> {{this.origine}}</div>

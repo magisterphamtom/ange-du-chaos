@@ -8,6 +8,7 @@ import { resoudreTest } from "./jets.mjs";
 import { donneesDes } from "./des3d.mjs";
 import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML } from "./sorts.mjs";
 import { academieDe } from "./academies.mjs";
+import { estSortDeSoin } from "./drogues.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -17,11 +18,11 @@ export function infosTest(actor, type, cle) {
   if (type === "competence") {
     const c = d?.competences?.[cle];
     if (!c) return null;
-    return { type, nom: COMPETENCES[cle].label, score: c.score, rang: c.rang ?? 0, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle].carac), detail: c.libelle };
+    return { type, nom: COMPETENCES[cle].label, carac: COMPETENCES[cle].carac, score: c.score, rang: c.rang ?? 0, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle].carac), detail: c.libelle };
   }
   const c = d?.caracs?.[cle];
   if (!c) return null;
-  return { type, nom: CARACS[cle].label, score: c.valeur, rang: 0, bloque: false, physique: CARACS_PHYSIQUES.includes(cle), detail: c.libelle };
+  return { type, nom: CARACS[cle].label, carac: cle, score: c.valeur, rang: 0, bloque: false, physique: CARACS_PHYSIQUES.includes(cle), detail: c.libelle };
 }
 
 async function demanderParametres(infos, { nd = null, etat, nexus = 0 } = {}) {
@@ -62,27 +63,34 @@ async function demanderParametres(infos, { nd = null, etat, nexus = 0 } = {}) {
  * @param {string} cle
  * @param {object} [options]  { rapide: true } saute la fenêtre (Maj + clic)
  */
-export async function lancerTest(actor, type, cle, { rapide = false, sort = null } = {}) {
+export async function lancerTest(actor, type, cle, { rapide = false, sort = null, nd: ndForce = null, titre = null } = {}) {
   const infos = infosTest(actor, type, cle);
   if (!infos) return null;
 
   // Sort : mana à payer avant tout (p. 150) ; la fenêtre propose le ND du sort.
   let coutSort = 0;
-  const manaActeur = actor.system.mana?.max ? actor.system.mana.value : null;
+  const dr = actor.system.derive?.effets?.drogues ?? {};
+  // Brume-Feu : les sorts coûtent de l'Endurance ; Mithass noir : plus de sorts du tout.
+  const surEndurance = !!dr.sortEndurance;
+  const manaActeur = surEndurance ? (actor.system.endurance?.value ?? 0) : (actor.system.mana?.max ? actor.system.mana.value : null);
   if (sort) {
+    if (dr.sortBloque) { ui.notifications.warn(`${actor.name} est sous Mithass noir : impossible de lancer un sort.`); return null; }
+    if (dr.sortSansSoin && estSortDeSoin(sort)) { ui.notifications.warn(`${actor.name} est sous Brume-Feu : aucun sort de soin n'est possible.`); return null; }
     const acad = actor.system.derive?.academie ?? academieDe({ voie: actor.system.voie, academie: actor.system.academie });
     coutSort = coutDuSort(acad, sort);
-    if (!peutLancer(manaActeur, coutSort)) { ui.notifications.warn(`${actor.name} n'a pas assez de mana pour ${sort.nom} (${coutSort} requis, ${manaActeur} disponible).`); return null; }
+    if (!peutLancer(manaActeur, coutSort)) { ui.notifications.warn(`${actor.name} n'a pas assez ${surEndurance ? "d'Endurance" : "de mana"} pour ${sort.nom} (${coutSort} requis, ${manaActeur} disponible).`); return null; }
     infos.nom = `Sort : ${sort.nom}`;
   }
 
   // États préjudiciables (p. 112-115) : Handicap, blocage, plus d'Inspiration.
-  const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique, fx: actor.system.derive?.effets ?? {}, cle: type === "competence" ? cle : null });
+  const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique, fx: actor.system.derive?.effets ?? {}, cle: type === "competence" ? cle : null, carac: infos.carac });
   infos.bloque = infos.bloque || etat.bloque;
-  const nexusDispo = etat.sansInspiration ? 0 : (actor.system.nexus?.value ?? 0);
+  const nexusDispo = (etat.sansInspiration || dr.nexusBloque) ? 0 : (actor.system.nexus?.value ?? 0);
+  const ndDepart = ndForce ?? (sort && sort.difficulte > 0 ? sort.difficulte : null);
+  if (titre) infos.nom = titre;
   const params = rapide
-    ? { nd: sort && sort.difficulte > 0 ? sort.difficulte : null, bonus: 0, inspire: false, handicap: etat.handicap, nexus: false }
-    : await demanderParametres(infos, { etat, nexus: nexusDispo, nd: sort && sort.difficulte > 0 ? sort.difficulte : null });
+    ? { nd: ndDepart, bonus: 0, inspire: etat.inspire, handicap: etat.handicap, nexus: false }
+    : await demanderParametres(infos, { etat, nexus: nexusDispo, nd: ndDepart });
   if (params && etat.sansInspiration) params.inspire = false;
   if (!params) return null;
 
@@ -100,10 +108,15 @@ export async function lancerTest(actor, type, cle, { rapide = false, sort = null
   if (sort) {
     const conseq = consequencesSort({ manaActuel: manaActeur, enduranceActuelle: actor.system.endurance?.value ?? 0, cout: coutSort, degre: resultat.degre });
     const maj = {};
-    if (conseq.mana !== null) maj["system.mana.value"] = conseq.mana;
-    if (conseq.perte) maj["system.endurance.value"] = conseq.endurance;
+    if (surEndurance) {
+      // Brume-Feu : le coût est payé en Endurance ; la catastrophe en retire autant en plus.
+      maj["system.endurance.value"] = Math.max(0, (conseq.mana ?? 0) - conseq.perte);
+    } else {
+      if (conseq.mana !== null) maj["system.mana.value"] = conseq.mana;
+      if (conseq.perte) maj["system.endurance.value"] = conseq.endurance;
+    }
     if (Object.keys(maj).length) await actor.update(maj);
-    affichage.sousTitre = [affichage.sousTitre, conseq.ligne].filter(Boolean).join(" · ");
+    affichage.sousTitre = [affichage.sousTitre, surEndurance ? conseq.ligne.replace(/mana/g, "Endurance") : conseq.ligne].filter(Boolean).join(" · ");
     if (conseq.issue === "reussite") actionsSort = detailsSortHTML(sort, esc);
   }
   return ChatMessage.create({
@@ -120,6 +133,7 @@ export async function relancerTest(message) {
   const actor = game.actors.get(jet?.actorId);
   if (!jet || !actor || jet.relance) return null;
   const dispo = actor.system.nexus.value;
+  if (actor.system.derive?.effets?.drogues?.nexusBloque) return ui.notifications.warn(`${actor.name} est sous Mithass noir : le Nexus est inaccessible.`);
   if (dispo < 1) return ui.notifications.warn(`${actor.name} n'a plus de point de Nexus.`);
   await actor.update({ "system.nexus.value": dispo - 1 });
 
