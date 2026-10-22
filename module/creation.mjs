@@ -23,7 +23,7 @@ export class AssistantCreation extends ApplicationV2 {
   static DEFAULT_OPTIONS = {
     id: "adc-assistant-creation",
     classes: [SYSTEM_ID, "adc-assistant"],
-    position: { width: 860, height: 760 },
+    position: { width: 940, height: 760 },
     window: { title: "Création de personnage", resizable: true, icon: "fa-solid fa-wand-magic-sparkles" }
   };
 

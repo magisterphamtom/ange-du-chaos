@@ -93,6 +93,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   _onRender(context, options) {
     super._onRender?.(context, options);
+    this._cadrerFenetre?.();
     this._afficherOnglet();
   }
 
@@ -162,6 +163,19 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   /* ----------------------------- Glisser-déposer ---------------------------- */
+
+  /** Garde la fenêtre dans l'écran (barre de défilement dans la fiche) et laisse la place aux onglets, qui dépassent à gauche. */
+  _cadrerFenetre() {
+    if (!this.element?.classList?.contains("feuille") || this._cadree) return;
+    this._cadree = true;
+    const p = this.position, maxH = Math.max(420, window.innerHeight - 24), maxW = Math.max(560, window.innerWidth - 150);
+    const maj = {};
+    if (p.height && p.height > maxH) maj.height = maxH;
+    if (p.width && p.width > maxW) maj.width = maxW;
+    if ((p.left ?? 0) < 140) maj.left = 140;
+    if ((p.top ?? 0) + (maj.height ?? p.height ?? 0) > window.innerHeight) maj.top = 8;
+    if (Object.keys(maj).length) this.setPosition(maj);
+  }
 
   _onFirstRender(context, options) {
     super._onFirstRender?.(context, options);
@@ -290,7 +304,7 @@ export class PersonnageSheet extends BaseActorSheet {
       reposer: function () { return reposer(this.actor); },
       assistant: function () { return ouvrirAssistant(this.actor); }
     },
-    position: { width: 880, height: 960 }
+    position: { width: 880, height: 780 }
   };
 
   static PARTS = {

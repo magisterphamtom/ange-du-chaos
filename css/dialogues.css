@@ -199,3 +199,22 @@
 .adc-assistant input:focus, .adc-assistant textarea:focus, .adc-assistant select:focus { outline: 2px solid var(--f-or); outline-offset: 1px; }
 .adc-asst-pied { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 16px; background: #e9e3d4; border-top: 3px solid var(--f-encre); }
 .adc-asst-erreurs { margin: 0; padding-left: 16px; font-size: 12.5px; color: #8d1f1f; flex: 1; max-height: 70px; overflow-y: auto; font-weight: 600; }
+
+/* ---- Correctifs de lisibilité (retours de test) ---- */
+.adc-assistant button { height: auto; }
+.adc-assistant .adc-asst-carte, .adc-assistant button.adc-asst-carte {
+  height: auto !important; min-height: 50px; line-height: 1.3; padding: 7px 12px; overflow: visible; white-space: normal;
+  align-items: flex-start; justify-content: center; flex: 0 1 auto; box-shadow: none;
+}
+.adc-assistant .adc-asst-carte strong { display: block; font: 700 14.5px/1.25 var(--f-corps); }
+.adc-assistant .adc-asst-carte small { display: block; font: 12.5px/1.3 var(--f-corps); text-align: left; }
+.adc-assistant .adc-asst-carte.large { flex: 1 1 100%; }
+.adc-assistant .adc-asst-choix, .adc-assistant .adc-asst-cartes { align-items: stretch; }
+.adc-assistant .adc-asst-etapes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 8px 10px 0; }
+.adc-assistant .adc-asst-pill { height: auto !important; min-height: 30px; white-space: normal; text-align: left; justify-content: flex-start; font-size: 15px; line-height: 1.15; padding: 4px 6px 2px; }
+.adc-assistant .adc-asst-pied { align-items: flex-end; }
+.adc-assistant .adc-asst-erreurs { max-height: none; overflow: visible; scrollbar-width: none; }
+.adc-assistant .adc-asst-pied button { height: auto !important; min-height: 38px; padding: 4px 18px; }
+.adc-assistant .adc-asst-ligne { min-height: 34px; }
+.adc-assistant .adc-asst-pas { width: 30px; height: 28px !important; min-height: 0; }
+.adc-assistant .adc-asst-corps { scrollbar-width: auto; scrollbar-color: #6f6a5c #e9e3d4; }
