@@ -1,0 +1,79 @@
+# L'Ange du Chaos — état du projet
+
+> **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.9.0 (fiches, jets, Nexus, combat, contenu du livre).
+
+## Fait (lot 1 — squelette)
+- `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
+- `module/config.mjs` : 6 caractéristiques, 36 compétences, Maisons, Voies, grades, 10 états, catégories d'adversaires.
+- `module/calc.mjs` : formules pures (Endurance, Seuil de fatigue, bonus aux dégâts, Mouvement, mana, grade) **vérifiées contre les exemples chiffrés du livre** (`node tools/test-calc.mjs`).
+- `module/datamodels.mjs` : DataModels ; valeurs dérivées dans `prepareDerivedData` (Initiative, Mouvement, Défense passive, Endurance max, Seuil, mana max, Hors-Destin max, Encombrement des armures équipées, +3 si armure trop lourde).
+- Fiche de personnage ApplicationV2 à 6 onglets (Caractéristiques, Profil, Combat, Équipement, Magie, Biographie) ; fiche PNJ et fiche créature ; fiche d'objet générique construite depuis le schéma.
+- Glisser-déposer d'objets sur les fiches (monde, compendium, autre acteur) ; Maison, Voie, Fortune et Malédiction remplacent la précédente ; la Maison et la Voie posent leur clé sur la fiche et donnent leur +1 de caractéristique.
+- États préjudiciables enregistrés comme statuts de jeton (cliquables dans l'onglet Combat).
+- Thème CSS « bleu nuit, pourpre et argent d'Eodh ».
+
+- 0.1.1 : onglets réécrits (un seul gabarit `personnage.hbs`, bascule de classe maison, plus de dépendance au mécanisme d'onglets d'ApplicationV2) ; partiel de section chargé avant le premier rendu.
+
+- 0.2.0 : moteur de jets `module/jets.mjs` (d10 explosif dans les deux sens, Inspiration/Handicap, double 10 / double 1, bloqué, degrés, catastrophe) testé par simulation (`node tools/test-jets.mjs`) ; fenêtre de jet + carte de chat (`module/rolls.mjs`) ; clic sur un score de caractéristique ou de compétence (Maj + clic : jet direct sans fenêtre).
+
+## Hypothèses à confirmer
+- Jets : les deux exemples chiffrés du livre (p. 32-33) ont un total final supérieur de 1 à ce que donnent leurs propres dés (10+10+1 +15 = 36, écrit 37 ; 15 − (1+10+8) = −4, écrit −3). J'applique les valeurs de dés écrites, pas les totaux finaux.
+- Degrés : majeure à ND+5, critique à ND+10 (à confirmer à la lecture de la section sur les degrés de réussite).
+- Non encore faits : Nexus, Hors-Destin, jets d'attaque/dégâts, Inspiration/Handicap automatiques (talents, états).
+- Caractéristique de départ 4 + 15 points (max 7 à cette étape) : saisie libre, **aucun contrôle** de plafond pour l'instant.
+- Bonus de formation de base : +1 REF/CON/VOL appliqué automatiquement à tout personnage.
+- Rattachement des compétences aux caractéristiques relevé dans le livre ; à comparer à la fiche officielle.
+- Profil PNJ / créature : champs génériques en attendant la lecture du bestiaire (Monde des Plans, chap. « Rencontres »).
+
+## Points incertains (extraction / lecture)
+- Armures et boucliers : tableau p. 136-137 lu partiellement ; colonnes PR/ENC/localisation retenues, valeurs pas encore importées.
+- Drogues (p. 120-127) et Sources de magie / académies (p. 147-171) : non lus ; le champ « Source » des sorts est libre.
+- Table de localisation aléatoire et catégorie de protection (règle optionnelle) : champs prévus, aucune automatisation.
+
+- Wiki (0.4.0) : au premier chargement du monde, le MJ crée un dossier « L'Ange du Chaos — Wiki » (Joueurs / Meneur de jeu) avec le livre de base (13 journaux, 98 pages) lu dans `assets/wiki/wiki.json` (pack d'assets privés, texte du livre : jamais dans le dépôt). Réglage client « Ouverture du wiki » (première fois / toujours / jamais), bouton Wiki dans l'onglet Journaux, API `game.adc.creerWiki()` / `ouvrirWiki()`. Banc d'essai : `node tools/test-wiki.mjs`.
+- Wiki, résidus d'extraction : citations latérales qui chevauchent deux pages parfois mal recollées (ex. « La formation des agents du Chaos », attribution « Michel Robert ») ; quelques mots composés ayant perdu leur trait d'union ; mises en page décoratives complexes ; blocs de statistiques de créatures en lignes séparées ; scénario « L'écume des profondeurs » exclu volontairement (spoilers). Rien n'a été testé dans Foundry.
+
+- 0.4.0 : wiki du livre de base (voir ci-dessus). 0.5.0 : fiches PNJ, créature et objet habillées (bandeau, logo, filigrane de l'adversaire) ; à la création d'un PNJ/créature dont le nom correspond à un adversaire du livre (Arkanôst, Chimère de sang, Ghonaki, Goule, Mante, Sangh, Serpentère, Squazz, Cellendhyll, Estrée, Xelshalee), portrait = illustration officielle et jeton rond officiel par défaut (`assets/tokens/`, `assets/filigranes/`). Test à faire : créer un acteur « Goule » → portrait et jeton automatiques ; un acteur au nom inconnu garde les images Foundry.
+
+- 0.6.0 : vérification des règles contre le livre (p. 33-38, 41-46, 82-85) : correspondance des 36 compétences et des 6 caractéristiques, échelles, Endurance, Seuil de fatigue, bonus aux dégâts, Mana, Initiative, Mouvement, Défense passive, grades, bonus de Maisons et de Voies : tout concorde, rien à corriger. Ajouts : le libellé du score de compétence du livre (Défaillant … Héroïque), Handicap pré-coché si l'état Épuisé, jet « bloqué » si Trouille bleue, rappel de la réussite automatique du rang Expert (ND ≤ 15). Carte de chat et fenêtre de jet refaites (parchemin, bandeau ciselé, dés gravés or/argent/sang, médaillon du total, verdict en bandeau coloré) : `module/rolls-html.mjs`, assets `des/`. Test à faire dans Foundry : jet depuis une fiche (fenêtre → carte), Maj + clic, Inspiration/Handicap, état Épuisé.
+
+- 0.6.1 : la carte de chat n'affiche d'abord que le total, le ND et le verdict ; le détail (dés, addition) se déplie au clic sur « Voir le détail du jet ».
+
+- 0.7.0 (lot A) : Nexus (p. 85) : case « Dépenser 1 Nexus » dans la fenêtre du test (Inspiration ou fin d'un Handicap), bouton « Relancer — 1 Nexus » sur la carte du jet, bouton éclair de la fiche (dégâts −10 = Endurance rendue, état suspendu = carte seule, Talent ou Art martial annoncé). Hors-Destin (p. 86-87) : 6 usages, « Éviter la mort » baisse définitivement le maximum (bonus −1). Repos de 8 h (p. 115) : Endurance = Carrure ± conditions ± soigneur, Mana = Arts étranges ± conditions, Nexus au maximum ; `game.adc.nouvelleSession()` rend le Hors-Destin à tout le groupe. Banc d'essai : `node tools/test-destin.mjs`. Non fait : transes martiale et magique, retrait automatique des états au repos. Test à faire dans Foundry : tout ce qui précède, notamment le bouton Relancer côté joueur (la mise à jour de l'ancienne carte demande les droits sur le message).
+
+- 0.8.0 (lot B, combat) : bouton d'attaque (épée) sur chaque arme et sur la fiche PNJ/créature. Fenêtre : Attaque / Frappe brutale (Handicap, +5) / Frappe précise (Inspiration, −5), partie du corps (table p. 105), position (dos, au sol, submergé), non létal, Nexus. ND = Défense passive de la cible désignée (−10 si Face contre terre). Carte du jet puis boutons Esquive / Parade (−3 Endurance, interdit sous le Seuil de fatigue ou Surpris, strictement supérieur pour réussir, le résultat remplace la Défense passive) ou Subir. Carte de dégâts : dés de l'arme + dés de degré + bonus − Protection ; bouton « Appliquer » (MJ ou propriétaire de la cible). États automatiques : Épuisé sous le Seuil, Aux portes de Dame Mort à 0 avec Dernier soupir automatique (Carrure ND 15, second souffle une fois par repos), hémorragie (−3 par tour avec Pisse le sang), initiative = dé du Destin + score (départage score puis PJ avant PNJ). États dans les tests : Épuisé et Aveuglé = Handicap aux tests physiques, Trouille bleue = bloqué, Démoralisé = pas d'Inspiration. Corrections : Carrure du repos = score (CON + rang) et non le rang ; le repos lève les états sauf En manque ; Épuisé ne touche plus que les tests physiques. Banc d'essai : `node tools/test-combat.mjs`, `node tools/test-attaque.mjs`. Non automatisé : Feinte, Désarmement, Saisie, Briser les os, Intimider, Riposte, Encaissement (optionnelle), combat à deux armes, sorts d'attaque, capacités d'armes (Perforant…), coups spéciaux, relance Nexus d'une attaque, pertes d'Endurance hors combat (chutes, feu, noyade). Test à faire dans Foundry : tout le flux avec une cible désignée (T), côté joueur ET côté MJ, l'initiative dans le Combat Tracker, le hook d'états.
+
+- 0.9.0 (lot C, contenu du livre) : `assets/contenu/contenu.json` (pack d'assets privé, extrait de wiki.json) → à l'ouverture d'un monde neuf, le MJ obtient des dossiers « L'Ange du Chaos — Contenu » : 51 armes (contact / distance), 26 armures, 3 boucliers, 55 objets de matériel (montures, véhicules, bateaux, munitions, objets communs), 10 drogues, 77 sorts (Communs, Éléments, Cycles, Sylve, Sang, Inanimé, Lumière, Ombres × Apprenti/Expert/Maître), 22 Arts martiaux, 25 Fortunes, 17 Malédictions, 7 Maisons (dont Loki), 6 Voies, 26 Talents (secrets de Maison + Talent de Voie) et 51 créatures/adversaires du bestiaire (jeton et portrait officiels quand l'adversaire est connu). Bouton « Contenu du livre » dans les onglets Objets et Acteurs (MJ) et `game.adc.creerContenu()` pour recréer (remplace les documents du contenu : modifications perdues). Banc d'essai : `node tools/test-contenu.mjs`.
+  Points à vérifier contre le livre (extraction automatique d'un PDF à colonnes) : sorts dont un champ est vide (Flèche-feu et Orbe : portée ; Étreinte des Ombres : portée ; Bienfaits de la nature : cible) ; difficulté textuelle des sorts (« Opposé », « Variable »…) placée en tête de l'effet, le champ ND vaut 0 ; sorts d'Éléments rangés sous la source « Éléments », avec l'élément en tête de l'effet ; profils du bestiaire dont l'attaque est générique (« Attaque », « Dégâts ») ou le score douteux (Sorcier thog, Sangh, Shenn'Gath, Inquisiteur, Ghonaki type) ; caractéristiques des créatures non reprises (mise en page du PDF illisible) ; Seuil de fatigue des créatures laissé à 2 ; Talents d'adversaire gardés en texte brut dans la fiche ; armes dont les dégâts sont un bonus (Ceste « +2 », Griffes « +1d6 ») : champ texte tel que dans le livre ; armures à plusieurs types de protection (ex. « 16 T, I ») : seul le premier type va dans le champ, la liste complète est dans la description. Non repris : les Talents d'Initié et d'Adepte, les objets magiques et enchantements, les maladies, les prétirés.
+
+## À faire
+0. Tests wiki dans Foundry : ouvrir un monde neuf (le wiki se crée, une notification), vérifier la visibilité joueur (Joueurs oui, MJ non), le réglage, le bouton Journaux, la régénération `game.adc.creerWiki()`.
+1. **Lot 2** : jets (fenêtre DialogV2, d10 explosif dans les deux sens, Inspiration/Handicap, degrés, catastrophe), cartes de chat avec boutons, Nexus, Hors-Destin.
+2. **Lot 2 bis** : combat automatisé (initiative, attaque vs Défense passive, réactions −3 END, dégâts − Protection, Seuil de fatigue → Épuisé, Portes de Dame Mort).
+3. **Lot 4** : FAIT en 0.9.0 sous forme de documents du monde (pas de compendiums LevelDB). Reste : objets magiques, Talents d'Initié/Adepte, maladies, prétirés.
+4. **Lot 5** : wiki automatique (journal joueurs + journal MJ) à l'ouverture du monde.
+5. Assistant de création de personnage en 9 étapes ; Talents qui alimentent automatiquement les bonus.
+6. Polices embarquées (`assets/fonts`) au lieu des polices système.
+
+## Tests jets (v0.2.0) à faire dans Foundry
+A. Onglet Caractéristiques : cliquer un score de compétence → fenêtre ; choisir ND 15, lancer → carte dans le chat avec dés, total, verdict.
+B. Maj + clic : jet direct sans fenêtre.
+C. Compétence à rang 0 : la fenêtre signale « Inapte ». Cocher Inspiration : 2 dés affichés, un barré.
+D. Cocher Inspiration + Handicap : un seul dé (ils s'annulent).
+E. Aucune erreur rouge en console pendant ces jets.
+
+## Tests lot 1 (validés : ouverture de fiche et onglets)
+1. Installer le zip, créer un monde de test, activer le système : aucune erreur rouge en console (F12) au chargement.
+2. Créer un acteur de chaque type (Personnage, PNJ, Créature) : la fiche s'ouvre, le titre est correct.
+3. Fiche de personnage : parcourir les 6 onglets ; saisir des valeurs, fermer/rouvrir, elles sont conservées.
+4. Caractéristiques : mettre CON 8 + VOL 6, choisir Maison Garthe et Voie Protecteur → CON 11 / VOL 7 affichées ; Carrure 6 → Endurance max 46 si CON+VOL = 16.
+5. Créer des objets de chaque type (+ Objet) ; ouvrir chaque fiche d'objet ; modifier les champs et les zones de texte riche.
+6. Glisser une arme, une armure, un bouclier sur la fiche (onglet Équipement) ; les équiper (bouclier) ; vérifier Encombrement et Défense passive dans l'onglet Combat.
+7. Glisser une Maison puis une autre : la première est remplacée. Idem Voie, Fortune, Malédiction.
+8. Cliquer les états dans l'onglet Combat : l'icône apparaît sur le jeton.
+9. PNJ : ajouter/supprimer une compétence, changer de catégorie.
+10. Jeton : la barre d'Endurance s'affiche.
+
+- 0.3.1 : thème parchemin par défaut (fond tiré d'une carte du jeu, texte brun, accents rouge sang). 0.3.0 : habillage visuel (assets privés dans `assets/`, hors dépôt) : logo argenté et bandeau ciselé dans l'en-tête, illustration de la Voie en filigrane (Loki si Maison Loki), filets d'argent sous les titres, runes des 10 sources de magie (bandeau de l'onglet Magie et pastille devant chaque sort selon son champ « Source »). Sans assets, la fiche reste lisible.
+- 0.3.2 : onglets verticaux illustrés dans la colonne de gauche de la fiche de personnage (plaque de métal ciselé + icône par onglet, assets/onglets/).

@@ -1,0 +1,177 @@
+<div class="adc-fiche">
+{{#if artVoie}}<img class="adc-art-voie" src="{{artVoie}}" alt="" onerror="this.remove()">{{/if}}
+<div class="adc-bandeau" style="background-image:url('{{assets}}/ornements/bandeau.webp')"></div>
+<header class="adc-header">
+  <img class="adc-logo" src="{{assets}}/ornements/logo.webp" alt="L'Ange du Chaos" onerror="this.remove()">
+  <img class="adc-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-edit="img" data-action="editImage">
+  <div class="adc-header-corps">
+    <input class="adc-nom" type="text" name="name" value="{{actor.name}}" placeholder="Nom du personnage">
+    <div class="adc-header-ligne">
+      <label>Maison
+        <select name="system.maison">{{selectOptions maisons selected=system.maison}}</select>
+      </label>
+      <label>Voie
+        <select name="system.voie">{{selectOptions voies selected=system.voie}}</select>
+      </label>
+      <label>Mérite
+        <input type="number" name="system.merite" value="{{system.merite}}" min="0">
+      </label>
+      <span class="adc-grade">{{derive.gradeLabel}}</span>
+    </div>
+    <div class="adc-ressources">
+      <div class="adc-jauge endurance {{#if system.endurance.epuise}}epuise{{/if}}">
+        <span class="adc-jauge-nom">Endurance</span>
+        <input type="number" name="system.endurance.value" value="{{system.endurance.value}}" min="0">
+        <span class="adc-jauge-max">/ {{system.endurance.max}}</span>
+        <small>Seuil {{system.endurance.seuil}}</small>
+      </div>
+      <div class="adc-jauge nexus">
+        <span class="adc-jauge-nom">Nexus</span>
+        <input type="number" name="system.nexus.value" value="{{system.nexus.value}}" min="0">
+        <span class="adc-jauge-max">/ {{system.nexus.max}}</span>
+        <a class="adc-jauge-btn" data-action="depenserNexus" data-tooltip="Dépenser un point de Nexus"><i class="fa-solid fa-bolt"></i></a>
+      </div>
+      <div class="adc-jauge mana">
+        <span class="adc-jauge-nom">Mana</span>
+        <input type="number" name="system.mana.value" value="{{system.mana.value}}" min="0">
+        <span class="adc-jauge-max">/ {{system.mana.max}}</span>
+      </div>
+      <div class="adc-jauge destin">
+        <span class="adc-jauge-nom">Hors-Destin</span>
+        <input type="number" name="system.horsDestin.value" value="{{system.horsDestin.value}}" min="0">
+        <span class="adc-jauge-max">/ {{system.horsDestin.max}}</span>
+        <a class="adc-jauge-btn" data-action="depenserHorsDestin" data-tooltip="Dépenser un point de Hors-Destin"><i class="fa-solid fa-feather-pointed"></i></a>
+      </div>
+      <a class="adc-jauge adc-repos" data-action="reposer" data-tooltip="Période de repos de 8 heures"><i class="fa-solid fa-bed"></i> Repos</a>
+    </div>
+  </div>
+</header>
+<nav class="adc-tabs">
+  {{#each onglets}}
+  <a class="adc-tab {{#if this.actif}}active{{/if}}" data-action="adcOnglet" data-tab="{{this.id}}" data-tooltip="{{this.label}}" data-tooltip-direction="RIGHT">
+    <img class="adc-tab-ico" src="{{this.icone}}" alt="" onerror="this.remove()">
+    <span class="adc-tab-nom">{{this.court}}</span>
+  </a>
+  {{/each}}
+</nav>
+<div class="adc-contenu">
+<section class="adc-onglet tab" data-tab="caracteristiques">
+  <p class="adc-aide">Saisissez la valeur de base de chaque caractéristique (4 + 15 points à la création). Les bonus de Maison, de Voie et de formation s'ajoutent automatiquement. Score de compétence = caractéristique + rang.</p>
+  <div class="adc-groupes">
+    {{#each groupes}}
+    <div class="adc-groupe">
+      <div class="adc-carac">
+        <span class="adc-carac-nom">{{this.label}} <small>({{this.abbr}})</small></span>
+        <input class="adc-carac-base" type="number" name="system.caracs.{{this.cle}}.base" value="{{this.base}}" min="0">
+        {{#if this.bonus}}<span class="adc-carac-bonus" data-tooltip="Maison, Voie, formation">+{{this.bonus}}</span>{{/if}}
+        <a class="adc-carac-valeur adc-jet" data-action="jet" data-type="carac" data-cle="{{this.cle}}" data-tooltip="Tester (Maj : sans fenêtre)">{{this.valeur}}</a>
+        <span class="adc-carac-libelle">{{this.libelle}}</span>
+      </div>
+      <table class="adc-competences">
+        <tbody>
+          {{#each this.competences}}
+          <tr class="{{#if this.inapte}}inapte{{/if}}">
+            <td class="nom">{{this.label}}</td>
+            <td class="rang"><input type="number" name="system.competences.{{this.cle}}.rang" value="{{this.rang}}" min="0"></td>
+            <td class="score"><a class="adc-jet" data-action="jet" data-type="competence" data-cle="{{this.cle}}" data-tooltip="Tester (Maj : sans fenêtre)">{{this.score}}</a></td>
+            <td class="lib">{{this.libelle}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{/each}}
+  </div>
+</section>
+<section class="adc-onglet tab" data-tab="profil">
+  <p class="adc-aide">Glissez ici une Maison, une Voie, une Fortune, une Malédiction, des Talents et un Art martial depuis les compendiums ou le répertoire des objets.</p>
+  <div class="adc-colonnes">
+    <div>
+      {{> adc-section sec=sections.maisons}}
+      {{> adc-section sec=sections.voies}}
+      {{> adc-section sec=sections.fortunes}}
+      {{> adc-section sec=sections.maledictions}}
+    </div>
+    <div>
+      {{> adc-section sec=sections.talents}}
+      {{> adc-section sec=sections.artsMartiaux}}
+    </div>
+  </div>
+</section>
+<section class="adc-onglet tab" data-tab="combat">
+  <div class="adc-stats">
+    <div class="adc-stat"><span>Initiative</span><strong>{{derive.initiative}}</strong></div>
+    <div class="adc-stat"><span>Mouvement</span><strong>{{derive.mouvement}} m</strong></div>
+    <div class="adc-stat"><span>Défense passive</span><strong>{{derive.defensePassive}}</strong></div>
+    <div class="adc-stat"><span>Bonus aux dégâts</span><strong>{{adcSigne derive.bonusDegats}}</strong></div>
+    <div class="adc-stat"><span>Protection</span><strong>{{derive.protection}}</strong></div>
+    <div class="adc-stat {{#if derive.armureTropLourde}}alerte{{/if}}"><span>Encombrement</span><strong>{{derive.encombrement}}</strong></div>
+  </div>
+  {{#if derive.armureTropLourde}}<p class="adc-alerte">Armure trop lourde pour le porteur : +3 d'Encombrement (compétence Armures insuffisante).</p>{{/if}}
+
+  <h3>États préjudiciables</h3>
+  <div class="adc-etats">
+    {{#each etats}}
+    <a class="adc-etat {{#if this.actif}}actif{{/if}}" data-action="toggleEtat" data-etat="{{this.id}}">
+      <img src="{{this.img}}" alt=""><span>{{this.name}}</span>
+    </a>
+    {{/each}}
+  </div>
+
+  <h3>Bonus (Talents, Arts martiaux, effets)</h3>
+  <p class="adc-aide">Ces bonus s'ajoutent aux valeurs calculées. Ils seront alimentés automatiquement par les Talents dans une prochaine version.</p>
+  <div class="adc-bonus">
+    <label>Initiative <input type="number" name="system.bonus.initiative" value="{{system.bonus.initiative}}"></label>
+    <label>Mouvement <input type="number" name="system.bonus.mouvement" value="{{system.bonus.mouvement}}"></label>
+    <label>Défense <input type="number" name="system.bonus.defense" value="{{system.bonus.defense}}"></label>
+    <label>Dégâts <input type="number" name="system.bonus.degats" value="{{system.bonus.degats}}"></label>
+    <label>Endurance <input type="number" name="system.bonus.endurance" value="{{system.bonus.endurance}}"></label>
+    <label>Mana <input type="number" name="system.bonus.mana" value="{{system.bonus.mana}}"></label>
+    <label>Nexus <input type="number" name="system.bonus.nexus" value="{{system.bonus.nexus}}"></label>
+    <label>Hors-Destin <input type="number" name="system.bonus.horsDestin" value="{{system.bonus.horsDestin}}"></label>
+  </div>
+</section>
+<section class="adc-onglet tab" data-tab="equipement">
+  <div class="adc-monnaie">
+    <span>Licornes</span>
+    <label>d'or <input type="number" name="system.monnaie.or" value="{{system.monnaie.or}}" min="0"></label>
+    <label>d'argent (£A) <input type="number" name="system.monnaie.argent" value="{{system.monnaie.argent}}" min="0"></label>
+    <label>de bronze <input type="number" name="system.monnaie.bronze" value="{{system.monnaie.bronze}}" min="0"></label>
+  </div>
+  {{> adc-section sec=sections.armes}}
+  {{> adc-section sec=sections.armures}}
+  {{> adc-section sec=sections.boucliers}}
+  {{> adc-section sec=sections.equipement}}
+  {{> adc-section sec=sections.drogues}}
+</section>
+<section class="adc-onglet tab" data-tab="magie">
+  <div class="adc-runes" aria-hidden="true">
+    {{#each runes}}<img src="{{this}}" alt="" onerror="this.remove()">{{/each}}
+  </div>
+  <div class="adc-stats">
+    <div class="adc-stat"><span>Mana</span><strong>{{system.mana.value}} / {{system.mana.max}}</strong></div>
+    <div class="adc-stat"><span>Arts étranges</span><strong>{{derive.competences.artsEtranges.score}}</strong></div>
+  </div>
+  {{> adc-section sec=sections.sorts}}
+</section>
+<section class="adc-onglet tab" data-tab="biographie">
+  <div class="adc-identite">
+    <label>Genre <input type="text" name="system.identite.genre" value="{{system.identite.genre}}"></label>
+    <label>Âge <input type="text" name="system.identite.age" value="{{system.identite.age}}"></label>
+    <label>Taille <input type="text" name="system.identite.taille" value="{{system.identite.taille}}"></label>
+    <label>Poids <input type="text" name="system.identite.poids" value="{{system.identite.poids}}"></label>
+    <label>Cheveux <input type="text" name="system.identite.cheveux" value="{{system.identite.cheveux}}"></label>
+    <label>Yeux <input type="text" name="system.identite.yeux" value="{{system.identite.yeux}}"></label>
+    <label>Peau <input type="text" name="system.identite.peau" value="{{system.identite.peau}}"></label>
+  </div>
+  <h3>Historique</h3>
+  {{formInput champs.biographie.fields.historique value=system.biographie.historique enriched=enrichi.historique toggled=true}}
+  <h3>Physionomie</h3>
+  {{formInput champs.biographie.fields.physionomie value=system.biographie.physionomie enriched=enrichi.physionomie toggled=true}}
+  <h3>Personnalité</h3>
+  {{formInput champs.biographie.fields.personnalite value=system.biographie.personnalite enriched=enrichi.personnalite toggled=true}}
+  <h3>Notes</h3>
+  {{formInput champs.notes value=system.notes enriched=enrichi.notes toggled=true}}
+</section>
+</div>
+</div>

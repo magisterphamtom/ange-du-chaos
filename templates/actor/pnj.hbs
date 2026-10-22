@@ -1,0 +1,65 @@
+<div class="adc-pnj adc-fiche">
+  {{#if artAdversaire}}<img class="adc-art-voie adc-art-creature" src="{{artAdversaire}}" alt="" onerror="this.remove()">{{/if}}
+  <div class="adc-bandeau" style="background-image:url('{{assets}}/ornements/bandeau.webp')"></div>
+  <header class="adc-header">
+    <img class="adc-logo" src="{{assets}}/ornements/logo.webp" alt="L'Ange du Chaos" onerror="this.remove()">
+    <img class="adc-portrait" src="{{actor.img}}" alt="{{actor.name}}" data-edit="img" data-action="editImage">
+    <div class="adc-header-corps">
+      <input class="adc-nom" type="text" name="name" value="{{actor.name}}" placeholder="Nom">
+      <div class="adc-header-ligne">
+        <label>Catégorie <select name="system.categorie">{{selectOptions categories selected=system.categorie}}</select></label>
+        <span class="adc-grade">Talents d'adversaire : {{talentsMax}}</span>
+        {{#if estCreature}}
+        <label>Espèce <input type="text" name="system.espece" value="{{system.espece}}"></label>
+        <label>Plan <input type="text" name="system.plan" value="{{system.plan}}"></label>
+        {{/if}}
+      </div>
+    </div>
+  </header>
+
+  <div class="adc-stats">
+    <label class="adc-stat">Endurance
+      <span><input type="number" name="system.endurance.value" value="{{system.endurance.value}}" min="0"> / <input type="number" name="system.endurance.max" value="{{system.endurance.max}}" min="0"></span>
+    </label>
+    <label class="adc-stat">Seuil de fatigue <input type="number" name="system.seuilFatigue" value="{{system.seuilFatigue}}" min="0"></label>
+    <label class="adc-stat">Protection <input type="number" name="system.protection" value="{{system.protection}}" min="0"></label>
+    <label class="adc-stat">Défense passive <input type="number" name="system.defensePassive" value="{{system.defensePassive}}"></label>
+    <label class="adc-stat">Initiative <input type="number" name="system.initiative" value="{{system.initiative}}"></label>
+    <label class="adc-stat">Mouvement <input type="number" name="system.mouvement" value="{{system.mouvement}}" min="0"></label>
+    <label class="adc-stat">Bonus dégâts <input type="number" name="system.bonusDegats" value="{{system.bonusDegats}}"></label>
+  </div>
+
+  <h3>Attaque <a class="adc-btn adc-btn-attaque" data-action="attaquer" data-tooltip="Attaquer (cible désignée)"><i class="fa-solid fa-khanda"></i></a></h3>
+  <div class="adc-bonus">
+    <label>Arme <input type="text" name="system.attaque.nom" value="{{system.attaque.nom}}"></label>
+    <label>Score d'attaque <input type="number" name="system.attaque.score" value="{{system.attaque.score}}"></label>
+    <label>Dégâts <input type="text" name="system.attaque.degats" value="{{system.attaque.degats}}"></label>
+  </div>
+
+  <h3>Compétences <a class="adc-btn" data-action="addCompetence" data-tooltip="Ajouter"><i class="fa-solid fa-plus"></i></a></h3>
+  <table class="adc-competences">
+    <tbody>
+      {{#each system.competences}}
+      <tr>
+        <td class="nom"><input type="text" name="system.competences.{{@index}}.nom" value="{{this.nom}}"></td>
+        <td class="rang"><input type="number" name="system.competences.{{@index}}.score" value="{{this.score}}"></td>
+        <td><a class="adc-btn" data-action="removeCompetence" data-index="{{@index}}"><i class="fa-solid fa-trash"></i></a></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <h3>Description</h3>
+  {{formInput champs.description value=system.description enriched=enrichi.description toggled=true}}
+  <h3>Talents d'adversaire</h3>
+  {{formInput champs.talents value=system.talents enriched=enrichi.talents toggled=true}}
+  {{#if estCreature}}
+  <h3>Capacités spéciales</h3>
+  {{formInput champs.capacites value=system.capacites enriched=enrichi.capacites toggled=true}}
+  {{/if}}
+
+  {{> adc-section sec=sections.armes}}
+  {{> adc-section sec=sections.sorts}}
+  {{> adc-section sec=sections.talents}}
+  {{> adc-section sec=sections.equipement}}
+</div>

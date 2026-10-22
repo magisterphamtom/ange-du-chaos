@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.pdf
+*.zip
+_extraction/
+
+# Illustrations officielles (Les XII Singes) : usage personnel, jamais dans le dépôt
+assets/

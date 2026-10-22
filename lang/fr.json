@@ -1,0 +1,17 @@
+{
+  "TYPES.Actor.personnage": "Personnage",
+  "TYPES.Actor.pnj": "PNJ",
+  "TYPES.Actor.creature": "Créature",
+  "TYPES.Item.arme": "Arme",
+  "TYPES.Item.armure": "Armure",
+  "TYPES.Item.bouclier": "Bouclier",
+  "TYPES.Item.equipement": "Équipement",
+  "TYPES.Item.drogue": "Drogue",
+  "TYPES.Item.sort": "Sort",
+  "TYPES.Item.artmartial": "Art martial",
+  "TYPES.Item.talent": "Talent",
+  "TYPES.Item.fortune": "Fortune",
+  "TYPES.Item.malediction": "Malédiction",
+  "TYPES.Item.maison": "Maison du Chaos",
+  "TYPES.Item.voie": "Voie de formation"
+}

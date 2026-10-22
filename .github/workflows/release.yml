@@ -1,0 +1,19 @@
+name: Release
+on:
+  push:
+    tags: ["v*.*.*"]
+permissions:
+  contents: write
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construire le zip (dossier ange-du-chaos/)
+        run: |
+          mkdir -p dist/ange-du-chaos
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'dist' --exclude 'node_modules' ./ dist/ange-du-chaos/
+          cd dist && zip -r ../ange-du-chaos.zip ange-du-chaos
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ange-du-chaos.zip

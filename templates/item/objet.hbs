@@ -1,0 +1,30 @@
+<div class="adc-objet adc-fiche">
+  <div class="adc-bandeau" style="background-image:url('{{assets}}/ornements/bandeau.webp')"></div>
+  <header class="adc-header">
+    <img class="adc-logo" src="{{assets}}/ornements/logo.webp" alt="" onerror="this.remove()">
+    <img class="adc-portrait petit" src="{{item.img}}" alt="{{item.name}}" data-edit="img" data-action="editImage">
+    <div class="adc-header-corps">
+      <input class="adc-nom" type="text" name="name" value="{{item.name}}" placeholder="Nom">
+      <span class="adc-grade">{{typeLabel}}</span>
+    </div>
+  </header>
+  <div class="adc-champs">
+    {{#each champs}}
+      {{#if (adcEq this.genre "html")}}
+        <div class="adc-champ html"><label>{{this.label}}</label>
+          {{formInput this.champ value=this.valeur enriched=this.enrichi toggled=true}}
+        </div>
+      {{else if (adcEq this.genre "boolean")}}
+        <div class="adc-champ"><label><input type="checkbox" name="{{this.name}}" {{#if this.valeur}}checked{{/if}}> {{this.label}}</label></div>
+      {{else if (adcEq this.genre "number")}}
+        <div class="adc-champ"><label>{{this.label}}</label><input type="number" name="{{this.name}}" value="{{this.valeur}}"></div>
+      {{else if (adcEq this.genre "select")}}
+        <div class="adc-champ"><label>{{this.label}}</label>
+          <select name="{{this.name}}">{{#each this.options}}<option value="{{this.valeur}}" {{#if this.choisi}}selected{{/if}}>{{this.label}}</option>{{/each}}</select>
+        </div>
+      {{else}}
+        <div class="adc-champ"><label>{{this.label}}</label><input type="text" name="{{this.name}}" value="{{this.valeur}}"></div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>

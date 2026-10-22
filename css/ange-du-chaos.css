@@ -1,0 +1,556 @@
+/* L'Ange du Chaos — thème « Cour des Apparences » : bleu nuit, pourpre et argent d'Eodh. */
+
+.ange-du-chaos {
+  --adc-nuit: #14152b;
+  --adc-nuit-2: #1d1f3d;
+  --adc-pourpre: #6b3a8f;
+  --adc-pourpre-clair: #a77bd0;
+  --adc-argent: #d7dbe6;
+  --adc-argent-sombre: #9aa0b8;
+  --adc-or: #d8b45a;
+  --adc-danger: #d9534f;
+  --adc-police: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-family: var(--adc-police);
+  color: var(--adc-argent);
+}
+
+.ange-du-chaos.sheet .window-content {
+  background: linear-gradient(160deg, var(--adc-nuit) 0%, var(--adc-nuit-2) 100%);
+  padding: 8px 10px;
+  gap: 6px;
+}
+
+.ange-du-chaos h3 {
+  margin: 14px 0 6px;
+  padding-bottom: 3px;
+  color: var(--adc-pourpre-clair);
+  border-bottom: 1px solid var(--adc-pourpre);
+  font-family: var(--adc-police);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.ange-du-chaos input[type="text"],
+.ange-du-chaos input[type="number"],
+.ange-du-chaos select {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--adc-argent);
+  border: 1px solid rgba(167, 123, 208, 0.45);
+  border-radius: 3px;
+}
+.ange-du-chaos input:focus, .ange-du-chaos select:focus {
+  border-color: var(--adc-or);
+  box-shadow: 0 0 4px rgba(216, 180, 90, 0.5);
+  outline: none;
+}
+.ange-du-chaos select option { color: #111; }
+.ange-du-chaos label { color: var(--adc-argent-sombre); font-size: 0.85em; }
+
+/* En-tête */
+.ange-du-chaos .adc-header { display: flex; gap: 12px; align-items: flex-start; }
+.ange-du-chaos .adc-portrait {
+  width: 96px; height: 96px; object-fit: cover; cursor: pointer;
+  border: 2px solid var(--adc-pourpre); border-radius: 4px;
+}
+.ange-du-chaos .adc-portrait.petit { width: 56px; height: 56px; }
+.ange-du-chaos .adc-header-corps { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.ange-du-chaos .adc-nom {
+  font-size: 1.6em; font-family: var(--adc-police); height: 2em;
+  background: transparent !important; border: none !important; border-bottom: 1px solid var(--adc-pourpre) !important;
+  color: var(--adc-argent) !important;
+}
+.ange-du-chaos .adc-header-ligne { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ange-du-chaos .adc-header-ligne label { display: flex; align-items: center; gap: 4px; }
+.ange-du-chaos .adc-header-ligne input[type="number"] { width: 3.2em; }
+.ange-du-chaos .adc-grade {
+  margin-left: auto; padding: 2px 10px; border-radius: 12px;
+  background: var(--adc-pourpre); color: #fff; font-size: 0.85em; letter-spacing: 0.05em;
+}
+
+/* Jauges */
+.ange-du-chaos .adc-ressources { display: flex; flex-wrap: wrap; gap: 8px; }
+.ange-du-chaos .adc-jauge {
+  display: flex; align-items: center; gap: 4px; padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--adc-pourpre); border-radius: 4px;
+}
+.ange-du-chaos .adc-jauge-nom { color: var(--adc-or); font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.06em; }
+.ange-du-chaos .adc-jauge input { width: 3em; text-align: center; font-weight: bold; }
+.ange-du-chaos .adc-jauge small { color: var(--adc-argent-sombre); margin-left: 4px; }
+.ange-du-chaos .adc-jauge.epuise { border-color: var(--adc-danger); }
+.ange-du-chaos .adc-jauge.epuise input { color: var(--adc-danger); }
+
+/* Onglets */
+.ange-du-chaos .adc-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--adc-pourpre); margin-top: 4px; }
+.ange-du-chaos .adc-tab {
+  padding: 5px 14px; color: var(--adc-argent-sombre); cursor: pointer;
+  border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0;
+}
+.ange-du-chaos .adc-tab:hover { color: var(--adc-argent); }
+.ange-du-chaos .adc-tab.active {
+  color: var(--adc-or); background: rgba(107, 58, 143, 0.35); border-color: var(--adc-pourpre);
+}
+.ange-du-chaos .adc-onglet { display: none; padding: 6px 2px; }
+.ange-du-chaos .adc-onglet.active { display: block; }
+
+.ange-du-chaos .adc-aide { color: var(--adc-argent-sombre); font-style: italic; font-size: 0.85em; margin: 2px 0 8px; }
+.ange-du-chaos .adc-alerte { color: var(--adc-danger); }
+
+/* Caractéristiques et compétences */
+.ange-du-chaos .adc-groupes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.ange-du-chaos .adc-groupe { background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(167, 123, 208, 0.35); border-radius: 4px; padding: 6px; }
+.ange-du-chaos .adc-carac { display: flex; align-items: center; gap: 6px; padding-bottom: 4px; border-bottom: 1px solid var(--adc-pourpre); }
+.ange-du-chaos .adc-carac-nom { flex: 1; color: var(--adc-or); font-weight: 600; }
+.ange-du-chaos .adc-carac-base { width: 3em; text-align: center; }
+.ange-du-chaos .adc-carac-bonus { color: var(--adc-pourpre-clair); }
+.ange-du-chaos .adc-carac-valeur { font-size: 1.5em; font-weight: bold; min-width: 1.6em; text-align: center; }
+.ange-du-chaos .adc-carac-libelle { color: var(--adc-argent-sombre); font-size: 0.8em; min-width: 5em; }
+.ange-du-chaos .adc-competences { width: 100%; border-collapse: collapse; }
+.ange-du-chaos .adc-competences td { padding: 1px 3px; }
+.ange-du-chaos .adc-competences .nom { width: 45%; }
+.ange-du-chaos .adc-competences .rang input { width: 3em; text-align: center; }
+.ange-du-chaos .adc-competences .score { font-weight: bold; text-align: center; color: var(--adc-or); width: 2.5em; }
+.ange-du-chaos .adc-competences .lib { color: var(--adc-argent-sombre); font-size: 0.8em; }
+.ange-du-chaos .adc-competences tr.inapte .nom, .ange-du-chaos .adc-competences tr.inapte .score { opacity: 0.55; }
+.ange-du-chaos .adc-pnj .adc-competences .nom input { width: 100%; }
+
+/* Statistiques */
+.ange-du-chaos .adc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 6px 0; }
+.ange-du-chaos .adc-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--adc-pourpre); border-radius: 4px;
+}
+.ange-du-chaos .adc-stat > span:first-child { color: var(--adc-argent-sombre); font-size: 0.8em; text-transform: uppercase; }
+.ange-du-chaos .adc-stat strong { font-size: 1.5em; color: var(--adc-or); }
+.ange-du-chaos .adc-stat.alerte { border-color: var(--adc-danger); }
+.ange-du-chaos .adc-stat input { width: 4em; text-align: center; }
+.ange-du-chaos .adc-bonus { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; }
+.ange-du-chaos .adc-bonus label { display: flex; flex-direction: column; gap: 2px; }
+
+/* États */
+.ange-du-chaos .adc-etats { display: flex; flex-wrap: wrap; gap: 6px; }
+.ange-du-chaos .adc-etat {
+  display: flex; align-items: center; gap: 4px; padding: 3px 8px; cursor: pointer;
+  border: 1px solid rgba(167, 123, 208, 0.35); border-radius: 12px; opacity: 0.55;
+  color: var(--adc-argent);
+}
+.ange-du-chaos .adc-etat img { width: 20px; height: 20px; border: none; filter: invert(1); }
+.ange-du-chaos .adc-etat.actif { opacity: 1; border-color: var(--adc-danger); background: rgba(217, 83, 79, 0.25); }
+
+/* Listes d'objets */
+.ange-du-chaos .adc-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ange-du-chaos .adc-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.ange-du-chaos .adc-ligne {
+  display: flex; align-items: center; gap: 8px; padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(167, 123, 208, 0.25); border-radius: 3px; cursor: grab;
+}
+.ange-du-chaos .adc-ligne-img { width: 26px; height: 26px; border: none; cursor: pointer; }
+.ange-du-chaos .adc-ligne-nom { flex: 1; color: var(--adc-argent); font-weight: 600; }
+.ange-du-chaos .adc-ligne-resume { color: var(--adc-argent-sombre); font-size: 0.8em; }
+.ange-du-chaos .adc-vide {
+  padding: 8px; text-align: center; color: var(--adc-argent-sombre); font-style: italic;
+  border: 1px dashed rgba(167, 123, 208, 0.4); border-radius: 3px;
+}
+.ange-du-chaos .adc-btn { color: var(--adc-argent-sombre); cursor: pointer; padding: 0 4px; }
+.ange-du-chaos .adc-btn:hover { color: var(--adc-or); }
+.ange-du-chaos .adc-btn.actif { color: var(--adc-or); }
+
+.ange-du-chaos .adc-monnaie { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.ange-du-chaos .adc-monnaie span { color: var(--adc-or); font-weight: 600; }
+.ange-du-chaos .adc-monnaie input { width: 4.5em; }
+.ange-du-chaos .adc-identite { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ange-du-chaos .adc-identite label { display: flex; flex-direction: column; gap: 2px; }
+
+/* Fiche d'objet */
+.ange-du-chaos .adc-champs { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ange-du-chaos .adc-champ { display: flex; flex-direction: column; gap: 2px; }
+.ange-du-chaos .adc-champ.html prose-mirror, .ange-du-chaos prose-mirror { min-height: 90px; color: var(--adc-argent); }
+
+/* Zone de saisie du chat (héritage de couleur ProseMirror) */
+#chat-controls .chat-entry .ProseMirror,
+#chat-controls .chat-entry [contenteditable] { color: #f3f0ff !important; caret-color: var(--adc-or) !important; }
+
+.ange-du-chaos .adc-fiche { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.ange-du-chaos .adc-fiche .adc-contenu { flex: 1; overflow-y: auto; }
+
+/* --- jets --- */
+.ange-du-chaos a.adc-jet { cursor: pointer; font-weight: 700; text-decoration: none; }
+.ange-du-chaos a.adc-jet:hover { color: var(--adc-or); text-shadow: 0 0 6px var(--adc-or); }
+
+
+/* ======================= Habillage visuel (assets privés) =================== */
+/* Les images viennent de assets/ (non versionné). Si elles manquent, la fiche reste lisible. */
+
+.ange-du-chaos .adc-bandeau {
+  height: 34px; margin-bottom: 8px; border-radius: 3px;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(215, 219, 230, 0.15);
+  filter: brightness(0.9) contrast(1.05);
+}
+.ange-du-chaos .adc-bandeau:not([style*="url"]) { display: none; }
+
+.ange-du-chaos .adc-header { position: relative; padding-right: 8px; }
+.ange-du-chaos .adc-header > * { position: relative; z-index: 1; }
+.ange-du-chaos .adc-fiche { position: relative; isolation: isolate; }
+.ange-du-chaos .adc-fiche > * { position: relative; z-index: 1; }
+.ange-du-chaos .adc-fiche > .adc-art-voie {
+  position: absolute; z-index: 0; right: 4px; bottom: 0; top: 40px; height: calc(100% - 40px); width: auto;
+  max-width: 55%; object-fit: contain; object-position: right bottom;
+  opacity: 0.13; pointer-events: none; border: none;
+  filter: drop-shadow(0 0 10px rgba(167, 123, 208, 0.5));
+}
+.ange-du-chaos .adc-header > .adc-logo {
+  position: absolute; z-index: 2; right: 6px; top: -4px; height: 56px; width: auto; border: none;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8)); pointer-events: none;
+}
+.ange-du-chaos .adc-portrait { box-shadow: 0 0 0 1px var(--adc-argent-sombre), 0 0 10px rgba(167, 123, 208, 0.45); }
+
+/* Titres : filet d'argent ciselé */
+.ange-du-chaos h3 {
+  padding-bottom: 10px; border-bottom: 1px solid rgba(107, 58, 143, 0.55);
+  background: url("../assets/ornements/filet.webp") left bottom / 100% 9px no-repeat;
+}
+
+/* Jauges et stats : liseré métallique */
+.ange-du-chaos .adc-jauge, .ange-du-chaos .adc-stat, .ange-du-chaos .adc-groupe {
+  border-color: rgba(154, 160, 184, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(215, 219, 230, 0.08);
+}
+.ange-du-chaos .adc-groupe .adc-carac { border-bottom-color: rgba(154, 160, 184, 0.35); }
+.ange-du-chaos .adc-tab.active { box-shadow: inset 0 -2px 0 var(--adc-or); }
+
+/* Runes des sources de magie */
+.ange-du-chaos .adc-rune {
+  width: 30px; height: 30px; border: none; flex: none; object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.25));
+}
+.ange-du-chaos .adc-runes { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin: 4px 0 12px; }
+.ange-du-chaos .adc-runes img {
+  width: 44px; height: 44px; border: none; object-fit: contain; opacity: 0.85;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7)); transition: transform 0.15s, opacity 0.15s;
+}
+.ange-du-chaos .adc-runes img:hover { opacity: 1; transform: scale(1.18); }
+
+/* ======================= Thème parchemin (défaut) ======================= */
+/* Texture tirée d'une carte du jeu (assets/ornements/fond-parchemin.webp, non versionnée). */
+.ange-du-chaos {
+  --adc-nuit:#d9ccb0; --adc-nuit-2:#cbbd9f; --adc-pourpre:#6e5a3c; --adc-pourpre-clair:#6b1d1d;
+  --adc-argent:#2b2016; --adc-argent-sombre:#5c4a33; --adc-or:#7a1f1f; --adc-danger:#a01818;
+}
+.ange-du-chaos.sheet .window-content { background: url("../assets/ornements/fond-parchemin.webp") center/cover #d4c6a6; }
+.ange-du-chaos input[type="text"], .ange-du-chaos input[type="number"], .ange-du-chaos select {
+  background: rgba(255,250,235,.55); color:#2b2016; border-color: rgba(110,90,60,.55); }
+.ange-du-chaos .adc-jauge, .ange-du-chaos .adc-stat, .ange-du-chaos .adc-groupe, .ange-du-chaos .adc-ligne {
+  background: rgba(255,248,230,.32); border-color: rgba(90,70,45,.55); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.ange-du-chaos .adc-nom { color:#2b2016 !important; border-bottom-color: rgba(110,90,60,.7) !important; }
+.ange-du-chaos .adc-tab.active { background: rgba(255,248,230,.45); color:#7a1f1f; border-color: rgba(90,70,45,.6); box-shadow: inset 0 -2px 0 #7a1f1f; }
+.ange-du-chaos .adc-tabs { border-bottom-color: rgba(90,70,45,.7); }
+.ange-du-chaos .adc-grade { background:#7a1f1f; color:#f3e9d2; }
+.ange-du-chaos .adc-competences .score, .ange-du-chaos .adc-stat strong { color:#7a1f1f; }
+.ange-du-chaos .adc-carac-valeur { color:#2b2016; }
+.ange-du-chaos .adc-fiche > .adc-art-voie { filter: invert(1) brightness(.35); opacity:.16; }
+.ange-du-chaos h3 { color:#6b1d1d; }
+.ange-du-chaos .adc-ligne-nom { color:#2b2016; }
+.ange-du-chaos .adc-header > .adc-logo { filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)) brightness(.85) contrast(1.1); }
+
+
+.ange-du-chaos .adc-etat, .ange-du-chaos .adc-vide { border-color: rgba(90, 70, 45, 0.5); }
+.ange-du-chaos .adc-etat img { filter: none; }
+.ange-du-chaos .adc-etat.actif { background: rgba(160, 24, 24, 0.18); border-color: #a01818; }
+.ange-du-chaos .adc-rune { filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.35)); }
+.ange-du-chaos .adc-runes img { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45)); }
+.ange-du-chaos input:focus, .ange-du-chaos select:focus { border-color: #7a1f1f; box-shadow: 0 0 4px rgba(122, 31, 31, 0.5); }
+.ange-du-chaos .adc-bandeau { filter: none; }
+.ange-du-chaos .adc-runes img, .ange-du-chaos .adc-rune { opacity: 1; filter: brightness(0.8) saturate(1.5) contrast(1.1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)); }
+
+/* ======================= Onglets verticaux illustrés (colonne de gauche) ===== */
+.ange-du-chaos.personnage .adc-fiche {
+  display: grid; grid-template-columns: 78px minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr);
+  column-gap: 6px; flex-direction: initial;
+}
+.ange-du-chaos.personnage .adc-fiche > .adc-bandeau, .ange-du-chaos.personnage .adc-fiche > .adc-header { grid-column: 1 / -1; }
+.ange-du-chaos.personnage .adc-fiche > .adc-tabs { grid-column: 1; grid-row: 3; }
+.ange-du-chaos.personnage .adc-fiche > .adc-contenu { grid-column: 2; grid-row: 3; min-height: 0; overflow-y: auto; }
+.ange-du-chaos.personnage .adc-fiche > .adc-art-voie { grid-column: 1 / -1; grid-row: 1 / -1; }
+
+.ange-du-chaos .adc-tabs {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  margin: 6px 0 0; padding: 4px 0 0; border: 0; overflow: visible;
+}
+.ange-du-chaos .adc-tabs .adc-tab {
+  position: relative; box-sizing: border-box; width: 66px; height: 86px; padding: 8px 2px 0; margin: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer;
+  border: 0; border-radius: 0; background: url("../assets/onglets/plaque.webp") center / 100% 100% no-repeat;
+  filter: brightness(0.9); transition: transform 0.12s ease, filter 0.12s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+}
+.ange-du-chaos .adc-tabs .adc-tab:hover { filter: brightness(1.12); transform: translateX(3px); }
+.ange-du-chaos .adc-tabs .adc-tab.active {
+  background-image: url("../assets/onglets/plaque-actif.webp"); filter: none; transform: translateX(8px);
+  box-shadow: 0 0 10px rgba(190, 30, 30, 0.55), 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+.ange-du-chaos .adc-tab-ico { width: 40px; height: 40px; border: none; object-fit: contain; flex: none; margin-top: 4px; }
+.ange-du-chaos .adc-tab-nom {
+  font-size: 9px; letter-spacing: 0; text-transform: uppercase; text-align: center; line-height: 1.1;
+  color: #d7dbe6; text-shadow: 0 1px 2px #000; margin-top: 3px; max-width: 100%;
+}
+.ange-du-chaos .adc-tabs .adc-tab.active .adc-tab-nom { color: #f3dc92; }
+/* sans images : repli lisible */
+.ange-du-chaos .adc-tabs .adc-tab { background-color: #2a2622; }
+
+/* ======================= Wiki (journaux du livre de base) ================== */
+.adc-wiki-sheet .window-content {
+  background: url("../assets/ornements/fond-parchemin.webp") center / cover #d4c6a6;
+}
+.adc-wiki-sheet .journal-sidebar, .adc-wiki-sheet .journal-entry-pages > .sidebar { background: rgba(40, 30, 20, 0.88); }
+.adc-wiki, .adc-wiki-sheet .journal-page-content {
+  --adc-encre: #2b2016; --adc-sang: #7a1f1f;
+  color: var(--adc-encre); font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif; font-size: 15px; line-height: 1.5;
+}
+.adc-wiki h1, .adc-wiki h2, .adc-wiki h3, .adc-wiki h4 {
+  font-family: "Palatino Linotype", Palatino, Georgia, serif; color: var(--adc-sang); border: 0; letter-spacing: 0.03em;
+}
+.adc-wiki h2 {
+  margin: 1.4em 0 0.5em; padding-bottom: 12px; font-size: 1.45em;
+  background: url("../assets/ornements/filet.webp") left bottom / 100% 9px no-repeat;
+}
+.adc-wiki h3 { margin: 1em 0 0.3em; font-size: 1.15em; font-style: italic; }
+.adc-wiki p { margin: 0.45em 0; text-align: justify; hyphens: auto; }
+.adc-wiki strong { color: #1d140c; }
+.adc-wiki .adc-puce { margin: 0.2em 0 0.2em 1.4em; text-indent: -0.9em; text-align: left; }
+.adc-wiki .adc-cite {
+  margin: 0.7em 1.2em; padding-left: 12px; border-left: 3px solid var(--adc-sang); font-style: italic; color: #4a3a28; text-align: left;
+}
+.adc-wiki .adc-exemple {
+  margin: 0.8em 0 0.1em; font-variant: small-caps; letter-spacing: 0.1em; color: var(--adc-sang); font-weight: 700;
+}
+.adc-wiki .adc-encadre {
+  margin: 1em 0; padding: 4px 16px 10px; background: rgba(255, 250, 235, 0.45);
+  border: 1px solid rgba(90, 70, 45, 0.55); border-radius: 4px; box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+.adc-wiki .adc-encadre h3 { margin-top: 0.6em; font-style: normal; text-align: center; }
+.adc-wiki table.adc-table {
+  width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.88em; background: rgba(255, 250, 235, 0.35);
+  border: 1px solid rgba(90, 70, 45, 0.6);
+}
+.adc-wiki .adc-table th, .adc-wiki .adc-table td { padding: 3px 7px; border: 1px solid rgba(90, 70, 45, 0.35); vertical-align: top; text-align: left; }
+.adc-wiki .adc-table th { background: rgba(60, 45, 30, 0.82); color: #f0e6cf; font-weight: 600; letter-spacing: 0.03em; }
+.adc-wiki .adc-table tr.groupe th { background: rgba(122, 31, 31, 0.85); text-align: left; }
+.adc-wiki .adc-table tr:nth-child(even) td { background: rgba(60, 45, 30, 0.06); }
+.adc-wiki img.adc-illus { max-height: 300px; width: auto; mix-blend-mode: multiply; border: 0; }
+.adc-wiki img.adc-illus.gauche { float: left; margin: 4px 16px 8px 0; }
+.adc-wiki img.adc-illus.droite { float: right; margin: 4px 0 8px 16px; max-width: 240px; }
+.adc-wiki h2, .adc-wiki h3 { clear: both; }
+.adc-wiki .adc-runes-ligne { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin: 8px 0 14px; }
+.adc-wiki .adc-runes-ligne img { width: 56px; height: 56px; border: 0; object-fit: contain; filter: brightness(0.8) saturate(1.5) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)); }
+.adc-wiki .adc-logo-wiki { display: block; margin: 0 auto 10px; max-width: 70%; border: 0; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5)); }
+.adc-wiki .adc-sommaire { columns: 2; list-style: none; margin: 0.4em 0; padding: 0; }
+.adc-wiki .adc-sommaire li { margin: 0.3em 0; break-inside: avoid; }
+.adc-wiki .adc-sommaire a.content-link { color: var(--adc-sang); background: transparent; border: 0; border-bottom: 1px dotted var(--adc-sang); }
+.adc-wiki .adc-carte-fig { margin: 12px 0; text-align: center; }
+.adc-wiki .adc-carte-fig img { max-width: 100%; border: 1px solid rgba(90, 70, 45, 0.7); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45); }
+.adc-wiki figcaption { font-style: italic; margin-top: 4px; }
+.adc-wiki .adc-galerie { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.adc-wiki .adc-galerie figure { margin: 0; text-align: center; }
+.adc-wiki .adc-galerie img { height: 240px; width: auto; mix-blend-mode: multiply; border: 0; }
+.adc-wiki-btn { flex: none; width: auto; padding: 0 10px; }
+
+/* PNJ, créatures, objets : même habillage que la fiche de personnage */
+.ange-du-chaos .adc-fiche > .adc-art-voie.adc-art-creature {
+  opacity: 0.18; filter: none; top: 330px; bottom: auto; height: 420px; max-width: 50%; object-position: right top;
+}
+.ange-du-chaos.pnj .adc-fiche, .ange-du-chaos.creature .adc-fiche, .ange-du-chaos.item .adc-fiche { min-height: 100%; }
+
+
+/* ============ Carte de chat des jets (parchemin, dés gravés) ============ */
+.adc-carte2 {
+  --encre: #2b2016; --sang: #7a1f1f; --or: #a77d28; --parch: #d3c4a4;
+  position: relative; overflow: hidden; border: 1px solid #1d1408; border-radius: 4px; padding: 0; color: var(--encre);
+  background: #d3c4a4 url("../assets/ornements/fond-parchemin.webp") center / cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 245, 220, 0.35), inset 0 0 18px rgba(80, 55, 25, 0.35);
+  font-family: var(--font-body, "Signika", sans-serif); line-height: 1.25;
+}
+.adc-carte2 .adc-c-entete {
+  display: flex; align-items: center; gap: 8px; padding: 5px 8px; min-height: 40px;
+  background: #23232e url("../assets/ornements/bandeau.webp") center / cover; border-bottom: 1px solid #0c0c12;
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+}
+.adc-carte2 .adc-c-portrait { width: 34px; height: 34px; object-fit: cover; border-radius: 50%; border: 2px solid #c9ced9; box-shadow: 0 0 0 1px #0c0c12, 0 1px 4px rgba(0, 0, 0, 0.7); flex: none; }
+.adc-carte2 .adc-c-titres { display: flex; flex-direction: column; min-width: 0; }
+.adc-carte2 .adc-c-nom { font-size: 1.15em; font-weight: 700; letter-spacing: 0.04em; color: #eceff6; text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.8); }
+.adc-carte2 .adc-c-sous { font-size: 0.78em; color: #c4c9d8; text-shadow: 0 1px 2px #000; }
+.adc-carte2 .adc-c-sous .mode { padding: 0 5px; border-radius: 8px; font-weight: 600; color: #fff; }
+.adc-carte2 .mode.inspire { background: #2f6b4a; } .adc-carte2 .mode.handicap { background: #7a1f1f; } .adc-carte2 .mode.bloque { background: #55402a; }
+
+.adc-carte2 .adc-c-corps { padding: 8px 10px 6px; }
+.adc-carte2 .adc-destins { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.adc-carte2 .adc-destin { display: flex; align-items: center; gap: 8px; padding: 2px 8px; border-radius: 14px; }
+.adc-carte2 .adc-destin.retenu { background: rgba(167, 125, 40, 0.22); box-shadow: inset 0 0 0 1px rgba(122, 90, 25, 0.55); }
+.adc-carte2 .adc-destin.ecarte { opacity: 0.5; }
+.adc-carte2 .adc-destin.ecarte .adc-destin-val { text-decoration: line-through; }
+.adc-carte2 .adc-chaine { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.adc-carte2 .adc-sep { font-weight: 700; color: #5a4630; }
+.adc-carte2 .adc-de {
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  background: url("../assets/des/d10.webp") center / contain no-repeat;
+}
+.adc-carte2 .adc-de.or { background-image: url("../assets/des/d10-or.webp"); }
+.adc-carte2 .adc-de.sang { background-image: url("../assets/des/d10-sang.webp"); }
+.adc-carte2 .adc-de.ombre { background-image: url("../assets/des/d10-ombre.webp"); }
+.adc-carte2 .adc-de i { font-style: normal; font-weight: 800; font-size: 14px; margin-top: 1px; color: #1a1209; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45); }
+.adc-carte2 .adc-de.sang i, .adc-carte2 .adc-de.ombre i { color: #f6ece0; text-shadow: 0 1px 1px #000; }
+.adc-carte2 .adc-destin-val { font-size: 1.15em; font-weight: 700; min-width: 2.2em; text-align: right; }
+
+.adc-carte2 .adc-c-calcul { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
+.adc-carte2 .adc-formule { font-size: 1.05em; }
+.adc-carte2 .adc-formule b { font-size: 1.15em; }
+.adc-carte2 .adc-formule em { font-style: normal; color: #5a4630; }
+.adc-carte2 .adc-egal { font-size: 1.3em; color: #5a4630; }
+.adc-carte2 .adc-total {
+  display: inline-flex; align-items: center; justify-content: center; width: 58px; height: 58px;
+  background: url("../assets/des/medaillon.webp") center / contain no-repeat;
+}
+.adc-carte2 .adc-total strong { font-size: 1.55em; font-weight: 800; color: var(--encre); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4); }
+.adc-carte2 .adc-nd { display: inline-flex; flex-direction: column; align-items: center; margin-left: 4px; padding: 2px 8px; border: 1px solid rgba(43, 32, 22, 0.55); border-radius: 3px; background: rgba(43, 32, 22, 0.08); line-height: 1.05; }
+.adc-carte2 .adc-nd small { font-size: 0.65em; letter-spacing: 0.1em; text-transform: uppercase; color: #5a4630; }
+.adc-carte2 .adc-nd strong { font-size: 1.25em; }
+
+.adc-carte2 .adc-c-verdict {
+  display: flex; flex-direction: column; align-items: center; padding: 5px 8px 6px; text-align: center;
+  background: linear-gradient(#5a4630, #3b2d1d); color: #f0e4c8; border-top: 1px solid #1d1408;
+  background-image: url("../assets/ornements/filet.webp"), linear-gradient(#5a4630, #3b2d1d); background-size: 100% 6px, auto; background-repeat: no-repeat; background-position: top;
+}
+.adc-carte2 .adc-c-verdict strong { font-size: 1.2em; letter-spacing: 0.06em; text-transform: uppercase; }
+.adc-carte2 .adc-c-verdict span { font-size: 0.8em; font-style: italic; opacity: 0.9; }
+.adc-carte2 .adc-c-verdict .adc-marge { font-size: 0.72em; font-style: normal; opacity: 0.75; margin-top: 1px; }
+.adc-carte2.simple .adc-c-verdict { background-color: #2f4a38; background-image: url("../assets/ornements/filet.webp"), linear-gradient(#3d6048, #26402f); }
+.adc-carte2.majeure .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#4f7c3a, #2c4f23); }
+.adc-carte2.critique .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#c9a23e, #8a5f17); color: #1d1408; text-shadow: 0 1px 0 rgba(255, 245, 200, 0.5); }
+.adc-carte2.critique { box-shadow: 0 0 10px 1px rgba(201, 162, 62, 0.75), 0 2px 8px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(80, 55, 25, 0.35); border-color: #8a5f17; }
+.adc-carte2.echec .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#6a5a48, #3f342a); }
+.adc-carte2.catastrophe .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#a02a2a, #4d0f10); }
+.adc-carte2.catastrophe { border-color: #4d0f10; box-shadow: 0 0 10px 1px rgba(160, 42, 42, 0.6), 0 2px 8px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(80, 25, 25, 0.4); }
+
+/* ============ Fenêtre de jet ============ */
+.adc-dialog-jet.application { background: #d3c4a4 url("../assets/ornements/fond-parchemin.webp") center / cover; border: 1px solid #1d1408; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7); color: #2b2016; }
+.adc-dialog-jet .window-header {
+  background: #23232e url("../assets/ornements/bandeau.webp") center / cover; border-bottom: 1px solid #0c0c12; color: #eceff6;
+}
+.adc-dialog-jet .window-header .window-title { text-shadow: 0 1px 2px #000; letter-spacing: 0.05em; font-weight: 700; }
+.adc-dialog-jet .window-header button, .adc-dialog-jet .window-header i { color: #c4c9d8; }
+.adc-dialog-jet .window-content { background: transparent; padding: 10px 14px 4px; color: #2b2016; }
+.adc-dialog-jet form.adc-dialogue-jet { display: flex; flex-direction: column; gap: 8px; }
+.adc-dialogue-jet .adc-d-tete { display: flex; align-items: center; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(43, 32, 22, 0.4); background: url("../assets/ornements/filet.webp") left bottom / 100% 8px no-repeat; }
+.adc-dialogue-jet .adc-d-medaillon { width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center; background: url("../assets/des/medaillon.webp") center / contain no-repeat; }
+.adc-dialogue-jet .adc-d-medaillon strong { font-size: 1.7em; font-weight: 800; color: #2b2016; }
+.adc-dialogue-jet h2 { margin: 0; border: 0; font-size: 1.5em; color: #7a1f1f; letter-spacing: 0.04em; }
+.adc-dialogue-jet .adc-d-titre span { font-size: 0.85em; color: #5a4630; font-style: italic; }
+.adc-dialogue-jet fieldset { border: 1px solid rgba(43, 32, 22, 0.35); border-radius: 4px; margin: 0; padding: 4px 8px 8px; background: rgba(255, 248, 230, 0.25); }
+.adc-dialogue-jet legend { padding: 0 6px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.1em; color: #7a1f1f; font-weight: 700; }
+.adc-dialogue-jet input[type="radio"], .adc-dialogue-jet input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.adc-dialogue-jet .adc-nd-rangee { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.adc-dialogue-jet .adc-nd-puce { position: relative; cursor: pointer; }
+.adc-dialogue-jet .adc-nd-puce span {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; height: 46px; border-radius: 4px; border: 1px solid #1d1408;
+  background: #2a2a36 url("../assets/onglets/plaque.webp") center / 100% 100%; color: #d5d9e5; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.adc-dialogue-jet .adc-nd-puce b { font-size: 1.2em; line-height: 1; }
+.adc-dialogue-jet .adc-nd-puce small { font-size: 0.6em; text-transform: uppercase; letter-spacing: 0.03em; opacity: 0.85; }
+.adc-dialogue-jet .adc-nd-puce:hover span { filter: brightness(1.2); }
+.adc-dialogue-jet .adc-nd-puce input:checked + span { background-image: url("../assets/onglets/plaque-actif.webp"); color: #fff4d0; box-shadow: 0 0 0 2px #a77d28, 0 0 8px rgba(201, 162, 62, 0.7); transform: translateY(-1px); }
+.adc-dialogue-jet .adc-bascules { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.adc-dialogue-jet .adc-bascule { position: relative; cursor: pointer; }
+.adc-dialogue-jet .adc-bascule span {
+  display: flex; flex-direction: column; align-items: center; padding: 5px 4px; border-radius: 4px; border: 1px solid rgba(43, 32, 22, 0.55);
+  background: rgba(43, 32, 22, 0.08); color: #4a3a28;
+}
+.adc-dialogue-jet .adc-bascule b { font-size: 1em; text-transform: uppercase; letter-spacing: 0.06em; }
+.adc-dialogue-jet .adc-bascule small { font-size: 0.7em; opacity: 0.85; }
+.adc-dialogue-jet .adc-bascule.inspire input:checked + span { background: linear-gradient(#4f7c3a, #2c4f23); color: #f2f7e6; border-color: #1d1408; box-shadow: 0 0 6px rgba(79, 124, 58, 0.8); }
+.adc-dialogue-jet .adc-bascule.handicap input:checked + span { background: linear-gradient(#a02a2a, #4d0f10); color: #fbeaea; border-color: #1d1408; box-shadow: 0 0 6px rgba(160, 42, 42, 0.8); }
+.adc-dialogue-jet .adc-note { margin: 5px 0 0; font-size: 0.78em; font-style: italic; color: #5a4630; }
+.adc-dialogue-jet .adc-note.sang { color: #7a1f1f; font-weight: 600; font-style: normal; margin: 0; }
+.adc-dialogue-jet .adc-note.or { color: #7a5a19; font-weight: 600; font-style: normal; margin: 0; }
+.adc-dialogue-jet .adc-pas { display: flex; justify-content: center; align-items: center; gap: 6px; }
+.adc-dialogue-jet .adc-pas input { width: 4em; text-align: center; font-size: 1.2em; font-weight: 700; background: rgba(255, 250, 235, 0.7); color: #2b2016; border: 1px solid rgba(43, 32, 22, 0.6); }
+.adc-dialogue-jet .adc-pas button { width: 32px; height: 32px; padding: 0; line-height: 1; font-size: 1.3em; font-weight: 700; color: #d5d9e5; border: 1px solid #1d1408; background: #2a2a36 url("../assets/onglets/plaque.webp") center / 100% 100%; cursor: pointer; }
+.adc-dialog-jet .form-footer, .adc-dialog-jet footer.form-footer { padding: 6px 14px 12px; }
+.adc-dialog-jet .form-footer button {
+  height: 40px; font-weight: 700; letter-spacing: 0.05em; color: #fff4d0; border: 1px solid #1d1408; border-radius: 4px;
+  background: linear-gradient(#a02a2a, #4d0f10); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.adc-dialog-jet .form-footer button:hover { filter: brightness(1.15); box-shadow: 0 0 10px rgba(160, 42, 42, 0.8); }
+
+/* Carte : seul le résultat est visible, le détail se déplie au clic */
+.adc-carte2 .adc-detail { margin-top: 4px; }
+.adc-carte2 .adc-detail summary { list-style: none; cursor: pointer; text-align: center; font-size: 0.72em; color: #5a4630; user-select: none; }
+.adc-carte2 .adc-detail summary::-webkit-details-marker { display: none; }
+.adc-carte2 .adc-detail summary:hover { color: var(--sang); text-decoration: underline; }
+.adc-carte2 .adc-detail .ouvert { display: none; }
+.adc-carte2 .adc-detail[open] .ouvert { display: inline; }
+.adc-carte2 .adc-detail[open] .ferme { display: none; }
+.adc-carte2 .adc-detail[open] .adc-destins { margin-top: 6px; }
+.adc-carte2 .adc-c-formule { margin-top: 4px; font-size: 0.95em; }
+.adc-carte2 .adc-c-formule b { font-size: 1.2em; }
+.adc-carte2 .adc-total-auto strong { font-size: 0.95em; letter-spacing: -0.02em; }
+
+/* ============ Nexus, Hors-Destin, repos ============ */
+.ange-du-chaos .adc-jauge-btn { margin-left: 4px; padding: 0 5px; color: var(--adc-or); cursor: pointer; }
+.ange-du-chaos .adc-jauge-btn:hover { text-shadow: 0 0 6px var(--adc-or); }
+.ange-du-chaos .adc-jauge.adc-repos { cursor: pointer; align-self: center; font-weight: 700; color: var(--adc-or); }
+.ange-du-chaos .adc-jauge.adc-repos:hover { filter: brightness(1.2); }
+
+.adc-carte2 .adc-c-actions { padding: 6px 8px 8px; text-align: center; background: rgba(43, 32, 22, 0.1); border-top: 1px solid rgba(43, 32, 22, 0.35); }
+.adc-carte2 .adc-btn-relance {
+  height: 28px; line-height: 1; padding: 0 12px; font-weight: 700; color: #fff4d0; cursor: pointer; border: 1px solid #1d1408; border-radius: 4px;
+  background: linear-gradient(#a77d28, #6d4d12); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.adc-carte2 .adc-btn-relance:hover { filter: brightness(1.15); }
+.adc-carte2 .mode.nexus { background: #a77d28; }
+.adc-carte2 .adc-c-texte { padding: 8px 12px; }
+.adc-carte2 .adc-c-texte p { margin: 0 0 4px; }
+.adc-carte2 .adc-c-lignes { margin: 0; padding: 0 0 0 16px; font-size: 0.9em; }
+.adc-carte-destin.nexus .adc-c-verdict, .adc-carte-destin.destin .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#c9a23e, #8a5f17); color: #1d1408; text-shadow: 0 1px 0 rgba(255, 245, 200, 0.5); }
+.adc-carte-destin.repos .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#3d6048, #26402f); }
+
+.adc-dialogue-jet .adc-choix-liste { display: flex; flex-direction: column; gap: 4px; }
+.adc-dialogue-jet .adc-choix { position: relative; cursor: pointer; }
+.adc-dialogue-jet .adc-choix span { display: flex; flex-direction: column; padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(43, 32, 22, 0.45); background: rgba(43, 32, 22, 0.07); color: #3b2d1d; }
+.adc-dialogue-jet .adc-choix b { font-size: 0.95em; }
+.adc-dialogue-jet .adc-choix small { font-size: 0.75em; opacity: 0.85; line-height: 1.2; }
+.adc-dialogue-jet .adc-choix:hover span { background: rgba(167, 125, 40, 0.18); }
+.adc-dialogue-jet .adc-choix input:checked + span { background: linear-gradient(#2a2a36, #15151f); color: #fff4d0; border-color: #a77d28; box-shadow: 0 0 0 1px #a77d28, 0 0 8px rgba(201, 162, 62, 0.55); }
+.adc-dialogue-jet .adc-selecteur { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.adc-dialogue-jet .adc-selecteur label { display: flex; flex-direction: column; font-size: 0.8em; color: #5a4630; }
+.adc-dialogue-jet .adc-selecteur select { background: rgba(255, 250, 235, 0.75); color: #2b2016; border: 1px solid rgba(43, 32, 22, 0.6); }
+.adc-dialogue-jet .adc-bascule.nexus input:checked + span { background: linear-gradient(#c9a23e, #8a5f17); color: #1d1408; border-color: #1d1408; box-shadow: 0 0 6px rgba(201, 162, 62, 0.8); }
+
+/* ============ Combat : fenêtre d'attaque, réactions, dégâts ============ */
+.ange-du-chaos .adc-btn-attaque { color: var(--adc-or); }
+.adc-dialogue-jet .adc-choix-ligne { flex-direction: row; gap: 5px; }
+.adc-dialogue-jet .adc-choix-court { flex: 1; }
+.adc-dialogue-jet .adc-choix-court span { height: 100%; align-items: center; text-align: center; }
+.adc-dialogue-jet .adc-trois { grid-template-columns: repeat(3, 1fr); }
+.adc-dialogue-jet .adc-form-attaque { max-height: 72vh; overflow-y: auto; }
+
+.adc-carte2 .adc-reactions { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.adc-carte2 .adc-reac-titre { font-size: 0.8em; font-weight: 700; color: #3b2d1d; }
+.adc-carte2 .adc-reac-titre small { font-weight: 400; opacity: 0.8; }
+.adc-carte2 .adc-reac-btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.adc-carte2 .adc-btn-reaction {
+  height: 28px; line-height: 1; padding: 0 10px; font-weight: 700; color: #eceff6; cursor: pointer; border: 1px solid #1d1408; border-radius: 4px;
+  background: #2a2a36 url("../assets/onglets/plaque.webp") center / 100% 100%; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.adc-carte2 .adc-btn-reaction:hover:not(:disabled) { filter: brightness(1.25); }
+.adc-carte2 .adc-btn-reaction:disabled { opacity: 0.4; cursor: not-allowed; }
+.adc-carte2 .adc-btn-reaction.subir { background: linear-gradient(#a02a2a, #4d0f10); color: #fff4d0; }
+
+.adc-carte2 .adc-total-degats strong { font-size: 1.6em; color: #7a1f1f; }
+.adc-carte2 .adc-des-degats { display: flex; gap: 4px; justify-content: center; margin: 6px 0 2px; flex-wrap: wrap; }
+.adc-carte2 .adc-de-degat { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; font-weight: 800; border: 1px solid #1d1408; border-radius: 5px; background: linear-gradient(#f4f6fb, #b9bfd0); color: #1a1209; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
+.adc-carte2 .adc-c-ligne { margin: 2px 0; text-align: center; font-size: 0.85em; color: #3b2d1d; }
+.adc-carte-degats.critique .adc-c-verdict, .adc-carte-degats.majeure .adc-c-verdict, .adc-carte-degats.simple .adc-c-verdict { background-image: url("../assets/ornements/filet.webp"), linear-gradient(#a02a2a, #4d0f10); color: #fff4d0; }
+
+/* ---- Bouton « Contenu du livre » (répertoires Objets / Acteurs) ---- */
+.adc-contenu-btn { flex: 0 0 auto; margin: 0 0 0 4px; }
