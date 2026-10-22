@@ -49,6 +49,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       toggleEtat: BaseActorSheet.#toggleEtat,
       adcOnglet: BaseActorSheet.#changerOnglet,
       basculerHaut: BaseActorSheet.#basculerHaut,
+      lancerSort: BaseActorSheet.#lancerSort,
       jet: BaseActorSheet.#jet,
       attaquer: BaseActorSheet.#attaquer,
       addCompetence: BaseActorSheet.#addCompetence,
@@ -99,6 +100,18 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element?.querySelector(".adc-feuille")?.classList.toggle("haut-masque", !!this._hautMasque);
   }
 
+  /** Lance un sort : dépense le mana, test d'Arts étranges contre le ND du sort (Maj : sans fenêtre). */
+  static async #lancerSort(event, target) {
+    const id = target.closest("[data-item-id]")?.dataset.itemId;
+    const it = id ? this.actor.items.get(id) : null;
+    if (!it || it.type !== "sort") return;
+    const sys = it.system;
+    await lancerTest(this.actor, "competence", "artsEtranges", {
+      rapide: event.shiftKey,
+      sort: { nom: it.name, source: sys.source, mana: sys.mana, difficulte: sys.difficulte, portee: sys.portee, cible: sys.cible, duree: sys.duree, incantation: sys.incantation, effet: String(sys.effet ?? "").replace(/<[^>]*>/g, "") }
+    });
+  }
+
   /** Masque ou réaffiche le haut du Profil pour donner toute la hauteur aux compétences. */
   static async #basculerHaut() {
     this._hautMasque = !this._hautMasque;
@@ -142,7 +155,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const ligne = (it, resume, equipable = false, rune = null) => ({
       id: it.id, img: it.img, name: it.name, resume,
       rune: rune ? `${ASSETS}/runes/${rune}.webp` : null,
-      equipable, equipee: equipable ? !!it.system.equipee : false, attaquable: it.type === "arme"
+      equipable, equipee: equipable ? !!it.system.equipee : false, attaquable: it.type === "arme", lancable: it.type === "sort"
     });
     const de = (type) => items.filter(i => i.type === type);
     const s = (cle, titre, type, lignes, extra = {}) => ({ cle, titre, type, lignes, vide: !lignes.length, ...extra });

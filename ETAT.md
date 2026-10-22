@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.15.3 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.16.0 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -27,8 +27,8 @@
 - Profil PNJ / créature : champs génériques en attendant la lecture du bestiaire (Monde des Plans, chap. « Rencontres »).
 
 ## Points incertains (extraction / lecture)
-- Armures et boucliers : tableau p. 136-137 lu partiellement ; colonnes PR/ENC/localisation retenues, valeurs pas encore importées.
-- Drogues (p. 120-127) et Sources de magie / académies (p. 147-171) : non lus ; le champ « Source » des sorts est libre.
+- Armures (26) et boucliers (3) : importés dans le contenu (mise à jour : la note « valeurs pas encore importées » était périmée).
+- Drogues (10, p. 120-127) importées ; académies (p. 149-150) lues en 0.15.0 ; le détail de chaque source de magie (p. 147-171) reste à relire pour vérifier les 77 sorts.
 - Table de localisation aléatoire et catégorie de protection (règle optionnelle) : champs prévus, aucune automatisation.
 
 - Wiki (0.4.0) : au premier chargement du monde, le MJ crée un dossier « L'Ange du Chaos — Wiki » (Joueurs / Meneur de jeu) avec le livre de base (13 journaux, 98 pages) lu dans `assets/wiki/wiki.json` (pack d'assets privés, texte du livre : jamais dans le dépôt). Réglage client « Ouverture du wiki » (première fois / toujours / jamais), bouton Wiki dans l'onglet Journaux, API `game.adc.creerWiki()` / `ouvrirWiki()`. Banc d'essai : `node tools/test-wiki.mjs`.
@@ -56,6 +56,7 @@
   Assistant : Guerrier né (3 compétences d'armes +1 rang, étape 5), Richesse (+100 £A d'or), équipement de départ à l'étape 9 (armure de cuir gras portée + jusqu'à 4 armes maniées au choix, portées).
   Hypothèses à confirmer : le plafond de 4 armes de départ (le livre dit « toute arme qu'il sait manier » sans limite) ; Frappe d'acier appliquée aux armes de Corps à corps ; Armure du Chaos, Frénésie, Sens du Chaos, Nexus de Voie, Perforant, dés supplémentaires sur Surpris : utilisation manuelle (pas automatisés). Non fait : Vieille blessure (choix de la conséquence), Handicaps « à la discrétion du MJ », vision nocturne, Héritage du bien-né, Favori de Morion, Savoirs interdits. Test à faire dans Foundry : icônes visibles dans les listes d'objets et les fiches ; ajouter le Talent « Résistant comme le roc » sur une fiche → Endurance +5, le retirer → retour ; « Œil de faucon » → Initiative et dégâts d'arc ; Guerrier né et armes de départ dans l'assistant.
 
+- 0.16.0 : lancer un sort. Bouton baguette sur chaque sort (page Magie et listes d'objets ; Maj = sans fenêtre). Le mana du sort (réduit par l'académie) est dépensé d'abord ; refus si mana insuffisant ; test d'Arts étranges avec le ND du sort pré-rempli (vide si difficulté variable) ; échec : mana perdu ; catastrophe : −Endurance égale au mana dépensé ; réussite : carte de chat avec portée, cible, durée, incantation et effet. Nouveau `module/sorts.mjs` + `tools/test-sorts.mjs`. Pas de relance au Nexus sur un sort.
 - 0.15.3 : fiche de personnage : bouton ⇕ dans le titre « Compétences » (Profil) pour masquer le haut de la fiche et donner toute la hauteur aux compétences ; poignée d'agrandissement de la fenêtre passée au premier plan (z-index) pour rester saisissable.
 - 0.15.2 : onglet Profil : le haut (Personnage, Hors-destin, Caractéristiques, Nexus, Endurance, Niveau de difficulté) reste fixe ; seules les compétences défilent, avec leur barre de défilement et le titre « Compétences » qui reste collé en haut. Les textes d'Effet du Talent / Fortune / Malédiction sont limités à 2 lignes (texte complet au survol). Hauteur par défaut de la fiche 900 px (ramenée à l'écran).
 - 0.15.1 (retours de test) : assistant de création : cartes de choix (Maison, Voie, Talents, armes…) à hauteur automatique (texte plus écrasé ni superposé), étapes en grille 5 colonnes, erreurs sans petite barre de défilement, fenêtre plus large (940 px). Fiche : hauteur par défaut 780 px, ramenée à la taille de l'écran à l'ouverture, barre de défilement visible dans la page, fenêtre décalée vers la droite si elle est trop près du bord gauche (les onglets dépassent à gauche).
@@ -117,3 +118,4 @@ E. Aucune erreur rouge en console pendant ces jets.
 9. PNJ et Créature (0.14.0) : ouvrir une fiche de chacun ; modifier Endurance, compétences (+ / corbeille), bouton d'attaque ; glisser une arme ; les textes riches s'éditent.
 10. Académies (0.15.0) : Magie > liste Académie ; en choisir une change avantage/sources/runes et le total de mana pour Gar-Vallon ; un sort de la source favorisée coûte 1 de moins (chiffre vert). Assistant : Voie Sorcier + Fortune Académie magique → choix d'académie et sorts limités à ses sources. Recréer le contenu pour voir les 4 nouvelles Fortunes.
 11. Fiche 0.15.3 : bouton ⇕ à droite du titre Compétences masque/affiche le haut ; la poignée en bas à droite de la fenêtre étire bien la fiche (avant et après création).
+12. Sorts (0.16.0) : sur la page Magie, clic sur la baguette d'un sort : fenêtre de test (ND pré-rempli) ; le mana baisse du coût affiché ; essaie un échec et une catastrophe (Endurance baisse) ; mana insuffisant : message.

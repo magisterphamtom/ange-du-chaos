@@ -3,9 +3,11 @@
  */
 import { SYSTEM_ID, CARACS, COMPETENCES } from "./config.mjs";
 import { CARACS_PHYSIQUES, effetsDesEtats } from "./combat.mjs";
-import { carteHTML, dialogueHTML } from "./rolls-html.mjs";
+import { carteHTML, dialogueHTML, esc } from "./rolls-html.mjs";
 import { resoudreTest } from "./jets.mjs";
 import { donneesDes } from "./des3d.mjs";
+import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML } from "./sorts.mjs";
+import { academieDe } from "./academies.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -60,17 +62,27 @@ async function demanderParametres(infos, { nd = null, etat, nexus = 0 } = {}) {
  * @param {string} cle
  * @param {object} [options]  { rapide: true } saute la fenêtre (Maj + clic)
  */
-export async function lancerTest(actor, type, cle, { rapide = false } = {}) {
+export async function lancerTest(actor, type, cle, { rapide = false, sort = null } = {}) {
   const infos = infosTest(actor, type, cle);
   if (!infos) return null;
+
+  // Sort : mana à payer avant tout (p. 150) ; la fenêtre propose le ND du sort.
+  let coutSort = 0;
+  const manaActeur = actor.system.mana?.max ? actor.system.mana.value : null;
+  if (sort) {
+    const acad = actor.system.derive?.academie ?? academieDe({ voie: actor.system.voie, academie: actor.system.academie });
+    coutSort = coutDuSort(acad, sort);
+    if (!peutLancer(manaActeur, coutSort)) { ui.notifications.warn(`${actor.name} n'a pas assez de mana pour ${sort.nom} (${coutSort} requis, ${manaActeur} disponible).`); return null; }
+    infos.nom = `Sort : ${sort.nom}`;
+  }
 
   // États préjudiciables (p. 112-115) : Handicap, blocage, plus d'Inspiration.
   const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique, fx: actor.system.derive?.effets ?? {}, cle: type === "competence" ? cle : null });
   infos.bloque = infos.bloque || etat.bloque;
   const nexusDispo = etat.sansInspiration ? 0 : (actor.system.nexus?.value ?? 0);
   const params = rapide
-    ? { nd: null, bonus: 0, inspire: false, handicap: etat.handicap, nexus: false }
-    : await demanderParametres(infos, { etat, nexus: nexusDispo });
+    ? { nd: sort && sort.difficulte > 0 ? sort.difficulte : null, bonus: 0, inspire: false, handicap: etat.handicap, nexus: false }
+    : await demanderParametres(infos, { etat, nexus: nexusDispo, nd: sort && sort.difficulte > 0 ? sort.difficulte : null });
   if (params && etat.sansInspiration) params.inspire = false;
   if (!params) return null;
 
@@ -84,10 +96,20 @@ export async function lancerTest(actor, type, cle, { rapide = false } = {}) {
 
   const resultat = resoudreTest({ score: infos.score, bloque: infos.bloque, nd: params.nd, bonus: params.bonus, inspire: params.inspire, handicap: params.handicap });
   const affichage = { nom: infos.nom, portrait: actor.img, sousTitre: nexusDepense ? "Nexus" : "" };
+  let actionsSort = "";
+  if (sort) {
+    const conseq = consequencesSort({ manaActuel: manaActeur, enduranceActuelle: actor.system.endurance?.value ?? 0, cout: coutSort, degre: resultat.degre });
+    const maj = {};
+    if (conseq.mana !== null) maj["system.mana.value"] = conseq.mana;
+    if (conseq.perte) maj["system.endurance.value"] = conseq.endurance;
+    if (Object.keys(maj).length) await actor.update(maj);
+    affichage.sousTitre = [affichage.sousTitre, conseq.ligne].filter(Boolean).join(" · ");
+    if (conseq.issue === "reussite") actionsSort = detailsSortHTML(sort, esc);
+  }
   return ChatMessage.create({
     ...(await donneesDes(resultat)),
     speaker: ChatMessage.getSpeaker({ actor }),
-    content: carteHTML({ ...affichage, resultat, relancable: (actor.system.nexus.value ?? 0) >= 1 }),
+    content: carteHTML({ ...affichage, resultat, actions: actionsSort, relancable: (actor.system.nexus.value ?? 0) >= 1 && !sort }),
     flags: { [SYSTEM_ID]: { jet: { type, cle, resultat, actorId: actor.id, params: { nd: params.nd, bonus: params.bonus, inspire: params.inspire, handicap: params.handicap }, score: infos.score, bloque: infos.bloque, affichage } } }
   });
 }

@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML } from "../module/sorts.mjs";
+assert.equal(coutDuSort("eodh", { source: "Ombres", mana: 3 }), 2);
+assert.equal(coutDuSort("eodh", { source: "Éléments", mana: 3 }), 3);
+assert.equal(coutDuSort("", { source: "Ombres", mana: 3 }), 3);
+assert.ok(peutLancer(5, 5) && !peutLancer(4, 5) && peutLancer(null, 9));
+let c = consequencesSort({ manaActuel: 10, enduranceActuelle: 30, cout: 3, degre: "simple" });
+assert.deepEqual([c.mana, c.endurance, c.perte, c.issue], [7, 30, 0, "reussite"]);
+c = consequencesSort({ manaActuel: 10, enduranceActuelle: 30, cout: 3, degre: "echec" });
+assert.deepEqual([c.mana, c.endurance, c.issue], [7, 30, "echec"]); assert.match(c.ligne, /raté/);
+c = consequencesSort({ manaActuel: 10, enduranceActuelle: 2, cout: 4, degre: "catastrophe" });
+assert.deepEqual([c.mana, c.endurance, c.perte, c.issue], [6, 0, 4, "catastrophe"]);
+c = consequencesSort({ manaActuel: null, enduranceActuelle: 20, cout: 3, degre: "simple" }); assert.equal(c.mana, null);
+assert.match(detailsSortHTML({ portee: "10 m", effet: "a\nb" }), /10 m.*a<br>b/s);
+console.log("OK : lancer un sort (mana, échec, catastrophe).");

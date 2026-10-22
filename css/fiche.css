@@ -289,3 +289,4 @@
 .adc-feuille.haut-masque .adc-f-zonecomp { margin-top: 0; }
 /* poignée d'agrandissement toujours cliquable */
 .ange-du-chaos.feuille .window-resize-handle { z-index: 60; width: 22px; height: 22px; opacity: 1; }
+.adc-f-lancer { color: #5b3f9a; opacity: 1; } .adc-f-lancer:hover { color: #7a1f1f; }

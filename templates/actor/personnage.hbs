@@ -204,6 +204,7 @@
     {{#each arts}}
     <div class="adc-f-art" data-item-id="{{this.id}}" draggable="true">
       <div class="adc-f-artentete"><span class="adc-f-etiq-fond">Art Martial</span><a class="adc-f-case-val inline" data-action="openItem">{{this.name}}</a>
+        <a class="adc-f-btn adc-f-lancer" data-action="lancerSort" data-tooltip="Lancer le sort (Maj : sans fenêtre)"><i class="fa-solid fa-wand-sparkles"></i></a>
         <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></div>
       <div class="adc-f-pt"><b>Talent :</b> {{this.permNom}}</div>
       <div class="adc-f-pt long"><b class="n">Effets permanents :</b> {{this.permDesc}}</div>

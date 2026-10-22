@@ -3,6 +3,7 @@
   <a class="adc-f-nom" data-action="openItem">{{this.name}}</a>
   {{#if this.resume}}<span class="adc-f-resume">{{this.resume}}</span>{{/if}}
   <span class="adc-f-btns">
+    {{#if this.lancable}}<a class="adc-f-btn adc-f-lancer" data-action="lancerSort" data-tooltip="Lancer le sort"><i class="fa-solid fa-wand-sparkles"></i></a>{{/if}}
     {{#if this.attaquable}}<a class="adc-f-btn" data-action="attaquer" data-tooltip="Attaquer"><i class="fa-solid fa-khanda"></i></a>{{/if}}
     {{#if this.equipable}}<a class="adc-f-btn {{#if this.equipee}}actif{{/if}}" data-action="toggleEquip" data-tooltip="{{#if this.equipee}}Équipé{{else}}Non équipé{{/if}}"><i class="fa-solid fa-shield-halved"></i></a>{{/if}}
     <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a>

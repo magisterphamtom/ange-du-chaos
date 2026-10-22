@@ -605,3 +605,8 @@
 .adc-asst-pied { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 14px; background: #e4d5b2; border-top: 2px solid #c9a95c; }
 .adc-asst-erreurs { margin: 0; padding-left: 16px; font-size: .85em; color: #b03a36; flex: 1; max-height: 70px; overflow-y: auto; }
 .adc-asst-lancer { flex: 0 0 auto; margin-left: 4px; }
+
+/* Carte de chat : détails d'un sort réussi */
+.ange-du-chaos .adc-c-sort { margin: 6px 0 2px; padding: 6px 10px; border-left: 3px solid #9b86e8; background: rgba(155, 134, 232, 0.12); font-size: 12.5px; line-height: 1.35; }
+.ange-du-chaos .adc-c-sort b { font-variant: small-caps; }
+.ange-du-chaos .adc-c-sort-effet { margin-top: 4px; }

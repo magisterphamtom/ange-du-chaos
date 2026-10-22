@@ -7,6 +7,7 @@
       <img class="adc-ligne-img" src="{{this.img}}" alt="" data-action="openItem">
       <a class="adc-ligne-nom" data-action="openItem">{{this.name}}</a>
       <span class="adc-ligne-resume">{{this.resume}}</span>
+      {{#if this.lancable}}<a class="adc-btn" data-action="lancerSort" data-tooltip="Lancer le sort"><i class="fa-solid fa-wand-sparkles"></i></a>{{/if}}
       {{#if this.attaquable}}<a class="adc-btn adc-btn-attaque" data-action="attaquer" data-tooltip="Attaquer avec cette arme"><i class="fa-solid fa-khanda"></i></a>{{/if}}
       {{#if this.equipable}}
       <a class="adc-btn {{#if this.equipee}}actif{{/if}}" data-action="toggleEquip" data-tooltip="{{#if this.equipee}}Équipé{{else}}Non équipé{{/if}}"><i class="fa-solid fa-shield-halved"></i></a>
