@@ -5,6 +5,7 @@ import { SYSTEM_ID, CARACS, COMPETENCES } from "./config.mjs";
 import { CARACS_PHYSIQUES, effetsDesEtats } from "./combat.mjs";
 import { carteHTML, dialogueHTML } from "./rolls-html.mjs";
 import { resoudreTest } from "./jets.mjs";
+import { donneesDes } from "./des3d.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -84,6 +85,7 @@ export async function lancerTest(actor, type, cle, { rapide = false } = {}) {
   const resultat = resoudreTest({ score: infos.score, bloque: infos.bloque, nd: params.nd, bonus: params.bonus, inspire: params.inspire, handicap: params.handicap });
   const affichage = { nom: infos.nom, portrait: actor.img, sousTitre: nexusDepense ? "Nexus" : "" };
   return ChatMessage.create({
+    ...(await donneesDes(resultat)),
     speaker: ChatMessage.getSpeaker({ actor }),
     content: carteHTML({ ...affichage, resultat, relancable: (actor.system.nexus.value ?? 0) >= 1 }),
     flags: { [SYSTEM_ID]: { jet: { type, cle, resultat, actorId: actor.id, params: { nd: params.nd, bonus: params.bonus, inspire: params.inspire, handicap: params.handicap }, score: infos.score, bloque: infos.bloque, affichage } } }
@@ -108,6 +110,7 @@ export async function relancerTest(message) {
     });
   } catch (e) { console.warn(`${SYSTEM_ID} | ancienne carte non modifiable`, e); }
   return ChatMessage.create({
+    ...(await donneesDes(resultat)),
     speaker: ChatMessage.getSpeaker({ actor }),
     content: carteHTML({ ...jet.affichage, sousTitre: "", resultat, relance: true, relancable: false }),
     flags: { [SYSTEM_ID]: { jet: { ...jet, resultat, relance: true } } }

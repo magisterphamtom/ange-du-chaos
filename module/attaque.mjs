@@ -2,6 +2,7 @@
  * Attaque, réactions, dégâts, états et Dernier soupir dans Foundry (règles pures dans combat.mjs).
  * Flux : fenêtre d'attaque → carte du jet → réaction de la cible (Esquive, Parade) ou « Subir » → carte de dégâts → « Appliquer ».
  */
+import { donneesDes } from "./des3d.mjs";
 import { degatsArme } from "./effets.mjs";
 import { SYSTEM_ID, COMPETENCES, COMPETENCES_ARMES } from "./config.mjs";
 import { resoudreTest } from "./jets.mjs";
@@ -126,6 +127,7 @@ export async function attaquer(actor, item = null) {
   };
   const actions = touche ? (cible ? reactionsHTML({ cibleNom: cible.name, peutReagir: reactionPossible(st) && !etatsCible.has("surpris") }) : degatsBouton()) : "";
   return ChatMessage.create({
+    ...(await donneesDes(resultat)),
     speaker: ChatMessage.getSpeaker({ actor }),
     content: carteHTML({ nom: `${info.nom} — ${action.label}`, portrait: actor.img, sousTitre: cible ? `contre ${cible.name}` : "", resultat, actions }),
     flags: { [SYSTEM_ID]: { attaque: flags } }
@@ -188,6 +190,7 @@ export async function reagir(message, mode) {
   const r = resoudreReaction({ totalAttaque: f.total, scoreReaction: score, bloque: bloque || eff.bloque, handicap });
   const resultat = { ...r, nd: f.total + 1, degre: r.evite ? (r.degre === "catastrophe" ? "catastrophe" : "simple") : (r.catastrophe ? "catastrophe" : "echec") };
   await ChatMessage.create({
+    ...(await donneesDes(r)),
     speaker: ChatMessage.getSpeaker({ actor: cible }),
     content: carteHTML({ nom: `${nom} contre ${f.nom}`, portrait: cible.img, sousTitre: `Réaction −${COUT_REACTION} Endurance · doit dépasser ${f.total}`, resultat })
   });
@@ -215,6 +218,7 @@ export async function lancerDegatsDe(f, attaquant, cible, degre) {
   if (loc.effet === "membre") effets.push("Si les dégâts dépassent la Carrure de la cible, le membre est brisé");
   if (f.nonLetal) effets.push("Dégâts non létaux");
   return ChatMessage.create({
+    ...(await donneesDes({ des: d.des, faces: d.faces })),
     speaker: ChatMessage.getSpeaker({ actor: attaquant }),
     content: carteDegatsHTML({ nom: attaquant?.name ?? "", portrait: attaquant?.img, titre: `Dégâts — ${f.nom}`, cibleNom: cible?.name ?? "", degre, d, appliquable: !!cible, localisation: f.loc !== "aucune" ? loc.label : "", effets }),
     flags: { [SYSTEM_ID]: { degats: { cibleUuid: cible?.uuid ?? null, net: d.net, nonLetal: f.nonLetal, loc: f.loc, appliques: false } } }
@@ -275,6 +279,7 @@ export async function lancerDernierSoupir(actor) {
   if (r.issue === "souffle") await actor.setFlag(SYSTEM_ID, "secondSouffle", true);
   if (r.endurance) await actor.update({ "system.endurance.value": r.endurance });
   await ChatMessage.create({
+    ...(await donneesDes(r)),
     speaker: ChatMessage.getSpeaker({ actor }),
     content: carteSoupirHTML({ nom: actor.name, portrait: actor.img, r, issue: r.issue, endurance: r.endurance })
   });
