@@ -48,6 +48,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       toggleEquip: BaseActorSheet.#toggleEquip,
       toggleEtat: BaseActorSheet.#toggleEtat,
       adcOnglet: BaseActorSheet.#changerOnglet,
+      basculerHaut: BaseActorSheet.#basculerHaut,
       jet: BaseActorSheet.#jet,
       attaquer: BaseActorSheet.#attaquer,
       addCompetence: BaseActorSheet.#addCompetence,
@@ -95,6 +96,13 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     super._onRender?.(context, options);
     this._cadrerFenetre?.();
     this._afficherOnglet();
+    this.element?.querySelector(".adc-feuille")?.classList.toggle("haut-masque", !!this._hautMasque);
+  }
+
+  /** Masque ou réaffiche le haut du Profil pour donner toute la hauteur aux compétences. */
+  static async #basculerHaut() {
+    this._hautMasque = !this._hautMasque;
+    this.element?.querySelector(".adc-feuille")?.classList.toggle("haut-masque", this._hautMasque);
   }
 
   /** Clic sur un score : fenêtre de jet (Maj + clic : jet direct, sans fenêtre). */
