@@ -11,6 +11,7 @@ import { ObjetSheet } from "./sheets/item-sheet.mjs";
 import { enregistrerReglagesWiki, initialiserWiki } from "./wiki.mjs";
 import { initialiserDestin } from "./destin.mjs";
 import { initialiserCombat } from "./attaque.mjs";
+import { initialiserCreation } from "./creation.mjs";
 import { enregistrerReglagesContenu, initialiserContenu } from "./contenu.mjs";
 
 Hooks.once("init", () => {
@@ -77,6 +78,9 @@ Hooks.once("init", () => {
   // --- Contenu du livre (objets, sorts, bestiaire) créé à l'ouverture du monde ---
   enregistrerReglagesContenu();
   initialiserContenu();
+
+  // --- Assistant de création de personnage ---------------------------------
+  initialiserCreation();
 
   // --- Helpers Handlebars ----------------------------------------------------
   Handlebars.registerHelper("adcEq", (a, b) => a === b);

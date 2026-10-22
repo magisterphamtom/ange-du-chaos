@@ -3,6 +3,7 @@
  * PnjSheet / CreatureSheet : fiche compacte (profil type d'adversaire).
  */
 
+import { ouvrirAssistant } from "../creation.mjs";
 import {
   SYSTEM_ID, CARACS, COMPETENCES, MAISONS, VOIES, ETATS, CATEGORIES_ADVERSAIRE, NIVEAUX_SORT, ASSETS, RUNES, runeDe, artDe, adversaireDe
 } from "../config.mjs";
@@ -281,7 +282,8 @@ export class PersonnageSheet extends BaseActorSheet {
     actions: {
       depenserNexus: function () { return depenserNexus(this.actor); },
       depenserHorsDestin: function () { return depenserHorsDestin(this.actor); },
-      reposer: function () { return reposer(this.actor); }
+      reposer: function () { return reposer(this.actor); },
+      assistant: function () { return ouvrirAssistant(this.actor); }
     },
     position: { width: 900, height: 800 }
   };
