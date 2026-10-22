@@ -39,7 +39,7 @@ function enrichir(html, acteur) {
 class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: [SYSTEM_ID, "sheet", "actor"],
-    position: { width: 880, height: 780 },
+    position: { width: 880, height: 900 },
     window: { resizable: true },
     form: { submitOnChange: true },
     actions: {

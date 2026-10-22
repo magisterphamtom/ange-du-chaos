@@ -272,3 +272,13 @@
 .adc-f-pages::-webkit-scrollbar { width: 12px; }
 .adc-f-pages::-webkit-scrollbar-track { background: #e9e3d4; }
 .adc-f-pages::-webkit-scrollbar-thumb { background: #6f6a5c; border: 2px solid #e9e3d4; border-radius: 6px; }
+
+/* Profil : le haut de la fiche reste fixe, seules les compétences défilent */
+.adc-feuille .adc-onglet.active[data-tab="profil"] { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.adc-feuille [data-tab="profil"] > .adc-f-haut { flex: none; }
+.adc-f-zonecomp { flex: 1 1 0; min-height: 190px; overflow-y: auto; margin-top: 8px; padding-right: 6px; scrollbar-width: auto; scrollbar-color: #6f6a5c #e9e3d4; }
+.adc-f-zonecomp::-webkit-scrollbar { width: 12px; }
+.adc-f-zonecomp::-webkit-scrollbar-track { background: #e9e3d4; }
+.adc-f-zonecomp::-webkit-scrollbar-thumb { background: #6f6a5c; border: 2px solid #e9e3d4; border-radius: 6px; }
+.adc-f-zonecomp > .adc-f-titre.large { position: sticky; top: 0; z-index: 3; margin-top: 0; }
+.adc-f-effet { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

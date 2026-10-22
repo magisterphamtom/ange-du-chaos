@@ -42,7 +42,7 @@
         <ul class="adc-f-liste">
           {{#each this.lignes}}
           {{> adc-ligne-f}}
-          <li class="adc-f-effet"><span>Effet :</span> {{this.effet}}</li>
+          <li class="adc-f-effet" data-tooltip="{{this.effet}}"><span>Effet :</span> {{this.effet}}</li>
           {{else}}
           <li class="adc-f-vide">Glissez ici : {{this.titre}}</li>
           {{/each}}
@@ -93,6 +93,7 @@
     </div>
   </div>
 
+  <div class="adc-f-zonecomp">
   <h2 class="adc-f-titre large">Compétences</h2>
   <div class="adc-f-comps">
     {{#each colonnesComp}}
@@ -114,6 +115,7 @@
       {{/each}}
     </div>
     {{/each}}
+  </div>
   </div>
 </section>
 
