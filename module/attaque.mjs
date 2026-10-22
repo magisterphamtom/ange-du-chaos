@@ -146,8 +146,8 @@ async function choisirParade(cible) {
   if (!options.length) options.push({ cle: "corpsACorps", nom: "À mains nues" });
   const unique = options.length === 1 ? options[0] : await DialogV2.prompt({
     classes: [SYSTEM_ID, "adc-dialog-jet"], window: { title: "Parer avec…" }, position: { width: 360 },
-    content: `<form class="adc-dialogue-jet"><fieldset><legend>Parade</legend><div class="adc-choix-liste">${options.map((o, i) =>
-      `<label class="adc-choix"><input type="radio" name="p" value="${i}" ${i === 0 ? "checked" : ""}><span><b>${esc(o.nom)}</b><small>${esc(COMPETENCES[o.cle]?.label ?? o.cle)}</small></span></label>`).join("")}</div></fieldset></form>`,
+    content: `<div class="adc-dialogue-jet"><fieldset><legend>Parade</legend><div class="adc-choix-liste">${options.map((o, i) =>
+      `<label class="adc-choix"><input type="radio" name="p" value="${i}" ${i === 0 ? "checked" : ""}><span><b>${esc(o.nom)}</b><small>${esc(COMPETENCES[o.cle]?.label ?? o.cle)}</small></span></label>`).join("")}</div></fieldset></div>`,
     ok: { label: "Parer", callback: (e, b) => options[Number(b.form.elements.p.value)] }, rejectClose: false
   });
   if (!unique) return null;

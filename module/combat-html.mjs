@@ -14,7 +14,7 @@ export function attaqueHTML({ nom, score, formule, cible = null, defense = null,
   const bascule = (nomChamp, titre, detail, coche = false, classe = "") => `
     <label class="adc-bascule ${classe}"><input type="checkbox" name="${nomChamp}" ${coche ? "checked" : ""}><span><b>${titre}</b><small>${detail}</small></span></label>`;
   return `
-  <form class="adc-dialogue-jet adc-form-attaque">
+  <div class="adc-dialogue-jet adc-form-attaque">
     <div class="adc-d-tete">
       <div class="adc-d-medaillon"><strong>${score}</strong></div>
       <div class="adc-d-titre"><h2>${esc(nom)}</h2><span>Dégâts ${esc(formule)}${cible ? ` · cible : ${esc(cible)}` : " · aucune cible désignée"}</span></div>
@@ -42,7 +42,7 @@ export function attaqueHTML({ nom, score, formule, cible = null, defense = null,
       </div>
       <div class="adc-pas"><button type="button" data-pas="-1" aria-label="Moins">−</button><input type="number" name="bonus" value="0" step="1"><button type="button" data-pas="1" aria-label="Plus">+</button></div>
     </fieldset>
-  </form>`;
+  </div>`;
 }
 
 /** Boutons de réaction affichés sous une attaque qui touche. */

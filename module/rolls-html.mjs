@@ -90,7 +90,7 @@ export function dialogueHTML({ infos, nd = null, etat = { handicap: false, notes
   const expert = infos.rang >= 7
     ? `<p class="adc-note or">Rang Expert : réussite automatique jusqu'au ND 15, si le Meneur l'accepte.</p>` : "";
   return `
-  <form class="adc-dialogue-jet">
+  <div class="adc-dialogue-jet">
     <div class="adc-d-tete">
       <div class="adc-d-medaillon"><strong>${infos.score}</strong></div>
       <div class="adc-d-titre">
@@ -114,5 +114,5 @@ export function dialogueHTML({ infos, nd = null, etat = { handicap: false, notes
     <fieldset><legend>Bonus / malus</legend>
       <div class="adc-pas"><button type="button" data-pas="-1" aria-label="Moins">−</button><input type="number" name="bonus" value="0" step="1"><button type="button" data-pas="1" aria-label="Plus">+</button></div>
     </fieldset>
-  </form>`;
+  </div>`;
 }

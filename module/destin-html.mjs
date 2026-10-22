@@ -47,19 +47,19 @@ const choix = (nom, liste, coche) => liste.map((o, i) => `
 
 export function menuHTML({ titre, restant, unite, usages, nom = "usage", extra = "" }) {
   return `
-  <form class="adc-dialogue-jet">
+  <div class="adc-dialogue-jet">
     <div class="adc-d-tete">
       <div class="adc-d-medaillon"><strong>${restant}</strong></div>
       <div class="adc-d-titre"><h2>${esc(titre)}</h2><span>${restant} ${esc(unite)} disponible${restant > 1 ? "s" : ""}</span></div>
     </div>
-    <fieldset><legend>Que faire de ce point ?</legend><div class="adc-choix-liste">${choix(nom, usages)}</div></fieldset>
+    <fieldset><legend>Choisir l’usage du point</legend><div class="adc-choix-liste">${choix(nom, usages)}</div></fieldset>
     ${extra}
-  </form>`;
+  </div>`;
 }
 
 export function reposHTML({ carrure, artsEtranges, nom }) {
   return `
-  <form class="adc-dialogue-jet">
+  <div class="adc-dialogue-jet">
     <div class="adc-d-tete">
       <div class="adc-d-medaillon"><strong>8 h</strong></div>
       <div class="adc-d-titre"><h2>Période de repos</h2><span>${esc(nom)} · Carrure ${carrure}${artsEtranges ? ` · Arts étranges ${artsEtranges}` : ""}</span></div>
@@ -69,7 +69,7 @@ export function reposHTML({ carrure, artsEtranges, nom }) {
       <div class="adc-selecteur"><select name="soin">${SOINS.map(s => `<option value="${s.id}">${esc(s.label)}</option>`).join("")}</select></div>
     </fieldset>
     <p class="adc-note">Récupère : Endurance (Carrure ± conditions ± soins), Mana (Arts étranges ± conditions), tout le Nexus.</p>
-  </form>`;
+  </div>`;
 }
 
 /** Carte de chat compacte pour un point dépensé ou un repos. */

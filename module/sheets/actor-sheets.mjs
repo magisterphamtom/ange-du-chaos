@@ -240,8 +240,10 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const item = BaseActorSheet.#itemDe(this, target);
     if (!item) return;
     const ok = await foundry.applications.api.DialogV2.confirm({
-      window: { title: "Supprimer l'objet" },
-      content: `<p>Supprimer <strong>${foundry.utils.escapeHTML(item.name)}</strong> de la fiche ?</p>`
+      classes: [SYSTEM_ID, "adc-dialog-jet"],
+      window: { title: "Supprimer l'objet", icon: "fa-solid fa-trash" },
+      position: { width: 380 },
+      content: `<div class="adc-dialogue-jet"><p>Supprimer <strong>${foundry.utils.escapeHTML(item.name)}</strong> de la fiche ?</p></div>`
     });
     if (!ok) return;
     if (this.actor.type === "personnage" && OBJETS_UNIQUES.includes(item.type)) {

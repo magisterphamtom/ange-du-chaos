@@ -440,7 +440,7 @@
 .adc-dialog-jet .window-header .window-title { text-shadow: 0 1px 2px #000; letter-spacing: 0.05em; font-weight: 700; }
 .adc-dialog-jet .window-header button, .adc-dialog-jet .window-header i { color: #c4c9d8; }
 .adc-dialog-jet .window-content { background: transparent; padding: 10px 14px 4px; color: #2b2016; }
-.adc-dialog-jet form.adc-dialogue-jet { display: flex; flex-direction: column; gap: 8px; }
+.adc-dialog-jet .adc-dialogue-jet { display: flex; flex-direction: column; gap: 8px; }
 .adc-dialogue-jet .adc-d-tete { display: flex; align-items: center; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(43, 32, 22, 0.4); background: url("../assets/ornements/filet.webp") left bottom / 100% 8px no-repeat; }
 .adc-dialogue-jet .adc-d-medaillon { width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center; background: url("../assets/des/medaillon.webp") center / contain no-repeat; }
 .adc-dialogue-jet .adc-d-medaillon strong { font-size: 1.7em; font-weight: 800; color: #2b2016; }

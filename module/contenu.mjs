@@ -33,8 +33,10 @@ export async function creerContenu({ confirmer = false } = {}) {
   const anciensF = game.folders.filter(f => estContenu(f));
   if (confirmer && (anciensI.length || anciensA.length)) {
     const ok = await foundry.applications.api.DialogV2.confirm({
-      window: { title: "Recréer le contenu du livre" },
-      content: "<p>Les objets et créatures du livre déjà créés vont être <strong>remplacés</strong> : vos modifications seront perdues. Continuer ?</p>"
+      classes: [SYSTEM_ID, "adc-dialog-jet"],
+      window: { title: "Recréer le contenu du livre", icon: "fa-solid fa-book" },
+      position: { width: 420 },
+      content: `<div class="adc-dialogue-jet"><p>Les objets et créatures du livre déjà créés vont être <strong>remplacés</strong> : vos modifications seront perdues. Continuer ?</p></div>`
     });
     if (!ok) return false;
   }
