@@ -145,7 +145,7 @@
 
 /* ---- Compétences ---- */
 .adc-f-complist { list-style: none; margin: 0; padding: 0; }
-.adc-f-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto 86px; align-items: center; gap: 6px; min-height: 22px; padding: 1px 0; }
+.adc-f-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto 112px; align-items: center; gap: 6px; min-height: 22px; padding: 1px 0; }
 .adc-f-compnom { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .adc-f-comp.inapte .adc-f-compnom { opacity: 0.6; }
 .adc-f-cases { display: inline-flex; }
@@ -154,8 +154,9 @@
 .adc-f-caseR:hover { background: #a9b3bd; }
 .adc-f-caseR.plein { background: var(--f-encre); }
 .adc-f-caseR.bonus { background: #c6a24c; }
-.adc-f-calc { font-size: 12px; color: #333; text-decoration: none; cursor: pointer; white-space: nowrap; min-width: 8.4em; text-align: right; }
-.adc-f-calc b { font-size: 14px; color: #111; }
+.adc-f-calc { font-size: 15px; color: #333; text-decoration: none; cursor: pointer; white-space: nowrap; width: 112px; text-align: right; font-variant-numeric: tabular-nums; }
+.adc-f-calc span { display: inline-block; min-width: 1.15em; text-align: right; }
+.adc-f-calc b { display: inline-block; min-width: 1.7em; text-align: right; font-size: 19px; color: #111; }
 
 /* ---- Listes d'objets ---- */
 .adc-f-liste { list-style: none; margin: 0; padding: 0; }
@@ -221,7 +222,7 @@
 .adc-feuille [data-type].adc-depot { outline: 2px dashed #7a1f1f; outline-offset: 2px; }
 
 /* Intitulés de rang inclinés au-dessus des colonnes de cases (comme sur la fiche imprimée) */
-.adc-f-palierhaut { display: grid; grid-template-columns: minmax(0, 1fr) auto 86px; height: 62px; align-items: end; margin-bottom: 2px; }
+.adc-f-palierhaut { display: grid; grid-template-columns: minmax(0, 1fr) auto 112px; height: 62px; align-items: end; margin-bottom: 2px; }
 .adc-f-palierhaut .adc-f-paliers { grid-column: 2; position: relative; display: flex; align-items: flex-end; height: 100%; }
 .adc-f-palierhaut i { position: relative; display: block; height: 100%; font-style: normal; }
 .adc-f-palierhaut i.g1, .adc-f-palierhaut i.g2, .adc-f-palierhaut i.g3 { width: 48px; }
