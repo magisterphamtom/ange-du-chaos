@@ -2,11 +2,11 @@
   "id": "ange-du-chaos",
   "title": "L'Ange du Chaos",
   "description": "Système de jeu Foundry VTT pour « L'Ange du Chaos », le jeu de rôle des éditions Les XII Singes (d'après les romans de Michel Robert)..",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "compatibility": { "minimum": "13", "verified": "14.369" },
   "authors": [{ "name": "magisterphamtom" }],
   "esmodules": ["module/ange-du-chaos.mjs"],
-  "styles": ["css/ange-du-chaos.css"],
+  "styles": ["css/ange-du-chaos.css", "css/fiche.css"],
   "languages": [{ "lang": "fr", "name": "Français", "path": "lang/fr.json" }],
   "documentTypes": {
     "Actor": {

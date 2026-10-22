@@ -1,0 +1,211 @@
+/* L'Ange du Chaos — fiche de personnage à l'image de la fiche imprimée officielle (4 pages + biographie). */
+@font-face { font-family: "ADC Buckingham"; src: url("../assets/fonts/buckingham.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "ADC Killigrew"; src: url("../assets/fonts/killigrew.ttf") format("truetype"); font-display: swap; }
+
+.ange-du-chaos.feuille {
+  --f-papier: #f4efe3; --f-bande: #bbb3a1; --f-encre: #404e59; --f-sous: #546675; --f-trait: #2b2b2b; --f-creme: #ebe5d6;
+  --f-titre: "ADC Buckingham", "Palatino Linotype", serif; --f-cap: "ADC Killigrew", "ADC Buckingham", serif;
+  --f-corps: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+}
+.ange-du-chaos.feuille .window-content {
+  position: relative; padding: 0; gap: 0; overflow: hidden;
+  background: var(--f-papier) !important; color: #1b1b1b;
+}
+.ange-du-chaos.feuille .window-content::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 20;
+  background: url("../assets/fiche/bords.webp") center / 100% 100% no-repeat; opacity: 0.85;
+}
+.adc-feuille { display: flex; flex-direction: column; height: 100%; min-height: 0; font-family: var(--f-corps); font-size: 13.5px; color: #1b1b1b; }
+.adc-feuille * { box-sizing: border-box; }
+
+/* ---- Entête ---- */
+.adc-f-entete {
+  position: relative; flex: none; display: flex; align-items: center; gap: 12px; height: 74px; padding: 6px 22px 6px 14px;
+  background: #23272d center / cover no-repeat; border-bottom: 3px solid var(--f-encre);
+}
+.adc-f-logo { height: 54px; width: auto; border: 0; filter: drop-shadow(0 1px 2px #000); }
+.adc-f-portrait { width: 52px; height: 52px; object-fit: cover; border: 2px solid #8d96a0; border-radius: 3px; background: #111; cursor: pointer; }
+.adc-feuille input.adc-f-nomperso[type="text"] {
+  flex: 1; min-width: 0; height: 38px; font: 600 24px var(--f-titre); color: #ece6d6; letter-spacing: 0.02em;
+  background: rgba(8, 11, 14, 0.82); border: 0; border-bottom: 1px solid #8d96a0; text-shadow: 0 1px 2px #000; border-radius: 0; padding: 0 8px;
+}
+.adc-f-outils { display: flex; flex-direction: column; gap: 3px; }
+.adc-f-outils a { color: #d9d2c0; font-size: 11px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; }
+.adc-f-outils a:hover { color: #fff; }
+
+/* ---- Onglets ---- */
+.adc-f-onglets { flex: none; display: flex; gap: 3px; padding: 6px 14px 0; background: #e9e3d4; border-bottom: 3px solid var(--f-encre); }
+.adc-feuille .adc-tab.adc-f-onglet {
+  all: unset; box-sizing: border-box; cursor: pointer; padding: 3px 16px 1px; font: 400 21px/1.15 var(--f-titre); color: var(--f-encre);
+  background: var(--f-bande) url("../assets/fiche/bande.webp") right center / auto 100% no-repeat; border: 1px solid #a39b88; border-bottom: 0;
+}
+.adc-feuille .adc-tab.adc-f-onglet::first-letter { font-family: var(--f-cap); font-size: 1.18em; }
+.adc-feuille .adc-tab.adc-f-onglet:hover { filter: brightness(1.08); }
+.adc-feuille .adc-tab.adc-f-onglet.active { background: var(--f-encre); color: var(--f-creme); border-color: var(--f-encre); transform: none; box-shadow: none; filter: none; }
+
+/* ---- Pages ---- */
+.adc-f-pages { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 26px 30px; scrollbar-width: thin; }
+.adc-feuille .adc-onglet { display: none; padding: 0; }
+.adc-feuille .adc-onglet.active { display: block; }
+
+/* ---- Titres en bandes ---- */
+.adc-feuille .adc-f-titre {
+  display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 2px 10px 0; min-height: 30px; border: 0 !important;
+  background: var(--f-bande) url("../assets/fiche/bande.webp") right center / auto 100% no-repeat;
+  font: 400 24px/1.1 var(--f-titre) !important; color: var(--f-encre) !important; text-shadow: none; letter-spacing: 0.01em;
+}
+.adc-feuille .adc-f-titre::first-letter { font-family: var(--f-cap); font-size: 1.22em; }
+.adc-feuille .adc-f-titre.petit { font-size: 22px !important; }
+.adc-feuille .adc-f-titre.large { margin-top: 14px; }
+.adc-feuille .adc-f-titre.sous { font-size: 19px !important; color: var(--f-sous) !important; min-height: 26px; margin-top: 8px; }
+.adc-f-paliers { margin-left: auto; display: flex; gap: 14px; font: italic 11px var(--f-corps); text-transform: uppercase; letter-spacing: 0.04em; color: var(--f-encre); }
+.adc-f-score2 { margin-left: auto; font: 700 18px var(--f-corps); color: var(--f-encre); }
+.adc-feuille .adc-f-titre .inline, .adc-f-case-val.inline { margin-left: auto; }
+
+/* ---- Mise en page ---- */
+.adc-f-haut { display: grid; grid-template-columns: 1.55fr 1fr 1fr; gap: 16px; align-items: start; }
+.adc-f-haut.deux { grid-template-columns: 1fr 1fr; }
+.adc-f-haut.bas { margin-top: 12px; }
+.adc-f-comps { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+.adc-f-arts, .adc-f-sorts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.adc-f-drogues { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+/* ---- Lignes pointillées et champs ---- */
+.adc-f-pt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 3px 0 1px; border-bottom: 1px dotted var(--f-trait); min-height: 24px; font-size: 13px; }
+.adc-f-pt b { color: var(--f-encre); font-variant: small-caps; font-weight: 700; letter-spacing: 0.03em; }
+.adc-f-pt.long { align-items: flex-start; min-height: 40px; }
+.adc-f-pt .n { white-space: nowrap; }
+.adc-f-pt small { color: #555; }
+.adc-f-sep { margin-left: 8px; }
+.adc-feuille label { color: #1b1b1b; font-size: 13px; display: inline-flex; align-items: baseline; gap: 4px; }
+.adc-feuille input[type="text"], .adc-feuille input[type="number"], .adc-feuille select {
+  background: transparent; color: #141414; border: 0; border-bottom: 1px dotted #666; border-radius: 0; height: 22px; padding: 0 3px;
+  font: 600 13px var(--f-corps); box-shadow: none; min-width: 0;
+}
+.adc-feuille input.c { width: 4.6em; } .adc-feuille input.l { width: 9em; }
+.adc-feuille select { min-width: 7.5em; max-width: 11em; cursor: pointer; }
+.adc-feuille select option { color: #111; background: #f4efe3; }
+.adc-feuille input:focus, .adc-feuille select:focus { outline: none; border-bottom: 1px solid #7a1f1f; background: rgba(255, 255, 255, 0.55); }
+.adc-f-etiquette { margin-top: 8px; font: 700 13.5px var(--f-corps); font-variant: small-caps; letter-spacing: 0.04em; color: var(--f-encre); }
+.adc-f-bloc { margin-top: 4px; }
+
+/* ---- Cases à valeur ---- */
+.adc-f-case-val {
+  display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 62px; min-height: 30px; padding: 1px 6px;
+  background: #fff; border: 1.5px solid var(--f-encre); color: #111;
+}
+.adc-f-case-val input { width: 2.6em; height: 26px; border: 0 !important; text-align: center; font: 700 17px var(--f-corps) !important; background: transparent; }
+.adc-f-case-val small { color: #555; font-size: 12px; }
+.adc-f-case-val b { font: 700 17px var(--f-corps); }
+.adc-f-case-val.epuise { border-color: #a01818; } .adc-f-case-val.epuise input { color: #a01818; }
+.adc-f-case-val.carac { min-width: 96px; justify-content: flex-end; }
+.adc-f-case-val.carac input { width: 2.2em; font-size: 14px !important; color: #666; }
+.adc-f-score { font: 700 22px var(--f-corps); color: #111; min-width: 1.6em; text-align: center; text-decoration: none; cursor: pointer; }
+.adc-f-score:hover, .adc-f-calc:hover { color: #7a1f1f; text-shadow: none; }
+.adc-f-mini { color: var(--f-sous); cursor: pointer; margin-left: 2px; } .adc-f-mini:hover { color: #7a1f1f; }
+.adc-f-jauge { margin-bottom: 10px; }
+.adc-f-jauge .adc-f-titre { margin-bottom: 4px; }
+.adc-f-jauge .adc-f-case-val { display: flex; width: 100%; }
+.adc-f-seuil { font-size: 12.5px; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+.adc-f-merite { display: flex; align-items: center; gap: 8px; }
+.adc-f-merite .adc-f-titre { margin: 0; flex: none; min-width: 120px; }
+.adc-f-merite .adc-f-case-val { flex: none; } .adc-f-merite label { font-size: 13px; }
+.adc-f-merite .adc-f-case-val input { width: 3em; font-size: 15px !important; }
+.adc-f-grade { font: italic 13px var(--f-corps); color: var(--f-sous); }
+
+.adc-f-carac { display: flex; align-items: stretch; gap: 6px; margin-bottom: 7px; }
+.adc-f-sous {
+  flex: 1; display: flex; align-items: center; min-height: 30px; padding: 2px 8px 0;
+  background: var(--f-bande) url("../assets/fiche/bande.webp") right center / auto 100% no-repeat;
+  font: 400 19px/1.1 var(--f-titre); color: var(--f-sous);
+}
+.adc-f-sous::first-letter { font-family: var(--f-cap); font-size: 1.15em; }
+.adc-f-plain { flex: 1; display: flex; align-items: center; font-size: 14px; }
+.adc-f-traits { margin-top: 10px; }
+.adc-f-filigrane { height: 34px; margin: 8px 0 10px; background: #1d2126 center / cover no-repeat; border: 1px solid #55606a; }
+.adc-f-ornement { height: 136px; background: #1d2126 center / cover no-repeat; border: 1px solid #55606a; }
+.adc-f-alerte { color: #a01818; font-size: 12.5px; margin: 4px 0 0; }
+
+/* ---- Tableau des difficultés ---- */
+.adc-f-nd { width: 100%; border-collapse: collapse; font-size: 13px; }
+.adc-f-nd th { background: var(--f-encre); color: #e5dfe1; padding: 3px 6px; font: 700 12px var(--f-corps); text-align: center; }
+.adc-f-nd td { text-align: center; padding: 3px 6px; border-bottom: 1px solid #d3cdbd; }
+.adc-f-nd tbody tr:nth-child(odd) { background: #ddd7c8; }
+.adc-f-nd td:first-child { width: 3em; }
+
+/* ---- Compétences ---- */
+.adc-f-complist { list-style: none; margin: 0; padding: 0; }
+.adc-f-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; min-height: 22px; padding: 1px 0; }
+.adc-f-compnom { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.adc-f-comp.inapte .adc-f-compnom { opacity: 0.6; }
+.adc-f-cases { display: inline-flex; }
+.adc-f-caseR { display: inline-block; width: 12px; height: 12px; margin: 0 1px; border: 1.5px solid #1c1c1c; background: #fff; cursor: pointer; }
+.adc-f-caseR.fin { margin-right: 7px; } .adc-f-caseR:last-child { margin-right: 0; }
+.adc-f-caseR:hover { background: #a9b3bd; }
+.adc-f-caseR.plein { background: var(--f-encre); }
+.adc-f-caseR.bonus { background: #c6a24c; }
+.adc-f-calc { font-size: 12px; color: #333; text-decoration: none; cursor: pointer; white-space: nowrap; min-width: 8.4em; text-align: right; }
+.adc-f-calc b { font-size: 14px; color: #111; }
+
+/* ---- Listes d'objets ---- */
+.adc-f-liste { list-style: none; margin: 0; padding: 0; }
+.adc-f-ligne { display: flex; align-items: center; gap: 6px; min-height: 26px; border-bottom: 1px dotted var(--f-trait); }
+.adc-f-ico { width: 22px; height: 22px; border: 0; flex: none; cursor: pointer; vertical-align: middle; border-radius: 3px; }
+.adc-f-nom { flex: 1; font-weight: 700; color: #1b1b1b; cursor: pointer; text-decoration: none; }
+.adc-f-nom:hover { color: #7a1f1f; }
+.adc-f-resume { color: #555; font-size: 12px; }
+.adc-f-btns { display: inline-flex; gap: 2px; margin-left: auto; opacity: 0.35; }
+.adc-f-ligne:hover .adc-f-btns, tr:hover .adc-f-btns, .adc-f-art:hover .adc-f-btn, .adc-f-drogue:hover .adc-f-btn, .adc-f-sort:hover .adc-f-btn { opacity: 1; }
+.adc-f-btn { color: #444; cursor: pointer; padding: 0 3px; } .adc-f-btn:hover { color: #7a1f1f; } .adc-f-btn.actif { color: #1f5a2a; }
+.adc-f-effet { font-size: 12.5px; padding: 2px 0 3px 28px; border-bottom: 1px dotted var(--f-trait); color: #222; }
+.adc-f-effet span { color: var(--f-encre); font-variant: small-caps; font-weight: 700; }
+.adc-f-vide { color: #8a8574; font-style: italic; font-size: 12.5px; padding: 4px 0; border-bottom: 1px dotted #aaa59a; }
+.adc-f-vide.large { grid-column: 1 / -1; text-align: center; padding: 14px; border: 1px dashed #aaa59a; }
+.adc-f-texte { font-size: 12.5px; margin-top: 4px; }
+.adc-f-texte p { margin: 2px 0; }
+
+/* ---- Tableaux (armement / armure) ---- */
+.adc-f-tab { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 4px; }
+.adc-f-tab th { font: 700 12px var(--f-corps); font-variant: small-caps; color: var(--f-encre); text-align: left; padding: 2px 4px; letter-spacing: 0.05em; }
+.adc-f-tab td, .adc-f-tab tbody th { padding: 3px 4px; border-bottom: 1px dotted var(--f-trait); font-weight: 400; font-variant: normal; color: #1b1b1b; font-size: 13px; vertical-align: middle; }
+.adc-f-tab td.pr { text-align: center; font-weight: 700; width: 3em; }
+
+/* ---- États ---- */
+.adc-f-etats { list-style: none; margin: 0; padding: 0; }
+.adc-f-etats li { display: grid; grid-template-columns: 11.5em 1fr; gap: 8px; align-items: center; min-height: 31px; border-bottom: 1px dotted #b7b19f; }
+.adc-f-etats a { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #1b1b1b; text-decoration: none; }
+.adc-f-etats em { font-style: normal; }
+.adc-f-etats li.actif em { color: #a01818; font-weight: 700; }
+.adc-f-etateffet { font-size: 12px; color: #333; }
+.adc-f-coche { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #1c1c1c; background: #fff; flex: none; }
+.adc-f-coche.pleine { background: #a01818; border-color: #a01818; }
+
+/* ---- Cartes (Arts martiaux, drogues, sorts) ---- */
+.adc-f-artentete { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.adc-f-etiq-fond { background: var(--f-encre); color: #fff; font: 700 11.5px var(--f-corps); font-variant: small-caps; letter-spacing: 0.06em; padding: 7px 10px; }
+.adc-f-artentete .adc-f-case-val.inline { flex: 1; justify-content: flex-start; margin: 0; font-weight: 700; cursor: pointer; min-height: 30px; }
+.adc-f-artentete .adc-f-titre { margin: 0; min-height: 26px; padding: 2px 8px 0; font-size: 20px !important; }
+.adc-f-drogue .adc-f-pt, .adc-f-art .adc-f-pt, .adc-f-sort .adc-f-pt { font-size: 12px; }
+.adc-f-sortligne { display: flex; align-items: center; gap: 4px; margin: 4px 0; }
+.adc-f-rond { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--f-encre); background: #fff; display: flex; align-items: center; justify-content: center; font: 700 15px var(--f-corps); flex: none; }
+.adc-f-sortligne .adc-f-etiq-fond { padding: 8px 10px; margin-left: -6px; }
+.adc-f-boite { border: 1.5px solid var(--f-encre); background: #fff; padding: 6px 8px; font-size: 12px; white-space: nowrap; }
+.adc-f-boite.grand { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.adc-f-runes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.adc-f-runes img { width: 30px; height: 30px; border: 0; opacity: 0.9; }
+.adc-f-voie .adc-f-titre { margin-bottom: 4px; }
+
+/* ---- Bonus manuels ---- */
+.adc-f-bonus { margin-top: 14px; font-size: 12.5px; }
+.adc-f-bonus summary { cursor: pointer; color: var(--f-sous); font-style: italic; }
+.adc-f-bonus .adc-bonus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 12px; margin-top: 6px; }
+.adc-f-bonus label { display: flex; flex-direction: column; gap: 0; }
+.adc-f-bonus input { width: 100%; }
+
+/* ---- Biographie (éditeurs) ---- */
+.adc-f-page prose-mirror, .adc-f-page .editor { min-height: 90px; color: #1b1b1b; background: rgba(255, 255, 255, 0.5); border: 1px dotted #777; }
+.adc-f-page prose-mirror * { color: #1b1b1b; }
+.adc-feuille .adc-vide { display: none; }
+
+/* ---- Glisser-déposer : repère de dépôt ---- */
+.adc-feuille [data-type].adc-depot { outline: 2px dashed #7a1f1f; outline-offset: 2px; }

@@ -66,7 +66,8 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async _preFirstRender(context, options) {
     await super._preFirstRender?.(context, options);
     await foundry.applications.handlebars.loadTemplates({
-      "adc-section": `systems/${SYSTEM_ID}/templates/partials/section.hbs`
+      "adc-section": `systems/${SYSTEM_ID}/templates/partials/section.hbs`,
+      "adc-ligne-f": `systems/${SYSTEM_ID}/templates/partials/ligne-fiche.hbs`
     });
   }
 
@@ -278,14 +279,15 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 export class PersonnageSheet extends BaseActorSheet {
   static DEFAULT_OPTIONS = {
-    classes: [SYSTEM_ID, "sheet", "actor", "personnage"],
+    classes: [SYSTEM_ID, "sheet", "actor", "personnage", "feuille"],
     actions: {
+      setRang: function (event, target) { return PersonnageSheet.#setRang(this, target); },
       depenserNexus: function () { return depenserNexus(this.actor); },
       depenserHorsDestin: function () { return depenserHorsDestin(this.actor); },
       reposer: function () { return reposer(this.actor); },
       assistant: function () { return ouvrirAssistant(this.actor); }
     },
-    position: { width: 900, height: 800 }
+    position: { width: 880, height: 960 }
   };
 
   static PARTS = {
@@ -293,13 +295,94 @@ export class PersonnageSheet extends BaseActorSheet {
   };
 
   static ONGLETS = [
-    { id: "caracteristiques", label: "Caractéristiques", court: "Carac." },
     { id: "profil", label: "Profil" },
     { id: "combat", label: "Combat" },
     { id: "equipement", label: "Équipement" },
     { id: "magie", label: "Magie" },
     { id: "biographie", label: "Biographie" }
   ];
+
+  /** Clic sur une case de rang : fixe le rang (re-clic sur le rang actuel : −1). */
+  static async #setRang(sheet, target) {
+    const { cle, rang } = target.dataset;
+    if (!(cle in COMPETENCES)) return;
+    const actuel = sheet.actor.system.competences[cle].rang;
+    const n = Number(rang);
+    await sheet.actor.update({ [`system.competences.${cle}.rang`]: actuel === n ? n - 1 : n });
+  }
+
+  /** Données propres à la fiche imprimée : traits, armure par zone, cartes d'Arts martiaux, de drogues et de sorts. */
+  _contexteFiche() {
+    const items = this.actor.items.contents.slice().sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+    const de = (t) => items.filter(i => i.type === t);
+    const txt = (h, max = 0) => {
+      const t = String(h ?? "").replace(/<\/(p|h\d|li|div)>/gi, " ").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+      return max && t.length > max ? t.slice(0, max - 1) + "…" : t;
+    };
+    const ligne = (it, extra = {}) => ({ id: it.id, img: it.img, name: it.name, ...extra });
+    const secs = this._sectionsObjets();
+
+    // Talent secret, Fortune, Malédiction (une ligne + « Effet »).
+    const secret = de("talent").filter(t => !/^Voie/.test(t.system.origine ?? ""));
+    const blocsTraits = [
+      { type: "talent", titre: "Talent secret", lignes: secret.map(t => ligne(t, { effet: txt(t.system.description, 240) })) },
+      { type: "fortune", titre: "Fortune", lignes: de("fortune").map(t => ligne(t, { effet: txt(t.system.description, 240) })) },
+      { type: "malediction", titre: "Malédiction", lignes: de("malediction").map(t => ligne(t, { effet: txt(t.system.description, 240) })) }
+    ];
+
+    // États préjudiciables : effet résumé (fiche imprimée).
+    const EFFET = {
+      aveugle: "Tests physiques Handicapés", demoralise: "Inspiration impossible", epuise: "Handicap sur tests physiques",
+      etourdi: "-1 Action / Tour", faceContreTerre: "-10 Défense passive + Handicap aux réactions", pisseLeSang: "-3 pts d'Endurance / Tour",
+      surpris: "Pas de Réaction possible", trouilleBleue: "« 10 » bloqués", enManque: "Handicap selon la drogue", portesDameMort: "Endurance à 0 : mourant"
+    };
+    const etatsFiche = ETATS.map(e => ({ ...e, effet: EFFET[e.id] ?? "", actif: this.actor.statuses?.has(e.id) ?? false }));
+
+    // Armes : tableau Type / Dégâts / Capacité.
+    const armes = de("arme").map(i => ligne(i, { degats: i.system.degats, capacites: i.system.capacites, equipee: !!i.system.equipee }));
+
+    // Armure par zone (armures portées).
+    const zones = [["Tête", ["T", "Te"]], ["Torse", ["To"]], ["Bras droit", ["BD"]], ["Bras gauche", ["BG"]], ["Jambe droite", ["JD"]], ["Jambe gauche", ["JG"]]];
+    const portees = de("armure").filter(a => a.system.equipee);
+    const armureLoc = zones.map(([label, codes]) => {
+      const sur = portees.filter(a => String(a.system.localisation ?? "").split(",").map(x => x.trim()).some(c => codes.includes(c)));
+      const meilleure = sur.sort((a, b) => b.system.protection - a.system.protection)[0];
+      return { label, nom: meilleure?.name ?? "", pr: meilleure ? meilleure.system.protection + (this.actor.system.derive?.effets?.protectionArmures ?? 0) + (this.actor.system.derive?.effets?.protectionNaturelle ?? 0) : "" };
+    });
+
+    // Arts martiaux (cartes), drogues et sorts.
+    const arts = de("artmartial").map(i => ligne(i, {
+      permNom: i.system.effetPermanent?.nom, permDesc: txt(i.system.effetPermanent?.description, 260),
+      coupNom: i.system.coupSpecial?.nom, coupInfo: [i.system.coupSpecial?.actions, i.system.coupSpecial?.duree].filter(Boolean).join(" · "),
+      coupDesc: txt(i.system.coupSpecial?.description, 260)
+    }));
+    const drogues = de("drogue").map(i => ligne(i, {
+      toxicite: i.system.toxicite, addiction: i.system.addiction, dependance: i.system.dependance, origine: i.system.origine,
+      rarete: i.system.rarete, prix: i.system.prix, inoculation: i.system.inoculation, effets: txt(i.system.effets, 220),
+      duree: i.system.duree, manque: i.system.manque
+    }));
+    const sorts = de("sort")
+      .sort((a, b) => Object.keys(NIVEAUX_SORT).indexOf(a.system.niveau) - Object.keys(NIVEAUX_SORT).indexOf(b.system.niveau))
+      .map(i => ligne(i, {
+        mana: i.system.mana, difficulte: i.system.difficulte || "var.", incantation: i.system.incantation,
+        portee: i.system.portee, cible: i.system.cible, duree: i.system.duree, effet: txt(i.system.effet, 300)
+      }));
+
+    // Voie : talent de Voie en clair.
+    const voie = de("voie")[0];
+    const voieTalent = voie ? String(voie.system.talent ?? "").replace(/<h3>.*?<\/h3>/i, "") : "";
+
+    // Académie magique (Sorcier : Eodh).
+    const sorcier = this.actor.system.voie === "sorcier";
+    const academie = sorcier
+      ? { nom: "Eodh", avantage: "+1 rang en Beau-parleur", enseignees: "Éléments, Cycles, Ombres", interdites: "Sylve, Sang, Inanimé, Lumière" }
+      : { nom: "", avantage: "", enseignees: "", interdites: "" };
+
+    return {
+      blocsTraits, etatsFiche, armes, armureLoc, arts, drogues, sorts, voieLigne: voie ? { name: voie.name } : null,
+      voieTalent, academie, sections: secs
+    };
+  }
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -312,8 +395,8 @@ export class PersonnageSheet extends BaseActorSheet {
     context.runes = Object.keys(RUNES).map(k => `${ASSETS}/runes/${k}.webp`);
     context.artVoie = artDe(this.actor.system.voie, this.actor.system.maison);
 
-    // Caractéristiques et leurs compétences, groupées.
-    context.groupes = Object.entries(CARACS).map(([cle, c]) => {
+    // Caractéristiques et compétences (rangs en cases : 3 Novice, 3 Entraîné, 3 Expert, 1 Maître).
+    const groupes = Object.entries(CARACS).map(([cle, c]) => {
       const dc = d.caracs?.[cle] ?? { base: 0, bonus: 0, valeur: 0, libelle: "" };
       return {
         cle, label: c.label, abbr: c.abbr,
@@ -321,16 +404,28 @@ export class PersonnageSheet extends BaseActorSheet {
         bonus: dc.bonus, valeur: dc.valeur, libelle: dc.libelle,
         competences: Object.entries(COMPETENCES)
           .filter(([, comp]) => comp.carac === cle)
-          .map(([k, comp]) => ({
-            cle: k, label: comp.label,
-            rang: this.actor.system.competences[k].rang,
-            score: d.competences?.[k]?.score ?? 0,
-            libelle: d.competences?.[k]?.libelle ?? "",
-            inapte: d.competences?.[k]?.inapte ?? true
-          }))
+          .map(([k, comp]) => {
+            const dk = d.competences?.[k] ?? {};
+            const base = this.actor.system.competences[k].rang;
+            const bonus = dk.rangBonus ?? 0;
+            return {
+              cle: k, label: comp.label, rang: base,
+              score: dk.score ?? 0,
+              total: (dk.score ?? 0) - dc.valeur,
+              libelle: dk.libelle ?? "",
+              inapte: dk.inapte ?? true,
+              cases: Array.from({ length: 10 }, (_, i) => ({
+                n: i + 1, plein: i < base, bonus: i >= base && i < base + bonus, fin: [3, 6, 9].includes(i + 1)
+              }))
+            };
+          })
       };
     });
-
+    context.caracs = groupes;
+    // Colonne gauche : Réflexes, Constitution, Puissance. Colonne droite : Charme, Intelligence, Volonté (comme la fiche imprimée).
+    const g = (k) => groupes.find(x => x.cle === k);
+    context.colonnesComp = [[g("ref"), g("con"), g("pui")], [g("cha"), g("int"), g("vol")]];
+    Object.assign(context, this._contexteFiche());
     context.maisonLabel = MAISONS[this.actor.system.maison]?.label ?? "—";
     context.voieLabel = VOIES[this.actor.system.voie]?.label ?? "—";
 
