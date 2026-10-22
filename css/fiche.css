@@ -251,3 +251,16 @@
 .adc-f-manatotal em { font: 700 15px var(--f-corps); font-style: normal; font-variant: small-caps; letter-spacing: 0.05em; color: var(--f-encre); }
 .adc-feuille .adc-f-manatotal input[type="number"] { width: 3em; height: 28px; padding: 0; border: 0; background: transparent; text-align: center; font: 700 24px var(--f-corps); color: #111; box-shadow: none; }
 .adc-f-manatotal i { font: 600 17px var(--f-corps); font-style: normal; color: #444; }
+
+/* PNJ et créatures */
+.adc-f-entetecorps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.adc-f-entetelig { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; color: #e2dccb; font-size: 13px; text-shadow: 0 1px 2px #000; }
+.adc-feuille .adc-f-entetelig label { color: #e2dccb; }
+.adc-feuille .adc-f-entetelig select, .adc-feuille .adc-f-entetelig input { color: #fff; background: rgba(8, 11, 14, 0.7); border-bottom: 1px solid #8d96a0; }
+.adc-feuille .adc-f-entetelig select option { color: #111; }
+.adc-f-entetelig b { color: #fff; }
+.adc-f-gros { margin-left: auto; font-size: 17px; }
+.adc-f-ligne input.adc-f-compnomchamp { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; }
+.adc-pnj .adc-f-haut { grid-template-columns: 1.5fr 1fr 1fr; }
+.adc-pnj .adc-f-carac .adc-f-case-val { min-width: 74px; }
+.adc-pnj .adc-f-jauge .adc-f-case-val input { width: 3.2em; font-size: 22px !important; }

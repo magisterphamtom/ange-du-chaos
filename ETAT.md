@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.13.7 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.14.0 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -56,6 +56,7 @@
   Assistant : Guerrier né (3 compétences d'armes +1 rang, étape 5), Richesse (+100 £A d'or), équipement de départ à l'étape 9 (armure de cuir gras portée + jusqu'à 4 armes maniées au choix, portées).
   Hypothèses à confirmer : le plafond de 4 armes de départ (le livre dit « toute arme qu'il sait manier » sans limite) ; Frappe d'acier appliquée aux armes de Corps à corps ; Armure du Chaos, Frénésie, Sens du Chaos, Nexus de Voie, Perforant, dés supplémentaires sur Surpris : utilisation manuelle (pas automatisés). Non fait : Vieille blessure (choix de la conséquence), Handicaps « à la discrétion du MJ », vision nocturne, Héritage du bien-né, Favori de Morion, Savoirs interdits. Test à faire dans Foundry : icônes visibles dans les listes d'objets et les fiches ; ajouter le Talent « Résistant comme le roc » sur une fiche → Endurance +5, le retirer → retour ; « Œil de faucon » → Initiative et dégâts d'arc ; Guerrier né et armes de départ dans l'assistant.
 
+- 0.14.0 : fiches PNJ et Créature refaites dans le style de la fiche de personnage (classe `feuille`, mêmes polices, bandes, cases blanches, bords) : entête sombre avec grand portrait, catégorie / espèce / plan dans l'entête ; colonnes Attaque + Compétences, Endurance (+ seuil, protection, défense passive), Combat (initiative, mouvement, bonus aux dégâts) ; Description, Talents, Capacités spéciales (créatures) ; listes Armes, Sorts, Talents, Équipement avec glisser-déposer.
 - 0.13.7 : page Magie : Total de Mana lisible (chiffre 24 px dans une case blanche), icônes des 10 sources centrées et plus grandes (38 px, réparties sur la largeur), « ACADÉMIE MAGIQUE » en majuscules et plus grand comme sur la fiche imprimée.
 - 0.13.6 : tableau Armement : icône et nom de l'arme sur une même ligne, boutons (attaquer, équiper, supprimer) alignés à droite sur la ligne de l'arme.
 - 0.13.5 : calculs des compétences (« 8 + 4 = 12 ») plus grands et alignés : colonne de 112 px, chiffres en largeur fixe, plus de débordement à droite.
@@ -109,3 +110,4 @@ E. Aucune erreur rouge en console pendant ces jets.
 6. Dice So Nice activé : un jet de compétence lance les dés 3D (le dé du Destin ; 2 si Inspiration/Handicap ; relances sur 10 et 1) puis la carte s'affiche, mêmes valeurs. Idem dégâts et Dernier soupir.
 7. Fiche (0.13.3) : entête plus haut, grand portrait (clic = changer l'image) ; onglets à l'extérieur, à gauche de la fenêtre ; vérifier qu'ils restent cliquables et visibles quand la fenêtre est près du bord gauche de l'écran.
 8. Fiche (0.13.4) : onglet Profil, les 4 intitulés inclinés pointent bien chacun sur sa colonne de cases (1-3 Novice, 4-6 Entraîné, 7-9 Expert, 10 Maître) dans les deux colonnes de compétences.
+9. PNJ et Créature (0.14.0) : ouvrir une fiche de chacun ; modifier Endurance, compétences (+ / corbeille), bouton d'attaque ; glisser une arme ; les textes riches s'éditent.

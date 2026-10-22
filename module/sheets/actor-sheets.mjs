@@ -447,8 +447,8 @@ export class PersonnageSheet extends BaseActorSheet {
 
 export class PnjSheet extends BaseActorSheet {
   static DEFAULT_OPTIONS = {
-    classes: [SYSTEM_ID, "sheet", "actor", "pnj"],
-    position: { width: 720, height: 760 }
+    classes: [SYSTEM_ID, "sheet", "actor", "pnj", "feuille"],
+    position: { width: 820, height: 860 }
   };
 
   static PARTS = {
@@ -461,6 +461,7 @@ export class PnjSheet extends BaseActorSheet {
     context.estCreature = this.actor.type === "creature";
     context.assets = ASSETS;
     context.artAdversaire = adversaireDe(this.actor.name)?.filigrane ?? null;
+    context.sectionsListe = ["armes", "sorts", "talents", "equipement"].map(k => context.sections?.[k]).filter(Boolean);
     const talentsMax = CATEGORIES_ADVERSAIRE[this.actor.system.categorie]?.talents ?? 0;
     context.talentsMax = talentsMax >= 99 ? "illimités" : talentsMax;
     context.enrichi = {
@@ -475,6 +476,6 @@ export class PnjSheet extends BaseActorSheet {
 
 export class CreatureSheet extends PnjSheet {
   static DEFAULT_OPTIONS = {
-    classes: [SYSTEM_ID, "sheet", "actor", "creature"]
+    classes: [SYSTEM_ID, "sheet", "actor", "creature", "feuille"]
   };
 }
