@@ -137,6 +137,7 @@ export async function reposer(actor) {
     retires.push(CONFIG.statusEffects.find(x => x.id === e)?.name ?? e);
   }
   await actor.unsetFlag?.(SYSTEM_ID, "secondSouffle");
+  await actor.unsetFlag?.(SYSTEM_ID, "verrous");
   const lignes = [
     `Endurance : <b>${end.value} → ${nouvelleEnd}</b> / ${end.max} (${gainEnd >= 0 ? "+" : ""}${gainEnd})`,
     ...(mana.max ? [`Mana : <b>${mana.value} → ${nouveauMana}</b> / ${mana.max}`] : []),

@@ -141,7 +141,7 @@
       <h2 class="adc-f-titre">Etats préjudiciables</h2>
       <ul class="adc-f-etats">
         {{#each etatsFiche}}
-        <li class="{{#if this.actif}}actif{{/if}}"><a data-action="toggleEtat" data-etat="{{this.id}}"><span class="adc-f-coche {{#if this.actif}}pleine{{/if}}"></span> <em>{{this.name}}</em></a><span class="adc-f-etateffet">{{this.effet}}</span></li>
+        <li class="{{#if this.actif}}actif{{/if}}"><a data-action="toggleEtat" data-etat="{{this.id}}"><span class="adc-f-coche {{#if this.actif}}pleine{{/if}}"></span> <em>{{this.name}}</em></a><span class="adc-f-etateffet">{{this.effet}}{{#if this.remede}} <a class="adc-f-remede" data-action="remedeEtat" data-etat="{{this.id}}" data-tooltip="{{this.remedeNote}}">se défaire : {{this.remede}}</a>{{/if}}</span></li>
         {{/each}}
       </ul>
     </div>

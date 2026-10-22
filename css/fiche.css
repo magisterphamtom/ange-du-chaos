@@ -313,3 +313,9 @@
 /* ---- Nom de compétence cliquable (description) ---- */
 a.adc-f-compnom { color: inherit; cursor: help; text-decoration: none; }
 a.adc-f-compnom:hover { text-decoration: underline dotted; text-underline-offset: 3px; }
+
+/* ---- États : bouton « se défaire » ---- */
+.adc-f-remede { display: inline-block; margin-left: 6px; padding: 1px 8px; border: 1.5px solid var(--f-encre); background: #fff; font: 700 11px var(--f-corps); font-variant: small-caps; cursor: pointer; color: var(--f-encre); }
+.adc-f-remede:hover { background: var(--f-encre); color: #fff; }
+.adc-f-etats a.adc-f-remede { display: inline-block; width: auto; margin: 2px 0 2px 0; padding: 1px 8px; line-height: 1.3; }
+.adc-f-etats li { height: auto; padding: 2px 0; }

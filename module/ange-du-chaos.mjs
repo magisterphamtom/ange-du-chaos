@@ -4,6 +4,7 @@
  * Les modules importés (datamodels, sheets…) ne figurent PAS dans `esmodules`.
  */
 
+import { initialiserEtats } from "./etats.mjs";
 import { SYSTEM_ID, ETATS, adversaireDe } from "./config.mjs";
 import { ACTOR_MODELS, ITEM_MODELS } from "./datamodels.mjs";
 import { PersonnageSheet, PnjSheet, CreatureSheet } from "./sheets/actor-sheets.mjs";
@@ -82,6 +83,7 @@ Hooks.once("init", () => {
 
   // --- Combat : attaque, réactions, dégâts, états, initiative -----------------
   initialiserCombat();
+  initialiserEtats();
 
   // --- Contenu du livre (objets, sorts, bestiaire) créé à l'ouverture du monde ---
   enregistrerReglagesContenu();

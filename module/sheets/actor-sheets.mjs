@@ -15,6 +15,8 @@ import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
 import { esc } from "../rolls-html.mjs";
 import { decrireCompetence } from "../competence-info.mjs";
+import { tenterRemede } from "../etats.mjs";
+import { FICHES_ETATS } from "../etats-tour.mjs";
 import { etatVide, ndDrogue, prendreDose, terminer, finPositif, basculerManque, appliquerSevrage, trouverDrogue } from "../drogues.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -54,6 +56,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       basculerHaut: BaseActorSheet.#basculerHaut,
       lancerSort: BaseActorSheet.#lancerSort,
       infoCompetence: BaseActorSheet.#infoCompetence,
+      remedeEtat: BaseActorSheet.#remedeEtat,
       prendreDrogue: BaseActorSheet.#prendreDrogue,
       finDrogue: BaseActorSheet.#finDrogue,
       finPositifDrogue: BaseActorSheet.#finPositifDrogue,
@@ -137,6 +140,11 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
   }
 
+
+  /** Tente de se défaire d'un état (test et ND du livre). */
+  static async #remedeEtat(event, target) {
+    await tenterRemede(this.actor, target.dataset.etat);
+  }
 
   /** Popup de description d'une compétence (clic sur son nom). */
   static async #infoCompetence(event, target) {
@@ -467,7 +475,7 @@ export class PersonnageSheet extends BaseActorSheet {
       etourdi: "-1 Action / Tour", faceContreTerre: "-10 Défense passive + Handicap aux réactions", pisseLeSang: "-3 pts d'Endurance / Tour",
       surpris: "Pas de Réaction possible", trouilleBleue: "« 10 » bloqués", enManque: "Handicap selon la drogue", portesDameMort: "Endurance à 0 : mourant"
     };
-    const etatsFiche = ETATS.map(e => ({ ...e, effet: EFFET[e.id] ?? "", actif: this.actor.statuses?.has(e.id) ?? false }));
+    const etatsFiche = ETATS.map(e => { const r = FICHES_ETATS[e.id]?.remede; const actif = this.actor.statuses?.has(e.id) ?? false; return { ...e, effet: EFFET[e.id] ?? "", actif, remede: actif && r ? (r.auto ? "Se relever" : `${COMPETENCES[r.comp].label} ND ${r.nd}`) : "", remedeNote: r?.note ?? "" }; });
 
     // Armes : tableau Type / Dégâts / Capacité.
     const armes = de("arme").map(i => ligne(i, { degats: i.system.degats, capacites: i.system.capacites, equipee: !!i.system.equipee }));
