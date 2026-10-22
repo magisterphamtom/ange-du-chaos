@@ -14,6 +14,7 @@ import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
 import { esc } from "../rolls-html.mjs";
+import { decrireCompetence } from "../competence-info.mjs";
 import { etatVide, ndDrogue, prendreDose, terminer, finPositif, basculerManque, appliquerSevrage, trouverDrogue } from "../drogues.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -52,6 +53,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       adcOnglet: BaseActorSheet.#changerOnglet,
       basculerHaut: BaseActorSheet.#basculerHaut,
       lancerSort: BaseActorSheet.#lancerSort,
+      infoCompetence: BaseActorSheet.#infoCompetence,
       prendreDrogue: BaseActorSheet.#prendreDrogue,
       finDrogue: BaseActorSheet.#finDrogue,
       finPositifDrogue: BaseActorSheet.#finPositifDrogue,
@@ -135,6 +137,13 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
   }
 
+
+  /** Popup de description d'une compétence (clic sur son nom). */
+  static async #infoCompetence(event, target) {
+    const cle = target.dataset.cle;
+    const c = this.actor.system.derive?.competences?.[cle];
+    await decrireCompetence(cle, c ? { score: c.score, libelle: c.libelle } : null);
+  }
 
   /** État des drogues de l'acteur (drapeau). */
   _etatDrogues() { return foundry.utils.deepClone(this.actor.getFlag(SYSTEM_ID, "drogues") ?? etatVide()); }
