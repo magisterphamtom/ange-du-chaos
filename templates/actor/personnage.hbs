@@ -245,14 +245,14 @@
   <div class="adc-f-haut deux">
     <div>
       <h2 class="adc-f-titre">Arts étranges <small class="adc-f-score2">{{derive.competences.artsEtranges.score}}</small></h2>
-      <div class="adc-f-pt"><b>Académie magique</b> {{academie.nom}}</div>
+      <div class="adc-f-pt adc-f-academie"><b>ACADÉMIE MAGIQUE</b> <span>{{academie.nom}}</span></div>
       <div class="adc-f-pt long"><b class="n">Avantage :</b> {{academie.avantage}}</div>
       <div class="adc-f-pt long"><b class="n">Sources interdites :</b> {{academie.interdites}}</div>
       <div class="adc-f-pt long"><b class="n">Sources enseignées :</b> {{academie.enseignees}}</div>
       <div class="adc-f-runes">{{#each runes}}<img src="{{this}}" alt="" onerror="this.remove()">{{/each}}</div>
     </div>
     <div>
-      <h2 class="adc-f-titre">Mana <span class="adc-f-case-val inline total"><label>Total <input type="number" name="system.mana.value" value="{{system.mana.value}}" min="0"> / {{system.mana.max}}</label></span></h2>
+      <h2 class="adc-f-titre">Mana <span class="adc-f-manatotal"><em>Total</em><input type="number" name="system.mana.value" value="{{system.mana.value}}" min="0"><i>/ {{system.mana.max}}</i></span></h2>
       <div class="adc-f-ornement" style="background-image:url('{{assets}}/fiche/ornement.webp')"></div>
     </div>
   </div>
