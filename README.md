@@ -1,3 +1,5 @@
+<p align="center"><img src="images/banniere.png" alt="L'Ange du Chaos — système Foundry VTT" width="100%"></p>
+
 # L'Ange du Chaos — système Foundry VTT
 
 Système de jeu pour **L'Ange du Chaos**, le jeu de rôle des éditions Les XII Singes (d'après les romans de Michel Robert).
