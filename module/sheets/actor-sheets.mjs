@@ -50,6 +50,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       adcOnglet: BaseActorSheet.#changerOnglet,
       basculerHaut: BaseActorSheet.#basculerHaut,
       lancerSort: BaseActorSheet.#lancerSort,
+      replier: BaseActorSheet.#replier,
       jet: BaseActorSheet.#jet,
       attaquer: BaseActorSheet.#attaquer,
       addCompetence: BaseActorSheet.#addCompetence,
@@ -98,6 +99,21 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this._cadrerFenetre?.();
     this._afficherOnglet();
     this.element?.querySelector(".adc-feuille")?.classList.toggle("haut-masque", !!this._hautMasque);
+    this._appliquerReplis();
+  }
+
+  /** Sections repliables (Équipement, Magie) : l'état est mémorisé entre deux rendus. */
+  _appliquerReplis() {
+    const reps = this._replis ?? new Set();
+    this.element?.querySelectorAll?.("[data-repli]").forEach(el => el.classList.toggle("replie", reps.has(el.dataset.repli)));
+  }
+
+  static async #replier(event, target) {
+    if (event.target.closest("input, select, a.adc-f-btn")) return;
+    this._replis ??= new Set();
+    const cle = target.dataset.cle;
+    if (this._replis.has(cle)) this._replis.delete(cle); else this._replis.add(cle);
+    this._appliquerReplis();
   }
 
   /** Lance un sort : dépense le mana, test d'Arts étranges contre le ND du sort (Maj : sans fenêtre). */

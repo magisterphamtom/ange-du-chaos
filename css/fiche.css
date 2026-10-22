@@ -290,3 +290,13 @@
 /* poignée d'agrandissement toujours cliquable */
 .ange-du-chaos.feuille .window-resize-handle { z-index: 60; width: 22px; height: 22px; opacity: 1; }
 .adc-f-lancer { color: #5b3f9a; opacity: 1; } .adc-f-lancer:hover { color: #7a1f1f; }
+
+/* Sections repliables */
+.adc-f-replitit { cursor: pointer; user-select: none; }
+.adc-f-replitit:hover { filter: brightness(1.06); }
+.adc-f-chev { margin-left: auto; font-size: 13px; color: var(--f-sous); transition: transform .15s; }
+.adc-f-score2 + .adc-f-chev, .adc-f-manatotal + .adc-f-chev { margin-left: 8px; }
+.adc-f-repli.replie > :not(h2) { display: none !important; }
+.adc-f-repli.replie .adc-f-chev { transform: rotate(-90deg); }
+.adc-f-repli.replie > h2 { margin-bottom: 0; }
+[data-repli="richesse"] .adc-f-case-val { min-width: 96px; } [data-repli="richesse"] .adc-f-case-val input { width: 5em; }

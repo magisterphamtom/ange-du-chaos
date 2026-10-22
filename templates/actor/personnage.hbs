@@ -199,12 +199,12 @@
 
 <!-- ====================== PAGE 3 : ÉQUIPEMENT ====================== -->
 <section class="adc-onglet tab adc-f-page" data-tab="equipement">
-  <h2 class="adc-f-titre large">Arts du combat</h2>
+  <div class="adc-f-repli" data-repli="arts">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="arts" data-tooltip="Cliquer pour replier / déplier">Arts du combat <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   <div class="adc-f-arts" data-type="artmartial">
     {{#each arts}}
     <div class="adc-f-art" data-item-id="{{this.id}}" draggable="true">
       <div class="adc-f-artentete"><span class="adc-f-etiq-fond">Art Martial</span><a class="adc-f-case-val inline" data-action="openItem">{{this.name}}</a>
-        <a class="adc-f-btn adc-f-lancer" data-action="lancerSort" data-tooltip="Lancer le sort (Maj : sans fenêtre)"><i class="fa-solid fa-wand-sparkles"></i></a>
         <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></div>
       <div class="adc-f-pt"><b>Talent :</b> {{this.permNom}}</div>
       <div class="adc-f-pt long"><b class="n">Effets permanents :</b> {{this.permDesc}}</div>
@@ -213,19 +213,21 @@
     </div>
     {{else}}<div class="adc-f-vide large">Glissez ici : vos Arts martiaux</div>{{/each}}
   </div>
+  </div>
   <div class="adc-f-haut deux bas">
-    <div data-type="equipement">
-      <h2 class="adc-f-titre">Equipement</h2>
+    <div class="adc-f-repli" data-repli="equip" data-type="equipement">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="equip" data-tooltip="Cliquer pour replier / déplier">Équipement <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
       <ul class="adc-f-liste">{{#each sections.equipement.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : votre matériel</li>{{/each}}</ul>
     </div>
-    <div>
-      <h2 class="adc-f-titre">Richesse</h2>
+    <div class="adc-f-repli" data-repli="richesse">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="richesse" data-tooltip="Cliquer pour replier / déplier">Richesse <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
       <div class="adc-f-carac"><span class="adc-f-plain">Licornes d'Or</span><span class="adc-f-case-val"><input type="number" name="system.monnaie.or" value="{{system.monnaie.or}}" min="0"></span></div>
       <div class="adc-f-carac"><span class="adc-f-plain">Licornes d'Argent</span><span class="adc-f-case-val"><input type="number" name="system.monnaie.argent" value="{{system.monnaie.argent}}" min="0"></span></div>
       <div class="adc-f-carac"><span class="adc-f-plain">Licornes de Bronze</span><span class="adc-f-case-val"><input type="number" name="system.monnaie.bronze" value="{{system.monnaie.bronze}}" min="0"></span></div>
     </div>
   </div>
-  <h2 class="adc-f-titre large">Drogues &amp; dépendances</h2>
+  <div class="adc-f-repli" data-repli="drogues">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="drogues" data-tooltip="Cliquer pour replier / déplier">Drogues &amp; dépendances <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   <div class="adc-f-drogues" data-type="drogue">
     {{#each drogues}}
     <div class="adc-f-drogue" data-item-id="{{this.id}}" draggable="true">
@@ -241,13 +243,14 @@
     </div>
     {{else}}<div class="adc-f-vide large">Glissez ici : vos drogues</div>{{/each}}
   </div>
+  </div>
 </section>
 
 <!-- ====================== PAGE 4 : MAGIE ====================== -->
 <section class="adc-onglet tab adc-f-page" data-tab="magie">
   <div class="adc-f-haut deux">
-    <div>
-      <h2 class="adc-f-titre">Arts étranges <small class="adc-f-score2">{{derive.competences.artsEtranges.score}}</small></h2>
+    <div class="adc-f-repli" data-repli="arts-etranges">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="arts-etranges" data-tooltip="Cliquer pour replier / déplier">Arts étranges <small class="adc-f-score2">{{derive.competences.artsEtranges.score}}</small> <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
       <div class="adc-f-pt adc-f-academie"><b>ACADÉMIE MAGIQUE</b> <span>{{academie.nom}}</span>
         <select name="system.academie" data-tooltip="Choisir l'académie (vide : Eodh pour un Sorcier)">{{selectOptions academiesChoix selected=system.academie}}</select></div>
       {{#if academie.condition}}<div class="adc-f-pt"><b class="n">Condition :</b> {{academie.condition}}</div>{{/if}}
@@ -256,8 +259,8 @@
       <div class="adc-f-pt long"><b class="n">Sources enseignées :</b> {{academie.enseignees}}</div>
       <div class="adc-f-runes">{{#each runes}}<img src="{{this}}" alt="" onerror="this.remove()">{{/each}}</div>
     </div>
-    <div>
-      <h2 class="adc-f-titre">Mana <span class="adc-f-manatotal"><em>Total</em><input type="number" name="system.mana.value" value="{{system.mana.value}}" min="0"><i>/ {{system.mana.max}}</i></span></h2>
+    <div class="adc-f-repli" data-repli="mana">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="mana" data-tooltip="Cliquer pour replier / déplier">Mana <span class="adc-f-manatotal"><em>Total</em><input type="number" name="system.mana.value" value="{{system.mana.value}}" min="0"><i>/ {{system.mana.max}}</i></span> <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
       <div class="adc-f-ornement" style="background-image:url('{{assets}}/fiche/ornement.webp')"></div>
     </div>
   </div>
@@ -265,6 +268,7 @@
     {{#each sorts}}
     <div class="adc-f-sort" data-item-id="{{this.id}}" draggable="true">
       <div class="adc-f-artentete"><h3 class="adc-f-titre sous">Sort</h3><a class="adc-f-case-val inline" data-action="openItem">{{this.name}}</a>
+        <a class="adc-f-btn adc-f-lancer" data-action="lancerSort" data-tooltip="Lancer le sort (Maj : sans fenêtre)"><i class="fa-solid fa-wand-sparkles"></i></a>
         <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></div>
       <div class="adc-f-sortligne"><span class="adc-f-rond {{#if this.manaReduit}}reduit{{/if}}" {{#if this.manaReduit}}data-tooltip="Coût réduit par l'académie"{{/if}}>{{this.mana}}</span><span class="adc-f-etiq-fond">Mana</span><span class="adc-f-boite">Difficulté : {{this.difficulte}}</span><span class="adc-f-boite grand">T.I : {{this.incantation}}</span></div>
       <div class="adc-f-pt"><b>Portée :</b> {{this.portee}}</div>
