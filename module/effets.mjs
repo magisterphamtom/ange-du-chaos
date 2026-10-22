@@ -33,6 +33,14 @@ export const EFFETS = {
   "frappe d'acier": { degatsNaturelles: 2 },
   "insensible": { immunise: ["trouilleBleue"] },
   "marque de kashgar": { horsDestin: 1 },
+  // — Académies de magie (rang dérivé ; voir academies.mjs)
+  "academie:guelfe-blanche": { rang: { guerison: 1 } },
+  "academie:gar-vallon": { rang: { erudition: 1 }, mana: 3 },
+  "academie:pendarakh": { rang: { survie: 1 } },
+  "academie:claire-aube": { rang: { esquive: 1 } },
+  "academie:ambre": { rang: { artisanat: 1 } },
+  "academie:arbre-monde": { rang: { nature: 1 } },
+  "academie:tenebres": { rang: { intimidation: 1 } },
   // — Malédictions
   "naif": { handicap: ["sagacite"] }
 };
@@ -44,14 +52,14 @@ const val = (v, i) => (Array.isArray(v) ? (v[Math.min(i, v.length - 1)] ?? 0) : 
 export function cumulerEffets(noms, grade = "maraudeur") {
   const i = indexGrade(grade);
   const t = { endurance: 0, initiative: 0, degats: 0, degatsDistance: 0, degatsArc: 0, degatsNaturelles: 0, mouvement: 0,
-    protectionNaturelle: 0, protectionArmures: 0, encombrementArmures: 0, horsDestin: 0,
+    protectionNaturelle: 0, protectionArmures: 0, encombrementArmures: 0, horsDestin: 0, mana: 0,
     rang: {}, score: {}, handicap: [], ignoreEpuise: false, immunise: [], sources: [] };
   for (const nom of noms ?? []) {
     const e = EFFETS[norm(nom)];
     if (!e) continue;
     t.sources.push(nom);
     for (const k of ["endurance", "initiative", "degats", "degatsDistance", "degatsArc", "degatsNaturelles", "mouvement",
-      "protectionNaturelle", "protectionArmures", "encombrementArmures", "horsDestin"]) t[k] += val(e[k], i);
+      "protectionNaturelle", "protectionArmures", "encombrementArmures", "horsDestin", "mana"]) t[k] += val(e[k], i);
     for (const [c, n] of Object.entries(e.rang ?? {})) t.rang[c] = (t.rang[c] ?? 0) + val(n, i);
     for (const [c, n] of Object.entries(e.score ?? {})) t.score[c] = (t.score[c] ?? 0) + val(n, i);
     for (const c of e.handicap ?? []) if (!t.handicap.includes(c)) t.handicap.push(c);

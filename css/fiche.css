@@ -264,3 +264,5 @@
 .adc-pnj .adc-f-haut { grid-template-columns: 1.5fr 1fr 1fr; }
 .adc-pnj .adc-f-carac .adc-f-case-val { min-width: 74px; }
 .adc-pnj .adc-f-jauge .adc-f-case-val input { width: 3.2em; font-size: 22px !important; }
+.adc-f-academie select { margin-left: auto; font-size: 12px; max-width: 9em; }
+.adc-f-rond.reduit { color: #1c6a3a; font-weight: 800; }

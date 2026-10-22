@@ -9,6 +9,7 @@ import {
 } from "./config.mjs";
 import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
+import { ACADEMIES, FORTUNE_SOEUR_GRISE, academieDe, nomEffetAcademie } from "./academies.mjs";
 
 const f = foundry.data.fields;
 
@@ -51,6 +52,7 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
       }),
       maison: new f.StringField({ required: true, blank: true, initial: "", choices: { "": "—", ...Object.fromEntries(Object.entries(MAISONS).map(([k, v]) => [k, v.label])) } }),
       voie: new f.StringField({ required: true, blank: true, initial: "", choices: { "": "—", ...Object.fromEntries(Object.entries(VOIES).map(([k, v]) => [k, v.label])) } }),
+      academie: new f.StringField({ required: true, blank: true, initial: "", choices: { "": "—", ...Object.fromEntries(Object.entries(ACADEMIES).filter(([, a]) => !a.inaccessible).map(([k, a]) => [k, a.court])) } }),
       caracs: new f.SchemaField(caracs),
       competences: new f.SchemaField(competences),
       merite: entier(0, { min: 0 }),
@@ -80,8 +82,10 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
   prepareDerivedData() {
     const items = this.parent?.items ?? [];
     // Effets chiffrés des Talents, Fortunes et Malédictions possédés (au grade du personnage).
+    const objetsEffets = [...items].filter(it => ["talent", "fortune", "malediction"].includes(it.type)).map(it => it.name);
+    const academie = academieDe({ voie: this.voie, academie: this.academie, fortune: objetsEffets.find(n => n === FORTUNE_SOEUR_GRISE) ?? "" });
     const effets = cumulerEffets(
-      [...items].filter(it => ["talent", "fortune", "malediction"].includes(it.type)).map(it => it.name),
+      [...objetsEffets, nomEffetAcademie(academie)].filter(Boolean),
       gradeSelonMerite(this.merite ?? 0).id
     );
     let encombrement = 0;
@@ -106,6 +110,7 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
     d.protection = protectionMax + effets.protectionNaturelle;
     d.armureTropLourde = protectionBase > pre.competences.armures.score;
     d.effets = effets;
+    d.academie = academie;
     this.derive = d;
 
     // Plafonne les jauges à leur maximum.

@@ -245,7 +245,9 @@
   <div class="adc-f-haut deux">
     <div>
       <h2 class="adc-f-titre">Arts étranges <small class="adc-f-score2">{{derive.competences.artsEtranges.score}}</small></h2>
-      <div class="adc-f-pt adc-f-academie"><b>ACADÉMIE MAGIQUE</b> <span>{{academie.nom}}</span></div>
+      <div class="adc-f-pt adc-f-academie"><b>ACADÉMIE MAGIQUE</b> <span>{{academie.nom}}</span>
+        <select name="system.academie" data-tooltip="Choisir l'académie (vide : Eodh pour un Sorcier)">{{selectOptions academiesChoix selected=system.academie}}</select></div>
+      {{#if academie.condition}}<div class="adc-f-pt"><b class="n">Condition :</b> {{academie.condition}}</div>{{/if}}
       <div class="adc-f-pt long"><b class="n">Avantage :</b> {{academie.avantage}}</div>
       <div class="adc-f-pt long"><b class="n">Sources interdites :</b> {{academie.interdites}}</div>
       <div class="adc-f-pt long"><b class="n">Sources enseignées :</b> {{academie.enseignees}}</div>
@@ -261,7 +263,7 @@
     <div class="adc-f-sort" data-item-id="{{this.id}}" draggable="true">
       <div class="adc-f-artentete"><h3 class="adc-f-titre sous">Sort</h3><a class="adc-f-case-val inline" data-action="openItem">{{this.name}}</a>
         <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></div>
-      <div class="adc-f-sortligne"><span class="adc-f-rond">{{this.mana}}</span><span class="adc-f-etiq-fond">Mana</span><span class="adc-f-boite">Difficulté : {{this.difficulte}}</span><span class="adc-f-boite grand">T.I : {{this.incantation}}</span></div>
+      <div class="adc-f-sortligne"><span class="adc-f-rond {{#if this.manaReduit}}reduit{{/if}}" {{#if this.manaReduit}}data-tooltip="Coût réduit par l'académie"{{/if}}>{{this.mana}}</span><span class="adc-f-etiq-fond">Mana</span><span class="adc-f-boite">Difficulté : {{this.difficulte}}</span><span class="adc-f-boite grand">T.I : {{this.incantation}}</span></div>
       <div class="adc-f-pt"><b>Portée :</b> {{this.portee}}</div>
       <div class="adc-f-pt"><b>Cible :</b> {{this.cible}}</div>
       <div class="adc-f-pt"><b>Durée :</b> {{this.duree}}</div>

@@ -4,6 +4,7 @@
  */
 import { CARACS, COMPETENCES, MAISONS, VOIES } from "./config.mjs";
 import { cumulerEffets } from "./effets.mjs";
+import { ACADEMIES, ACADEMIES_CHOISISSABLES, FORTUNE_ACADEMIE, academieDe, nomEffetAcademie } from "./academies.mjs";
 import { FORMATION_BASE_COMP, COMP_MAISONS, COMP_VOIES } from "./formations.mjs";
 
 export const ETAPES = [
@@ -21,7 +22,7 @@ export const ETAPES = [
 export const REGLES = {
   caracDepart: 4, caracPoints: 15, caracMaxCreation: 7, caracMaxMerite: 10,
   ptsMaison: 20, maxMaison: 7, ptsBase: 20, maxBase: 7, ptsVoie: 20, maxVoie: 9, ptsLibres: 20, maxLibres: 9,
-  merite: 15, armesDepart: 4, sortsSorcier: 5, sourcesSorcier: ["Éléments", "Cycles", "Ombres"]
+  merite: 15, armesDepart: 4, sortsSorcier: 5
 };
 
 const zero = (cles) => Object.fromEntries(cles.map(k => [k, 0]));
@@ -45,7 +46,9 @@ export const FORTUNE_RICHESSE = "Richesse";
 export const CHOIX_GUERRIER = ["esquive", "lames1", "armesDHast", "corpsACorps", "lames2", "massesEtHaches"];
 export const ARMURE_DEPART = "Cuir gras";
 /** Brouillons enregistrés avant l'ajout de Guerrier né / équipement : champs manquants. */
-export function normaliser(e) { e.guerrierNe ??= []; e.armes ??= []; return e; }
+export function normaliser(e) { e.guerrierNe ??= []; e.armes ??= []; e.academie ??= ""; return e; }
+/** Académie effective du brouillon : Eodh par défaut (Sorcier), celle de la Fortune « Académie magique », Claire-Aube pour une Sœur grise. */
+export const academieEff = (e) => academieDe({ voie: e.voie, academie: e.fortune === FORTUNE_ACADEMIE ? e.academie : "", fortune: e.fortune });
 export const estLoki = (e) => e.maison === "loki";
 export const estSorcier = (e) => e.voie === "sorcier";
 export const somme = (o) => Object.values(o ?? {}).reduce((a, b) => a + (Number(b) || 0), 0);
@@ -64,8 +67,8 @@ export function rangs(e, jusqua = "merite") {
     if (phase === jusqua) return r;
   }
   for (const [k, v] of Object.entries(e.merite.comps)) r[k] += Number(v) || 0;
-  // Sorcier (académie d'Eodh) : +1 rang en Beau-parleur.
-  if (estSorcier(e)) r.beauParleur += 1;
+  // Sorcier de l'académie d'Eodh (par défaut) : +1 rang en Beau-parleur.
+  if (estSorcier(e) && academieEff(e) === "eodh") r.beauParleur += 1;
   // Fortune « Guerrier né » : +1 rang dans trois compétences d'armes au choix.
   if (e.fortune === FORTUNE_GUERRIER && !estLoki(e)) for (const k of e.guerrierNe ?? []) r[k] += 1;
   return r;
@@ -89,7 +92,7 @@ export function coutMerite(e) {
   let total = 0;
   const base = rangs(e, "libres");
   for (const [k, n] of Object.entries(e.merite.comps)) {
-    let r = base[k] + (estSorcier(e) && k === "beauParleur" ? 1 : 0);
+    let r = base[k] + (estSorcier(e) && academieEff(e) === "eodh" && k === "beauParleur" ? 1 : 0);
     for (let i = 0; i < n; i++) { total += coutRang(r); r++; }
   }
   total += 5 * somme(e.merite.caracs) + 5 * (e.merite.nexus || 0) + 3 * e.merite.arts.length + 3 * e.merite.sorts.length;
@@ -149,6 +152,8 @@ export function erreursEtape(e, n, contenu = {}) {
     case 5:
       if (!estLoki(e) && !e.fortune) err.push("Choisis une Fortune.");
       if (!e.malediction && !estLoki(e)) err.push("Choisis une Malédiction.");
+      if (e.fortune === FORTUNE_ACADEMIE && !estSorcier(e)) err.push("La Fortune Académie magique est réservée à la Voie du Sorcier.");
+      else if (e.fortune === FORTUNE_ACADEMIE && !ACADEMIES_CHOISISSABLES.includes(e.academie)) err.push("Académie magique : choisis une académie.");
       if (e.fortune === FORTUNE_GUERRIER && (e.guerrierNe ?? []).length !== 3) err.push(`Guerrier né : choisis 3 compétences (${(e.guerrierNe ?? []).length}/3).`);
       break;
     case 6:
@@ -182,7 +187,7 @@ export function appliquer(e, contenu, docsItems) {
   const update = {
     name: e.infos.nom.trim() || "Agent du Chaos",
     system: {
-      maison: e.maison, voie: e.voie,
+      maison: e.maison, voie: e.voie, academie: estSorcier(e) && e.fortune === FORTUNE_ACADEMIE ? e.academie : "",
       caracs: Object.fromEntries(Object.keys(CARACS).map(k => [k, { base: cb[k] }])),
       competences: Object.fromEntries(Object.keys(COMPETENCES).map(k => [k, { rang: r[k] }])),
       merite: REGLES.merite,
@@ -238,7 +243,8 @@ export function bonusCaracsDe(e) {
 export function nomsAvecEffets(e, contenu = {}) {
   const voie = nomVoie(contenu, e.voie);
   const talents = (contenu.talents ?? []).filter(t => (e.talentsMaison ?? []).includes(t.nom) || (voie && t.origine === voie)).map(t => t.nom);
-  return [...talents, ...(!estLoki(e) && e.fortune ? [e.fortune] : []), ...(estLoki(e) ? ["Esprit protecteur"] : e.malediction ? [e.malediction] : [])];
+  const acad = estSorcier(e) ? nomEffetAcademie(academieEff(e)) : null;
+  return [...talents, ...(acad ? [acad] : []), ...(!estLoki(e) && e.fortune ? [e.fortune] : []), ...(estLoki(e) ? ["Esprit protecteur"] : e.malediction ? [e.malediction] : [])];
 }
 
 export function traitsDe(e, deriver, contenu = {}) {
@@ -340,8 +346,12 @@ export function agir(e, act, d = {}, contenu = {}) {
       if (["fortune", "malediction", "art"].includes(d.champ)) {
         e[d.champ] = d.val;
         if (d.champ === "fortune" && d.val !== FORTUNE_GUERRIER) e.guerrierNe = [];
+        if (d.champ === "fortune" && d.val !== FORTUNE_ACADEMIE) { e.academie = ""; }
         if (d.champ === "art") e.merite.arts = e.merite.arts.filter(x => x !== d.val);
       }
+      break;
+    case "academie":
+      if (e.fortune === FORTUNE_ACADEMIE && ACADEMIES_CHOISISSABLES.includes(d.val) && e.academie !== d.val) { e.academie = d.val; e.sorts = []; e.merite.sorts = []; }
       break;
     case "info":
       if (d.cle in e.infos) e.infos[d.cle] = d.val;

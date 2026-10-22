@@ -10,6 +10,7 @@ import {
 
 import { appliquerOnglet } from "./onglets.mjs";
 import { lancerTest } from "../rolls.mjs";
+import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
 
@@ -363,10 +364,11 @@ export class PersonnageSheet extends BaseActorSheet {
       rarete: i.system.rarete, prix: i.system.prix, inoculation: i.system.inoculation, effets: txt(i.system.effets, 220),
       duree: i.system.duree, manque: i.system.manque
     }));
+    const idAcademieSorts = this.actor.system.derive?.academie ?? academieDe({ voie: this.actor.system.voie, academie: this.actor.system.academie });
     const sorts = de("sort")
       .sort((a, b) => Object.keys(NIVEAUX_SORT).indexOf(a.system.niveau) - Object.keys(NIVEAUX_SORT).indexOf(b.system.niveau))
       .map(i => ligne(i, {
-        mana: i.system.mana, difficulte: i.system.difficulte || "var.", incantation: i.system.incantation,
+        mana: coutMana(idAcademieSorts, i.system.source, i.system.mana).mana, manaReduit: coutMana(idAcademieSorts, i.system.source, i.system.mana).reduit, difficulte: i.system.difficulte || "var.", incantation: i.system.incantation,
         portee: i.system.portee, cible: i.system.cible, duree: i.system.duree, effet: txt(i.system.effet, 300)
       }));
 
@@ -374,15 +376,17 @@ export class PersonnageSheet extends BaseActorSheet {
     const voie = de("voie")[0];
     const voieTalent = voie ? String(voie.system.talent ?? "").replace(/<h3>.*?<\/h3>/i, "") : "";
 
-    // Académie magique (Sorcier : Eodh).
-    const sorcier = this.actor.system.voie === "sorcier";
-    const academie = sorcier
-      ? { nom: "Eodh", avantage: "+1 rang en Beau-parleur", enseignees: "Éléments, Cycles, Ombres", interdites: "Sylve, Sang, Inanimé, Lumière" }
-      : { nom: "", avantage: "", enseignees: "", interdites: "" };
+    // Académie magique : choix de la fiche, sinon Eodh (Sorcier) ; avantages et sources selon le livre (p. 149-150).
+    const idAcademie = idAcademieSorts;
+    const A = ACADEMIES[idAcademie];
+    const academie = A
+      ? { id: idAcademie, nom: A.nom, avantage: A.avantage, enseignees: A.enseignees.join(", "), interdites: A.interdites.join(", ") || "Aucune", condition: A.condition ?? "" }
+      : { id: "", nom: "", avantage: "", enseignees: "", interdites: "", condition: "" };
+    const academiesChoix = { "": "— (par défaut)", ...Object.fromEntries(Object.entries(ACADEMIES).filter(([, a]) => !a.inaccessible).map(([k, a]) => [k, a.court])) };
 
     return {
       blocsTraits, etatsFiche, armes, armureLoc, arts, drogues, sorts, voieLigne: voie ? { name: voie.name } : null,
-      voieTalent, academie, sections: secs
+      voieTalent, academie, academiesChoix, sections: secs
     };
   }
 

@@ -127,7 +127,7 @@ export function deriver(src, ctx = {}) {
   out.initiative = out.competences.artsDuCombat.score + (b.initiative ?? 0) + (fx.initiative ?? 0) - enc;
   out.mouvement = mouvement(out.caracs.ref.valeur, out.caracs.pui.valeur, enc) + (b.mouvement ?? 0) + (fx.mouvement ?? 0);
   out.defensePassive = out.competences.esquive.score + (b.defense ?? 0) + (ctx.bonusDefense ?? 0) - enc;
-  out.manaMax = manaMax(out.competences.artsEtranges.score) + (b.mana ?? 0);
+  out.manaMax = manaMax(out.competences.artsEtranges.score) + (b.mana ?? 0) + (fx.mana ?? 0);
 
   const grade = gradeSelonMerite(src.merite ?? 0);
   out.grade = grade.id;

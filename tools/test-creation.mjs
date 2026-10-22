@@ -1,4 +1,5 @@
 // Banc d'essai de l'assistant de création (logique pure). Usage : node tools/test-creation.mjs [contenu.json]
+import { ACADEMIES } from "../module/academies.mjs";
 import fs from "node:fs";
 import { agir, etatInitial, erreursEtape, rangs, coutMerite, coutRang, caracsBase, appliquer, REGLES, aPlat, listeMaison, listeVoie } from "../module/creation-data.mjs";
 import { FORMATION_BASE_COMP } from "../module/formations.mjs";
@@ -97,7 +98,7 @@ if (fs.existsSync(chemin)) {
   // Sorcier : 5 sorts + 3 communs
   const f = etatInitial(); f.voie = "sorcier"; f.maison = "eodh";
   t(erreursEtape(f, 6).length === 2, "sorcier : art + sorts requis");
-  f.art = "Wush’in"; f.sorts = c.sorts.filter(x => x.niveau === "apprenti" && REGLES.sourcesSorcier.includes(x.source)).slice(0, 5).map(x => x.nom);
+  f.art = "Wush’in"; f.sorts = c.sorts.filter(x => x.niveau === "apprenti" && ACADEMIES.eodh.enseignees.includes(x.source)).slice(0, 5).map(x => x.nom);
   t(f.sorts.length === 5 && erreursEtape(f, 6).length === 0, "sorcier étape 6 : " + erreursEtape(f, 6));
   f.infos.nom = "Syl";
   const r = appliquer(f, c, documentsItems);

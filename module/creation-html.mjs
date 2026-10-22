@@ -5,8 +5,9 @@ import { CARACS, COMPETENCES, MAISONS, VOIES } from "./config.mjs";
 import { FORMATION_BASE_COMP, COMP_MAISONS, COMP_VOIES } from "./formations.mjs";
 import {
   ETAPES, REGLES, erreursEtape, rangs, caracsBase, coutMerite, coutRang, estLoki, estSorcier, somme,
-  bonusCaracsDe, traitsDe, listeMaison, listeVoie, aPlat, FORTUNE_GUERRIER, CHOIX_GUERRIER, normaliser, nomsAvecEffets, ARMURE_DEPART
+  bonusCaracsDe, traitsDe, listeMaison, listeVoie, aPlat, FORTUNE_GUERRIER, CHOIX_GUERRIER, normaliser, nomsAvecEffets, ARMURE_DEPART, academieEff
 } from "./creation-data.mjs";
+import { ACADEMIES, ACADEMIES_CHOISISSABLES, FORTUNE_ACADEMIE, sourceEnseignee } from "./academies.mjs";
 import { deriver } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
 
@@ -116,8 +117,17 @@ function etape5(e, c) {
   const esp = (c.maledictions ?? []).find(x => x.nom === "Esprit protecteur");
   return `<p>Une Fortune et une Malédiction définissent ce qui distingue ton agent.</p>
     <h4>Fortune</h4>${loki ? "<p><em>Un personnage Loki ne peut pas choisir de Fortune.</em></p>" : selection("fortune", fortunes, e.fortune, "— Choisir une Fortune —")}
+    ${!loki && e.fortune === FORTUNE_ACADEMIE ? academieChoix(e) : ""}
     ${!loki && e.fortune === FORTUNE_GUERRIER ? `<h4>Guerrier né <small>+1 rang dans 3 compétences (${e.guerrierNe.length}/3)</small></h4><div class="adc-asst-choix">${CHOIX_GUERRIER.map(k => `<button type="button" class="adc-asst-carte ${e.guerrierNe.includes(k) ? "choisi" : ""}" data-act="guerrier" data-val="${k}"><strong>${esc(lbl(k))}</strong></button>`).join("")}</div>` : ""}
     <h4>Malédiction</h4>${loki ? `<p><strong>Esprit protecteur</strong> (obligatoire).</p><div class="adc-asst-texte">${esc(esp?.description)}</div>` : selection("malediction", mal, e.malediction, "— Choisir une Malédiction —")}`;
+}
+
+function academieChoix(e) {
+  if (!estSorcier(e)) return `<p class="adc-asst-alerte">Cette Fortune est réservée à la Voie du Sorcier.</p>`;
+  return `<h4>Académie magique <small>avantages et sources de l'académie choisie, à la place d'Eodh</small></h4><div class="adc-asst-choix">${ACADEMIES_CHOISISSABLES.map(k => {
+    const a = ACADEMIES[k];
+    return `<button type="button" class="adc-asst-carte large ${e.academie === k ? "choisi" : ""}" data-act="academie" data-val="${k}"><strong>${esc(a.nom)}</strong><small>${esc(a.avantage)} · enseigne : ${esc(a.enseignees.join(", "))} · interdit : ${esc(a.interdites.join(", ") || "aucune")}</small></button>`;
+  }).join("")}</div>`;
 }
 
 function artDescr(a) {
@@ -130,10 +140,11 @@ function etape6(e, c) {
   const a = arts.find(x => x.nom === e.art);
   let sorts = "";
   if (estSorcier(e)) {
-    const dispo = (c.sorts ?? []).filter(s => s.niveau === "apprenti" && REGLES.sourcesSorcier.includes(s.source));
+    const ac = ACADEMIES[academieEff(e)];
+    const dispo = (c.sorts ?? []).filter(s => s.niveau === "apprenti" && ac && sourceEnseignee(academieEff(e), s.source) && s.source !== "Communs");
     const par = {};
     for (const s of dispo) (par[s.source] ??= []).push(s);
-    sorts = `<h4>Sorts d'Apprenti <small>${e.sorts.length}/${REGLES.sortsSorcier} · sources de l'académie d'Eodh · les 3 sorts communs sont acquis</small></h4>` +
+    sorts = `<h4>Sorts d'Apprenti <small>${e.sorts.length}/${REGLES.sortsSorcier} · ${esc(ac?.nom ?? "")} (${esc((ac?.enseignees ?? []).join(", "))}) · les 3 sorts communs sont acquis</small></h4>` +
       Object.entries(par).map(([src, l]) => `<div class="adc-asst-groupe"><h5>Source : ${esc(src)}</h5><div class="adc-asst-choix">${l.map(s => `<button type="button" class="adc-asst-carte ${e.sorts.includes(s.nom) ? "choisi" : ""}" data-act="sort" data-val="${esc(s.nom)}"><strong>${esc(s.nom)}</strong><small>${s.mana} mana · ND ${s.difficulte || "var."}</small></button>`).join("")}</div></div>`).join("");
   }
   return `<p>L'Art martial personnalise ton style de combat.</p><h4>Art martial</h4>
@@ -159,8 +170,8 @@ function etape7(e, c) {
   let sorts = "";
   if (estSorcier(e)) {
     const pris = new Set([...e.sorts, ...e.merite.sorts]);
-    const dispo = (c.sorts ?? []).filter(s => s.niveau === "apprenti" && s.source !== "Communs" && s.source !== "Sang" && !pris.has(s.nom) || e.merite.sorts.includes(s.nom));
-    sorts = `<h4>Sorts d'Apprenti supplémentaires <small>3 points chacun (hors sources interdites par l'académie d'Eodh)</small></h4><div class="adc-asst-choix">${dispo.map(s => `<button type="button" class="adc-asst-carte ${e.merite.sorts.includes(s.nom) ? "choisi" : ""}" data-act="meriteSort" data-val="${esc(s.nom)}"><strong>${esc(s.nom)}</strong><small>${esc(s.source)}</small></button>`).join("")}</div>`;
+    const dispo = (c.sorts ?? []).filter(s => s.niveau === "apprenti" && s.source !== "Communs" && sourceEnseignee(academieEff(e), s.source) && !pris.has(s.nom) || e.merite.sorts.includes(s.nom));
+    sorts = `<h4>Sorts d'Apprenti supplémentaires <small>3 points chacun (sources enseignées par ${esc(ACADEMIES[academieEff(e)]?.nom ?? "l'académie")})</small></h4><div class="adc-asst-choix">${dispo.map(s => `<button type="button" class="adc-asst-carte ${e.merite.sorts.includes(s.nom) ? "choisi" : ""}" data-act="meriteSort" data-val="${esc(s.nom)}"><strong>${esc(s.nom)}</strong><small>${esc(s.source)}</small></button>`).join("")}</div>`;
   }
   const nx = e.merite.nexus || 0;
   return `<p>Tu disposes de ${REGLES.merite} points de Mérite. Rang +1 : 1 point jusqu'au rang 6, 2 points jusqu'au rang 9, 3 points pour le rang de Maître (10). Caractéristique ou Nexus +1 : 5 points.</p>
