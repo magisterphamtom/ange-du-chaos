@@ -159,11 +159,11 @@
         <tbody>
         {{#each armes}}
         <tr data-item-id="{{this.id}}" draggable="true">
-          <td><img class="adc-f-ico" src="{{this.img}}" alt="" data-action="openItem"> <a class="adc-f-nom" data-action="openItem">{{this.name}}</a></td>
+          <td><span class="adc-f-cellnom"><img class="adc-f-ico" src="{{this.img}}" alt="" data-action="openItem"><a class="adc-f-nom" data-action="openItem">{{this.name}}</a></span></td>
           <td>{{this.degats}}</td><td>{{this.capacites}}</td>
-          <td class="adc-f-btns"><a class="adc-f-btn" data-action="attaquer" data-tooltip="Attaquer"><i class="fa-solid fa-khanda"></i></a>
+          <td class="adc-f-cellbtns"><span class="adc-f-btns"><a class="adc-f-btn" data-action="attaquer" data-tooltip="Attaquer"><i class="fa-solid fa-khanda"></i></a>
             <a class="adc-f-btn {{#if this.equipee}}actif{{/if}}" data-action="toggleEquip" data-tooltip="{{#if this.equipee}}Équipée{{else}}Non équipée{{/if}}"><i class="fa-solid fa-shield-halved"></i></a>
-            <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></td>
+            <a class="adc-f-btn" data-action="deleteItem" data-tooltip="Supprimer"><i class="fa-solid fa-trash"></i></a></span></td>
         </tr>
         {{else}}<tr><td colspan="4" class="adc-f-vide">Glissez ici : vos armes</td></tr>{{/each}}
         </tbody></table>
