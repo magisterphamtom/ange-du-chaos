@@ -69,7 +69,6 @@
 .adc-feuille .adc-f-titre.petit { font-size: 22px !important; }
 .adc-feuille .adc-f-titre.large { margin-top: 14px; }
 .adc-feuille .adc-f-titre.sous { font-size: 19px !important; color: var(--f-sous) !important; min-height: 26px; margin-top: 8px; }
-.adc-f-paliers { margin-left: auto; display: flex; gap: 14px; font: italic 11px var(--f-corps); text-transform: uppercase; letter-spacing: 0.04em; color: var(--f-encre); }
 .adc-f-score2 { margin-left: auto; font: 700 18px var(--f-corps); color: var(--f-encre); }
 .adc-feuille .adc-f-titre .inline, .adc-f-case-val.inline { margin-left: auto; }
 
@@ -146,7 +145,7 @@
 
 /* ---- Compétences ---- */
 .adc-f-complist { list-style: none; margin: 0; padding: 0; }
-.adc-f-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; min-height: 22px; padding: 1px 0; }
+.adc-f-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto 86px; align-items: center; gap: 6px; min-height: 22px; padding: 1px 0; }
 .adc-f-compnom { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .adc-f-comp.inapte .adc-f-compnom { opacity: 0.6; }
 .adc-f-cases { display: inline-flex; }
@@ -220,3 +219,15 @@
 
 /* ---- Glisser-déposer : repère de dépôt ---- */
 .adc-feuille [data-type].adc-depot { outline: 2px dashed #7a1f1f; outline-offset: 2px; }
+
+/* Intitulés de rang inclinés au-dessus des colonnes de cases (comme sur la fiche imprimée) */
+.adc-f-palierhaut { display: grid; grid-template-columns: minmax(0, 1fr) auto 86px; height: 62px; align-items: end; margin-bottom: 2px; }
+.adc-f-palierhaut .adc-f-paliers { grid-column: 2; position: relative; display: flex; align-items: flex-end; height: 100%; }
+.adc-f-palierhaut i { position: relative; display: block; height: 100%; font-style: normal; }
+.adc-f-palierhaut i.g1, .adc-f-palierhaut i.g2, .adc-f-palierhaut i.g3 { width: 48px; }
+.adc-f-palierhaut i.g4 { width: 14px; }
+.adc-f-palierhaut em {
+  position: absolute; left: 4px; bottom: 2px; transform-origin: 0 100%; transform: rotate(-58deg); white-space: nowrap;
+  font: 400 15px/1 var(--f-titre); color: var(--f-encre); letter-spacing: 0.02em;
+}
+.adc-f-palierhaut em::first-letter { font-family: var(--f-cap); font-size: 1.15em; }

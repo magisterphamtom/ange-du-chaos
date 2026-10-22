@@ -93,10 +93,11 @@
     </div>
   </div>
 
-  <h2 class="adc-f-titre large">Compétences <span class="adc-f-paliers"><i>Novice</i><i>Entraîné</i><i>Expert</i><i>Maître</i></span></h2>
+  <h2 class="adc-f-titre large">Compétences</h2>
   <div class="adc-f-comps">
     {{#each colonnesComp}}
     <div class="adc-f-compcol">
+      <div class="adc-f-palierhaut" aria-hidden="true"><span class="adc-f-paliers"><i class="g1"><em>Novice</em></i><i class="g2"><em>Entraîné</em></i><i class="g3"><em>Expert</em></i><i class="g4"><em>Maître</em></i></span></div>
       {{#each this}}
       <h3 class="adc-f-titre sous">{{this.label}}</h3>
       <ul class="adc-f-complist">
