@@ -9,6 +9,7 @@ import { donneesDes } from "./des3d.mjs";
 import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML } from "./sorts.mjs";
 import { academieDe } from "./academies.mjs";
 import { estSortDeSoin } from "./drogues.mjs";
+import { niveauPermis } from "./progression.mjs";
 
 const { DialogV2 } = foundry.applications.api;
 
@@ -74,6 +75,8 @@ export async function lancerTest(actor, type, cle, { rapide = false, sort = null
   const surEndurance = !!dr.sortEndurance;
   const manaActeur = surEndurance ? (actor.system.endurance?.value ?? 0) : (actor.system.mana?.max ? actor.system.mana.value : null);
   if (sort) {
+    const gradeActeur = actor.system.derive?.grade;
+    if (actor.type === "personnage" && gradeActeur && sort.niveau && !niveauPermis(gradeActeur, sort.niveau)) { ui.notifications.warn(`${actor.name} n'a pas le grade pour un sort ${sort.niveau === "expert" ? "d'Expert (Capitaine-Maraudeur)" : "de Maître (Ombre du Chaos)"}.`); return null; }
     if (dr.sortBloque) { ui.notifications.warn(`${actor.name} est sous Mithass noir : impossible de lancer un sort.`); return null; }
     if (dr.sortSansSoin && estSortDeSoin(sort)) { ui.notifications.warn(`${actor.name} est sous Brume-Feu : aucun sort de soin n'est possible.`); return null; }
     const acad = actor.system.derive?.academie ?? academieDe({ voie: actor.system.voie, academie: actor.system.academie });

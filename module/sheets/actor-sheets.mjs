@@ -16,6 +16,7 @@ import { attaquer } from "../attaque.mjs";
 import { esc } from "../rolls-html.mjs";
 import { decrireCompetence } from "../competence-info.mjs";
 import { tenterRemede } from "../etats.mjs";
+import { ouvrirProgression } from "../progression-ui.mjs";
 import { FICHES_ETATS } from "../etats-tour.mjs";
 import { etatVide, ndDrogue, prendreDose, terminer, finPositif, basculerManque, appliquerSevrage, trouverDrogue } from "../drogues.mjs";
 
@@ -57,6 +58,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       lancerSort: BaseActorSheet.#lancerSort,
       infoCompetence: BaseActorSheet.#infoCompetence,
       remedeEtat: BaseActorSheet.#remedeEtat,
+      progression: BaseActorSheet.#progression,
       prendreDrogue: BaseActorSheet.#prendreDrogue,
       finDrogue: BaseActorSheet.#finDrogue,
       finPositifDrogue: BaseActorSheet.#finPositifDrogue,
@@ -136,10 +138,13 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const sys = it.system;
     await lancerTest(this.actor, "competence", "artsEtranges", {
       rapide: event.shiftKey,
-      sort: { nom: it.name, source: sys.source, mana: sys.mana, difficulte: sys.difficulte, portee: sys.portee, cible: sys.cible, duree: sys.duree, incantation: sys.incantation, effet: String(sys.effet ?? "").replace(/<[^>]*>/g, "") }
+      sort: { nom: it.name, niveau: sys.niveau, source: sys.source, mana: sys.mana, difficulte: sys.difficulte, portee: sys.portee, cible: sys.cible, duree: sys.duree, incantation: sys.incantation, effet: String(sys.effet ?? "").replace(/<[^>]*>/g, "") }
     });
   }
 
+
+  /** Fenêtre d'achats au Mérite. */
+  static async #progression() { await ouvrirProgression(this.actor); }
 
   /** Tente de se défaire d'un état (test et ND du livre). */
   static async #remedeEtat(event, target) {

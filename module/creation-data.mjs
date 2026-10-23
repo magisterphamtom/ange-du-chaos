@@ -191,6 +191,7 @@ export function appliquer(e, contenu, docsItems) {
       caracs: Object.fromEntries(Object.keys(CARACS).map(k => [k, { base: cb[k] }])),
       competences: Object.fromEntries(Object.keys(COMPETENCES).map(k => [k, { rang: r[k] }])),
       merite: REGLES.merite,
+      meriteDepense: coutMerite(e),
       identite: { genre: e.infos.genre, age: e.infos.age, taille: e.infos.taille, poids: e.infos.poids, cheveux: e.infos.cheveux, yeux: e.infos.yeux, peau: e.infos.peau },
       biographie: {
         historique: paragraphes(e.infos.historique), physionomie: paragraphes(e.infos.physionomie), personnalite: paragraphes(e.infos.personnalite)

@@ -126,6 +126,8 @@
       <div class="adc-f-merite"><h2 class="adc-f-titre">Mérite</h2>
         <span class="adc-f-case-val m"><label>Total = <input type="number" name="system.merite" value="{{system.merite}}" min="0"></label></span>
         <span class="adc-f-grade">{{derive.gradeLabel}}</span></div>
+      <div class="adc-f-progrow"><a class="adc-f-remede adc-f-progres" data-action="progression" data-tooltip="Dépenser du Mérite : compétences, caractéristiques, Nexus, Arts martiaux, sorts">Progression : {{adcDispo system.merite system.meriteDepense}} à dépenser</a>
+        <label class="adc-f-depense" data-tooltip="Mérite déjà dépensé (créer un personnage le remplit ; à régler à la main pour un personnage plus ancien)">Dépensé <input type="number" name="system.meriteDepense" value="{{system.meriteDepense}}" min="0"></label></div>
       <div class="adc-f-filigrane" style="background-image:url('{{assets}}/fiche/filigrane.webp')"></div>
       <div class="adc-f-traits">
         <div class="adc-f-carac"><span class="adc-f-sous">Encombrement</span><span class="adc-f-case-val {{#if derive.armureTropLourde}}epuise{{/if}}"><b>{{derive.encombrement}}</b></span></div>

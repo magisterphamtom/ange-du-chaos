@@ -57,6 +57,7 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
       caracs: new f.SchemaField(caracs),
       competences: new f.SchemaField(competences),
       merite: entier(0, { min: 0 }),
+      meriteDepense: entier(0, { min: 0 }),
       endurance: jauge(10),
       mana: jauge(0),
       nexus: new f.SchemaField({ value: entier(NEXUS_DEPART, { min: 0 }), max: entier(NEXUS_DEPART, { min: 0 }) }),

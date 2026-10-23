@@ -5,6 +5,7 @@
  */
 
 import { initialiserEtats } from "./etats.mjs";
+import { initialiserProgression } from "./progression-ui.mjs";
 import { SYSTEM_ID, ETATS, adversaireDe } from "./config.mjs";
 import { ACTOR_MODELS, ITEM_MODELS } from "./datamodels.mjs";
 import { PersonnageSheet, PnjSheet, CreatureSheet } from "./sheets/actor-sheets.mjs";
@@ -84,6 +85,7 @@ Hooks.once("init", () => {
   // --- Combat : attaque, réactions, dégâts, états, initiative -----------------
   initialiserCombat();
   initialiserEtats();
+  initialiserProgression();
 
   // --- Contenu du livre (objets, sorts, bestiaire) créé à l'ouverture du monde ---
   enregistrerReglagesContenu();
@@ -93,6 +95,7 @@ Hooks.once("init", () => {
   initialiserCreation();
 
   // --- Helpers Handlebars ----------------------------------------------------
+  Handlebars.registerHelper("adcDispo", (m, d) => Math.max(0, Number(m ?? 0) - Number(d ?? 0)));
   Handlebars.registerHelper("adcEq", (a, b) => a === b);
   Handlebars.registerHelper("adcGt", (a, b) => Number(a) > Number(b));
   Handlebars.registerHelper("adcSigne", n => (Number(n) > 0 ? `+${n}` : `${n}`));
