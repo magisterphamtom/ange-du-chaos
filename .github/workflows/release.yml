@@ -1,7 +1,7 @@
 name: Release
 on:
-  push:
-    tags: ["v*.*.*"]
+  release:
+    types: [published]
 permissions:
   contents: write
 jobs:
@@ -9,11 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Construire le zip (dossier ange-du-chaos/)
+      - name: Mettre à jour version et téléchargement dans system.json
         run: |
-          mkdir -p dist/ange-du-chaos
-          rsync -a --exclude '.git' --exclude '.github' --exclude 'dist' --exclude 'node_modules' ./ dist/ange-du-chaos/
-          cd dist && zip -r ../ange-du-chaos.zip ange-du-chaos
+          V="${GITHUB_REF_NAME#v}"
+          jq --arg v "$V" --arg d "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/ange-du-chaos.zip" \
+            '.version = $v | .download = $d' system.json > system.tmp && mv system.tmp system.json
+      - name: Construire le zip (fichiers à la racine)
+        run: zip -r ange-du-chaos.zip . -x '.git/*' '.github/*' 'node_modules/*' '*.zip'
       - uses: softprops/action-gh-release@v2
         with:
-          files: ange-du-chaos.zip
+          files: |
+            system.json
+            ange-du-chaos.zip
