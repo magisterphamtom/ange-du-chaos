@@ -21,12 +21,12 @@ export function documentsItems(c) {
   const add = (type, chemin, name, system, extra = {}) => out.push({ doc: "Item", chemin, data: { name, type, img: iconeObjet(type, system, name), system, ...extra } });
 
   for (const a of c.armes ?? []) {
-    add("arme", ["Armes", a.categorie === "tir" ? "À distance" : "De contact"], a.nom, {
+    add("arme", ["Armes", a.unique ? "Armes magiques uniques" : a.categorie === "tir" ? "À distance" : "De contact"], a.nom, {
       categorie: a.categorie, competence: a.competence, degats: a.degats || "",
       typeDegats: TYPES.has(a.typeDegats) ? a.typeDegats : "I", capacites: a.capacites || "",
       puissanceRequise: a.puissanceRequise || 0, porteeEffective: a.porteeEffective || "", porteeMax: a.porteeMax || "",
-      disponibilite: dispo(a.disponibilite), cout: a.cout || "", description: ""
-    });
+      disponibilite: dispo(a.disponibilite), cout: a.cout || "", description: para(a.description)
+    }, a.runes?.length ? { flags: { "ange-du-chaos": { runesIncluses: a.runes } } } : {});
   }
   for (const a of c.armures ?? []) {
     add("armure", ["Armures"], a.nom, {

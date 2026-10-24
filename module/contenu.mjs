@@ -63,7 +63,7 @@ export async function creerContenu({ confirmer = false } = {}) {
   const par = { Item: [], Actor: [] };
   for (const d of docs) {
     const folder = dossiers.get(JSON.stringify([d.doc, ...d.chemin]));
-    par[d.doc].push({ ...d.data, folder, flags: flags() });
+    par[d.doc].push({ ...d.data, folder, flags: { [SYSTEM_ID]: { ...(d.data.flags?.[SYSTEM_ID] ?? {}), contenu: true } } });
   }
   await Item.createDocuments(par.Item);
   await Actor.createDocuments(par.Actor);

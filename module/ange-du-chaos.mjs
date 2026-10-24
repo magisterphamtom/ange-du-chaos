@@ -52,6 +52,25 @@ Hooks.once("init", () => {
     item.updateSource({ img: iconeObjet(item.type, data.system ?? {}, data.name ?? item.name) });
   });
 
+  // --- Armes magiques uniques : leurs runes sont créées avec l'arme sur la fiche ----------
+  Hooks.on("createItem", async (item, options, userId) => {
+    try {
+      if (userId !== game.user.id || item.type !== "arme" || !item.parent?.items) return;
+      const incluses = item.getFlag(SYSTEM_ID, "runesIncluses");
+      if (!incluses?.length) return;
+      const { RUNES, RANGS_RUNE, EMPLACEMENTS } = await import("./runes.mjs");
+      const modeles = [...item.parent.items, ...game.items].filter(i => i.type === "rune");
+      const crees = [];
+      for (const { cle, rang } of incluses) {
+        if (item.parent.items.some(i => i.type === "rune" && i.system.objetId === item.id && i.system.cle === cle && i.system.rang === rang)) continue;
+        const nom = `${RUNES[cle].nom} (${RANGS_RUNE[rang]})`;
+        const modele = modeles.find(i => i.system.cle === cle && i.system.rang === rang);
+        crees.push({ name: nom, type: "rune", img: modele?.img, system: { cle, rang, cible: "arme", emplacements: EMPLACEMENTS[rang], objetId: item.id, active: false, effet: modele?.system.effet ?? "", description: "" } });
+      }
+      if (crees.length) await item.parent.createEmbeddedDocuments("Item", crees);
+    } catch (e) { console.error(`${SYSTEM_ID} | Runes incluses`, e); }
+  });
+
   // --- Fiches --------------------------------------------------------------
   const { DocumentSheetConfig } = foundry.applications.apps;
   const Actor = CONFIG.Actor.documentClass;
