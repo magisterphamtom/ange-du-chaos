@@ -135,6 +135,7 @@ export function effetsDesEtats(etats, { physique, fx = {}, cle = null, carac = n
     else { handicap = true; notes.push("Épuisé : Handicap"); }
   }
   if (physique && has("aveugle")) { handicap = true; notes.push("Aveuglé : Handicap"); }
+  if (has("contrecoupZen")) { handicap = true; notes.push("Contrecoup du Zen : Handicap"); }
   if (cle && (fx.handicap ?? []).includes(cle)) { handicap = true; notes.push("Fortune ou Malédiction : Handicap"); }
   // Drogues : dé d'Inspiration (effet positif) ou de Handicap (effet négatif, manque).
   const dr = modifsDrogues(fx.drogues, { carac, cle, physique, init });

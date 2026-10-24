@@ -14,6 +14,8 @@ import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
 import { libererGemmelite } from "../gemmelite.mjs";
+import { actionTalentInitie } from "../initie.mjs";
+import { actionInitie } from "../initie-regles.mjs";
 import { RANGS_RUNE, GRADES_GEMMELITE } from "../runes.mjs";
 import { esc } from "../rolls-html.mjs";
 import { decrireCompetence } from "../competence-info.mjs";
@@ -75,6 +77,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       toggleRune: BaseActorSheet.#toggleRune,
       graverRune: BaseActorSheet.#graverRune,
       libererGemmelite: BaseActorSheet.#libererGemmelite,
+      actionInitie: BaseActorSheet.#actionInitie,
       removeAttaque: BaseActorSheet.#removeAttaque
     }
   };
@@ -269,7 +272,8 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const ligne = (it, resume, equipable = false, rune = null) => ({
       id: it.id, img: it.img, name: it.name, resume,
       rune: rune ? `${ASSETS}/runes/${rune}.webp` : null,
-      equipable, equipee: equipable ? !!it.system.equipee : false, attaquable: it.type === "arme", lancable: it.type === "sort"
+      equipable, equipee: equipable ? !!it.system.equipee : false, attaquable: it.type === "arme", lancable: it.type === "sort",
+      initie: it.type === "talent" && !!actionInitie(it.name)
     });
     const de = (type) => items.filter(i => i.type === type);
     const s = (cle, titre, type, lignes, extra = {}) => ({ cle, titre, type, lignes, vide: !lignes.length, ...extra });
@@ -445,6 +449,11 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ok: { label: "Graver", callback: (e, b) => b.form.elements.o.value }, rejectClose: false
     });
     if (choix !== null && choix !== undefined) await rune.update({ "system.objetId": choix });
+  }
+
+  static async #actionInitie(event, target) {
+    const item = BaseActorSheet.#itemDe(this, target);
+    if (item) await actionTalentInitie(this.actor, item);
   }
 
   static async #libererGemmelite(event, target) {

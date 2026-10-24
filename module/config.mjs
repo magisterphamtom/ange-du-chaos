@@ -127,7 +127,9 @@ export const ETATS = [
   { id: "pisseLeSang",   name: "Pisse le sang",    img: "icons/svg/blood.svg" },
   { id: "surpris",       name: "Surpris",          img: "icons/svg/eye.svg" },
   { id: "trouilleBleue", name: "Trouille bleue",   img: "icons/svg/terror.svg" },
-  { id: "portesDameMort", name: "Aux portes de Dame Mort", img: "icons/svg/skull.svg" }
+  { id: "portesDameMort", name: "Aux portes de Dame Mort", img: "icons/svg/skull.svg" },
+  { id: "zen",           name: "Zen",              img: "icons/svg/aura.svg" },
+  { id: "contrecoupZen", name: "Contrecoup du Zen", img: "icons/svg/downgrade.svg" }
 ];
 
 /** Types de dégâts des armes : Pointe, Taille, Impact (p. 130). */

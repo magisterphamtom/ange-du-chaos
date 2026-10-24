@@ -2,6 +2,7 @@
  * Attaque, réactions, dégâts, états et Dernier soupir dans Foundry (règles pures dans combat.mjs).
  * Flux : fenêtre d'attaque → carte du jet → réaction de la cible (Esquive, Parade) ou « Subir » → carte de dégâts → « Appliquer ».
  */
+import { handicapContreZen, connaitZen } from "./initie-regles.mjs";
 import { effetsRunesArme, effetsRunesDefense } from "./runes.mjs";
 import { donneesDes } from "./des3d.mjs";
 import { degatsArme } from "./effets.mjs";
@@ -126,7 +127,8 @@ export async function attaquer(actor, item = null, sup = null) {
   let inspire = eff.inspire || params.inspire || params.dos || params.sol || params.submerge || action.inspire || !!ru?.inspireAttaque;
   // Rune de défense (Maître) de la cible : les attaques qui la visent subissent un dé de Handicap.
   const defRunes = cible ? effetsRunesDefense(cible) : null;
-  let handicap = params.handicap || action.handicap || eff.handicap || !!defRunes?.handicapAttaquants;
+  let handicap = params.handicap || action.handicap || eff.handicap || !!defRunes?.handicapAttaquants
+    || handicapContreZen({ adversaireEnZen: cible?.statuses?.has("zen"), moiConnaitZen: connaitZen(actor.items.map(i => i.name)) });
   if (eff.sansInspiration) inspire = false;
   if (params.nexus && nexusDispo > 0 && !eff.sansInspiration && !nexusBloque) {
     if (handicap) handicap = false; else inspire = true;
@@ -200,7 +202,9 @@ export async function reagir(message, mode) {
     ({ score, nom, bloque = false } = p);
   }
   const eff = effetsDesEtats(etatsDe(cible), { physique: true, fx: cible.system?.derive?.effets ?? {}, carac: "ref", cle: "esquive" });
-  const handicap = eff.handicap || etatsDe(cible).has("faceContreTerre");
+  const attaquantZen = await fromUuid(f.attaquantUuid);
+  const handicap = eff.handicap || etatsDe(cible).has("faceContreTerre")
+    || handicapContreZen({ adversaireEnZen: attaquantZen?.statuses?.has("zen"), moiConnaitZen: connaitZen(cible.items.map(i => i.name)) });
   const defRu = effetsRunesDefense(cible);
   const bonusRune = mode === "esquive" ? defRu.esquive : defRu.parade;
   const inspireRune = mode === "esquive" ? defRu.inspireEsquive : defRu.inspireParade;
@@ -326,6 +330,7 @@ function brancherInitiative() {
   };
 }
 function initiativeActeur(score, actor, eff) {
+  if (actor.statuses?.has("zen")) return 1000 + calculInitiative({ score, joueur: actor.hasPlayerOwner, bloque: eff.bloque, inspire: eff.inspire, handicap: eff.handicap }).valeur; // Zen : agit en premier
   const r = calculInitiative({ score, joueur: actor.hasPlayerOwner, bloque: eff.bloque, inspire: eff.inspire, handicap: eff.handicap });
   return r.valeur;
 }

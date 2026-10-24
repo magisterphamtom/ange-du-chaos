@@ -10,6 +10,7 @@ import {
 import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
 import { effetsDrogues } from "./drogues.mjs";
+import { bonusFrappeNexus } from "./initie-regles.mjs";
 import { RUNES, RANGS_RUNE, GRADES_GEMMELITE, effetsRunesArmures } from "./runes.mjs";
 import { ACADEMIES, FORTUNE_SOEUR_GRISE, academieDe, nomEffetAcademie } from "./academies.mjs";
 
@@ -91,6 +92,8 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
       [...objetsEffets, nomEffetAcademie(academie)].filter(Boolean),
       gradeSelonMerite(this.merite ?? 0).id
     );
+    // Rhys (art martial des Initiés) : Frappe du Nexus = + rang de Nexus aux dégâts.
+    effets.degats += bonusFrappeNexus([...items].filter(it => it.type === "artmartial").map(it => it.name), this.nexus?.max ?? 0);
     // Runes d'armures actives, gravées sur une armure portée.
     const ra = effetsRunesArmures(items);
     effets.protectionArmures += ra.protection;

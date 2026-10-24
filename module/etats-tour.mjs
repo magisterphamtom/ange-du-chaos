@@ -36,6 +36,8 @@ export const FICHES_ETATS = {
     effet: "« Bloqué » : les 10 ne se relancent plus",
     remede: { comp: "sagacite", nd: 15, action: "complexe", note: "Repousser la peur." }
   },
+  zen: { effet: "Agit en premier, +1 action simple par tour, immunisé à Surpris ; les non-Initiés ont un Handicap contre lui. Dégâts subis : Résilience ND 20 ou expulsé.", remede: null },
+  contrecoupZen: { effet: "Handicap sur tous les tests (moitié du temps passé dans le Zen)", remede: null },
   portesDameMort: { effet: "Endurance à 0 : mourant (Dernier soupir)", remede: null }
 };
 
