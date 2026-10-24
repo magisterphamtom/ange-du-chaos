@@ -9,8 +9,9 @@
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
 
 /** À incrémenter quand le contenu de wiki.json change : le MJ obtient alors une régénération automatique. */
-export const WIKI_VERSION = 1;
+export const WIKI_VERSION = 2;
 const WIKI_URL = `${ASSETS}/wiki/wiki.json`;
+const GUIDES_URL = `${ASSETS}/wiki/guides.json`;
 const IMG = `${ASSETS}/wiki`;
 const RUNE = (r) => `${ASSETS}/runes/${r}.webp`;
 const { DOCUMENT_OWNERSHIP_LEVELS: NIVEAU, JOURNAL_ENTRY_PAGE_FORMATS: FORMAT } = CONST;
@@ -39,6 +40,16 @@ async function chargerDonnees() {
     const r = await fetch(WIKI_URL);
     return r.ok ? await r.json() : null;
   } catch (e) { return null; }
+}
+
+/** Guides et campagnes (facultatif) : { guides: [{ nom, journaux: [{ name, pages: [{ name, html }] }] }] }. */
+async function chargerGuides() {
+  try {
+    const r = await fetch(GUIDES_URL);
+    if (!r.ok) return [];
+    const d = await r.json();
+    return Array.isArray(d?.guides) ? d.guides : [];
+  } catch (e) { return []; }
 }
 
 function estWiki(doc) { return !!doc.getFlag?.(SYSTEM_ID, "wiki"); }
@@ -95,6 +106,17 @@ export async function creerWiki() {
     flags: flags({ groupe: "mj" })
   });
 
+  // Guides et campagnes (MJ) : un sous-dossier par guide, un journal par partie.
+  const guides = await chargerGuides();
+  const liensGuides = [];
+  if (guides.length) {
+    const dG = await Folder.create({ name: "Guides et campagnes", type: "JournalEntry", folder: dM.id, flags: flags() });
+    for (const g of guides) {
+      const sous = await Folder.create({ name: g.nom, type: "JournalEntry", folder: dG.id, flags: flags() });
+      liensGuides.push({ nom: g.nom, docs: await creerChapitres(g.journaux, sous, { default: NIVEAU.NONE }, "mj") });
+    }
+  }
+
   // Accueils (liens vers tous les chapitres).
   const liste = (docs) => `<ul class="adc-sommaire">${docs.map(d => `<li>${lien(d)}</li>`).join("")}</ul>`;
   const logo = `<img class="adc-logo-wiki" src="${ASSETS}/ornements/logo.webp" alt="L'Ange du Chaos" onerror="this.remove()">`;
@@ -111,7 +133,8 @@ export async function creerWiki() {
   await JournalEntry.create({
     name: "Accueil du Meneur de jeu", folder: dM.id, sort: 1, ownership: { default: NIVEAU.NONE },
     pages: [page("Accueil", `${logo}<h2>Guide du Meneur de jeu</h2>${liste(chM)}
-      <h2>Aides de jeu</h2><ul class="adc-sommaire"><li>${lien(aides)}</li></ul>`, 0)],
+      <h2>Aides de jeu</h2><ul class="adc-sommaire"><li>${lien(aides)}</li></ul>
+      ${liensGuides.length ? `<h2><img src="${ASSETS}/icones/guide.webp" alt="" style="height:1.3em;vertical-align:middle" onerror="this.remove()"> Guides et campagnes</h2>${liensGuides.map(g => `<h3>${g.nom}</h3>${liste(g.docs)}`).join("")}` : ""}`, 0)],
     flags: flags({ accueil: "mj" })
   });
 
