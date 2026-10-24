@@ -6,7 +6,7 @@
  */
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
 import { iconeObjet } from "./icones.mjs";
-import { DOSSIER_RACINE, documentsItems, documentsActeurs, cheminsDistincts } from "./contenu-data.mjs";
+import { DOSSIER_RACINE, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
 
 export const CONTENU_VERSION = 1;
 const URL_CONTENU = `${ASSETS}/contenu/contenu.json`;
@@ -45,7 +45,8 @@ export async function creerContenu({ confirmer = false } = {}) {
   const ids = anciensF.map(f => f.id).filter(id => game.folders.has(id));
   if (ids.length) await Folder.deleteDocuments(ids, { deleteSubfolders: true, deleteContents: true });
 
-  const docs = [...documentsItems(data.contenu), ...documentsActeurs(data.contenu)];
+  const docsItems = documentsItems(data.contenu);
+  const docs = [...docsItems, ...documentsActeurs(data.contenu), ...documentsPretires(data.contenu, docsItems)];
   const dossiers = new Map();      // clé JSON du chemin → id
   const racines = new Map();       // type de document → id du dossier racine
   for (const type of ["Item", "Actor"]) {
@@ -67,7 +68,7 @@ export async function creerContenu({ confirmer = false } = {}) {
   await Item.createDocuments(par.Item);
   await Actor.createDocuments(par.Actor);
   await game.settings.set(SYSTEM_ID, "contenuVersion", CONTENU_VERSION);
-  ui.notifications.info(`L'Ange du Chaos : ${par.Item.length} objets et ${par.Actor.length} créatures créés.`);
+  ui.notifications.info(`L'Ange du Chaos : ${par.Item.length} objets et ${par.Actor.length} créatures ou personnages créés.`);
   return true;
 }
 

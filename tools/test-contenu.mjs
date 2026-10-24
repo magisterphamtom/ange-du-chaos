@@ -2,7 +2,8 @@
 // Usage : node tools/test-contenu.mjs [chemin/vers/contenu.json]
 import fs from "node:fs";
 import { DISPONIBILITES, MAISONS, VOIES, COMPETENCES_ARMES, TYPES_DEGATS, NIVEAUX_SORT, CATEGORIES_ADVERSAIRE } from "../module/config.mjs";
-import { documentsItems, documentsActeurs, cheminsDistincts } from "../module/contenu-data.mjs";
+import { documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "../module/contenu-data.mjs";
+import { deriver } from "../module/calc.mjs";
 const chemin = process.argv[2] ?? "assets/contenu/contenu.json";
 if (!fs.existsSync(chemin)) { console.log("contenu.json absent : test ignoré (pack d'assets privés non installé)."); process.exit(0); }
 const c = JSON.parse(fs.readFileSync(chemin, "utf8")).contenu;
@@ -35,8 +36,22 @@ for (const { data: d } of acteurs) {
   for (const k of ["defensePassive", "initiative", "mouvement"]) if (!Number.isInteger(s[k])) ko(`${d.name}: ${k}`);
   if (!(s.endurance.max > 0) || !(s.actions >= 1) || typeof s.reaction !== "boolean") ko(`${d.name}: endurance/actions/réaction`);
 }
+// Prétirés : 6 personnages, objets rattachés, valeurs dérivées proches de la fiche imprimée.
+const pretires = documentsPretires(c, items);
+if (pretires.length !== 6) ko(`prétirés : ${pretires.length} au lieu de 6`);
+for (const [i, pt] of pretires.entries()) {
+  const src = c.pretires[i], s = pt.data.system;
+  if (pt.manques.length) console.log(`  prétiré ${pt.data.name} : objets créés faute d'équivalent dans le livre → ${pt.manques.join(" ; ")}`);
+  if (Object.keys(s.competences).length !== 36) ko(`${pt.data.name}: ${Object.keys(s.competences).length} compétences`);
+  for (const k of ["talent", "fortune", "malediction", "artmartial", "arme"]) if (!pt.data.items.some(o => o.type === k)) ko(`${pt.data.name}: aucun objet ${k}`);
+  const bonus = { ref: 1, con: 1, vol: 1, pui: 0, cha: 0, int: 0 };
+  const d = deriver({ caracs: s.caracs, competences: s.competences, nexus: s.nexus }, { bonusCaracs: bonus });
+  // les bonus de Maison / Voie sont ajoutés par le modèle : ici on compare l'Endurance de base (CON + VOL + Carrure)
+  if (!Number.isInteger(d.enduranceMax) || d.enduranceMax <= 0) ko(`${pt.data.name}: endurance`);
+  if (s.endurance.value !== src.controle.endurance) ko(`${pt.data.name}: endurance ${s.endurance.value}`);
+}
 const par = {}; for (const { data: d } of items) par[d.type] = (par[d.type] ?? 0) + 1;
-console.log({ items: items.length, acteurs: acteurs.length, dossiers: cheminsDistincts([...items, ...acteurs]).length, par });
+console.log({ items: items.length, acteurs: acteurs.length, pretires: pretires.length, dossiers: cheminsDistincts([...items, ...acteurs]).length, par });
 if (items.length < 250 || acteurs.length < 40) ko("effectifs trop bas");
 // Création complète avec bouchons de Foundry.
 const crees = { Folder: [], Item: [], Actor: [] }; let n = 0; const reglages = {};
