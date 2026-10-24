@@ -324,3 +324,14 @@ a.adc-f-compnom:hover { text-decoration: underline dotted; text-underline-offset
 .adc-f-progrow .adc-f-progres { margin: 0; }
 .adc-f-depense { font-size: 12px; color: var(--f-sous); display: flex; align-items: center; gap: 4px; }
 .adc-f-depense input { width: 52px; text-align: center; }
+
+/* --- Fiche d'adversaire : bande de caractéristiques, étiquette d'espèce, attaques supplémentaires --- */
+.adc-f-caracs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 2px 0 12px; }
+.adc-f-caracs .c { background: var(--f-creme); border: 1px solid var(--f-trait); text-align: center; padding: 4px 2px 6px; display: block; }
+.adc-f-caracs .c b { display: block; font: 11px "ADC Killigrew", serif; letter-spacing: 0.08em; color: var(--f-sous); }
+.adc-f-caracs .c input { width: 100%; border: 0; background: transparent; text-align: center; font: 700 26px "ADC Buckingham", serif; color: var(--f-encre); line-height: 1.05; padding: 0; }
+.adc-f-tag { display: inline-block; background: #2f4a38; color: #fff; font: 12px sans-serif; padding: 1px 7px; border-radius: 9px; }
+.adc-f-sup { flex-wrap: nowrap; align-items: center; }
+.adc-f-sup input.l { min-width: 0; flex: 1; }
+.adc-f-sup input.c { width: 3em; text-align: center; }
+.adc-f-protnom { width: 6em; font-size: 11px; border: 0; border-bottom: 1px dotted var(--f-trait); background: transparent; }

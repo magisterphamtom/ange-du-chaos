@@ -81,17 +81,21 @@ export function documentsItems(c) {
 
 export function documentsActeurs(c) {
   return (c.adversaires ?? []).map(a => ({
-    doc: "Actor", chemin: [a.section],
+    doc: "Actor", chemin: [a.section ?? a.plan ?? "Bestiaire"],
     data: {
-      name: a.nom, type: "creature",
+      name: a.nom, type: a.pnj ? "pnj" : "creature",
       system: {
-        categorie: a.categorie, plan: a.plan, espece: a.section,
-        endurance: { value: a.endurance, max: a.endurance }, protection: a.protection, defensePassive: a.defensePassive,
+        categorie: a.categorie, ...(a.pnj ? {} : { plan: a.plan ?? "", espece: a.espece ?? "" }),
+        caracs: { ref: 5, con: 5, int: 5, pui: 5, cha: 5, vol: 5, ...(a.caracs ?? {}) },
+        endurance: { value: a.endurance, max: a.endurance }, seuilFatigue: a.seuilFatigue ?? Math.round((a.endurance ?? 0) / 5),
+        protection: a.protection ?? 0, protectionNom: a.protectionNom ?? "", defensePassive: a.defensePassive,
         initiative: a.initiative, mouvement: a.mouvement,
-        attaque: { nom: a.attaque?.nom || "Attaque", score: a.attaque?.score ?? 10, degats: a.attaque?.degats || "2d6" },
+        nexus: a.nexus ?? 0, actions: a.actions ?? 1, reaction: !!a.reaction, artsEtranges: a.artsEtranges ?? 0,
+        attaque: { nom: a.attaque?.nom || "Attaque", score: a.attaque?.score ?? 10, degats: a.attaque?.degats || "2d6", note: a.attaqueNote ?? "" },
+        attaquesSup: (a.attaquesSup ?? []).map(w => ({ nom: w.nom || "Attaque", score: w.score ?? 10, degats: w.degats || "2d6" })),
         competences: (a.competences ?? []).map(k => ({ nom: k.nom, score: k.score })),
         talents: a.talents || "",
-        notes: `<p>NEXUS : ${a.nexus ?? 0} — Actions par tour : ${a.actions ?? 1}.</p>`
+        notes: a.notes || ""
       }
     }
   }));

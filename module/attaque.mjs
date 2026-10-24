@@ -33,14 +33,14 @@ export function statsActeur(actor) {
 const etatsDe = (actor) => new Set(actor?.statuses ?? []);
 
 /** Ce que l'arme (ou l'attaque type d'un PNJ) apporte au jet. */
-function infosAttaque(actor, item) {
+function infosAttaque(actor, item, sup = null) {
   if (item) {
     const cle = item.system.competence;
     const c = actor.system.derive?.competences?.[cle];
     if (!c) return null;
     return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }), cleCompetence: cle };
   }
-  const a = actor.system.attaque;
+  const a = sup !== null && sup !== undefined ? actor.system.attaquesSup?.[sup] : actor.system.attaque;
   if (!a) return null;
   return { nom: a.nom || "Attaque", score: a.score, formule: a.degats, bloque: false, physique: true, bonusDegats: actor.system.bonusDegats ?? 0, cleCompetence: null };
 }
@@ -73,8 +73,8 @@ const brancherPas = (dialog) => {
 /*  Attaque                                                                    */
 /* -------------------------------------------------------------------------- */
 
-export async function attaquer(actor, item = null) {
-  const info = infosAttaque(actor, item);
+export async function attaquer(actor, item = null, sup = null) {
+  const info = infosAttaque(actor, item, sup);
   if (!info) return ui.notifications.warn("Cette arme n'a pas de compétence utilisable.");
   const cible = game.user.targets.first()?.actor ?? null;
   const st = cible ? statsActeur(cible) : null;

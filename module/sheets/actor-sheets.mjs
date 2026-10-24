@@ -68,7 +68,9 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       jet: BaseActorSheet.#jet,
       attaquer: BaseActorSheet.#attaquer,
       addCompetence: BaseActorSheet.#addCompetence,
-      removeCompetence: BaseActorSheet.#removeCompetence
+      removeCompetence: BaseActorSheet.#removeCompetence,
+      addAttaque: BaseActorSheet.#addAttaque,
+      removeAttaque: BaseActorSheet.#removeAttaque
     }
   };
 
@@ -233,7 +235,8 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /** Bouton d'attaque d'une arme (ligne de la liste) ou attaque type d'un PNJ. */
   static async #attaquer(event, target) {
     const id = target.closest("[data-item-id]")?.dataset.itemId;
-    await attaquer(this.actor, id ? this.actor.items.get(id) : null);
+    const sup = target.dataset.sup;
+    await attaquer(this.actor, id ? this.actor.items.get(id) : null, sup !== undefined && sup !== "" ? Number(sup) : null);
   }
 
   static async #changerOnglet(event, target) {
@@ -407,6 +410,18 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const liste = foundry.utils.deepClone(this.actor.system.toObject().competences ?? []);
     liste.push({ nom: "Nouvelle compétence", score: 10 });
     await this.actor.update({ "system.competences": liste });
+  }
+
+  static async #addAttaque() {
+    const liste = foundry.utils.deepClone(this.actor.system.toObject().attaquesSup ?? []);
+    liste.push({ nom: "Autre attaque", score: this.actor.system.attaque?.score ?? 10, degats: "2d6" });
+    await this.actor.update({ "system.attaquesSup": liste });
+  }
+
+  static async #removeAttaque(event, target) {
+    const liste = foundry.utils.deepClone(this.actor.system.toObject().attaquesSup ?? []);
+    liste.splice(Number(target.dataset.index), 1);
+    await this.actor.update({ "system.attaquesSup": liste });
   }
 
   static async #removeCompetence(event, target) {
@@ -610,6 +625,7 @@ export class PnjSheet extends BaseActorSheet {
     const context = await super._prepareContext(options);
     context.categories = Object.fromEntries(Object.entries(CATEGORIES_ADVERSAIRE).map(([k, v]) => [k, v.label]));
     context.estCreature = this.actor.type === "creature";
+    context.caracsListe = ["ref", "con", "pui", "cha", "int", "vol"].map(k => ({ cle: k, label: k.toUpperCase(), valeur: this.actor.system.caracs?.[k] ?? 0 }));
     context.assets = ASSETS;
     context.artAdversaire = adversaireDe(this.actor.name)?.filigrane ?? null;
     context.sectionsListe = ["armes", "sorts", "talents", "equipement"].map(k => context.sections?.[k]).filter(Boolean);

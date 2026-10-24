@@ -147,8 +147,18 @@ export class PnjData extends foundry.abstract.TypeDataModel {
       attaque: new f.SchemaField({
         nom: texte("Attaque", "Arme"),
         score: entier(12),
-        degats: texte("Dégâts", "2d6")
+        degats: texte("Dégâts", "2d6"),
+        note: texte("Capacités de l'arme")
       }),
+      attaquesSup: new f.ArrayField(new f.SchemaField({
+        nom: texte("Attaque", "Arme"), score: entier(12), degats: texte("Dégâts", "2d6")
+      })),
+      caracs: new f.SchemaField(Object.fromEntries(["ref", "con", "int", "pui", "cha", "vol"].map(k => [k, entier(5, { min: 0 })]))),
+      nexus: entier(0, { min: 0 }),
+      actions: entier(1, { min: 1 }),
+      reaction: new f.BooleanField({ initial: false, label: "Réaction" }),
+      artsEtranges: entier(0, { min: 0 }),
+      protectionNom: texte("Nom de la protection"),
       competences: new f.ArrayField(new f.SchemaField({
         nom: texte("Compétence"), score: entier(10)
       })),

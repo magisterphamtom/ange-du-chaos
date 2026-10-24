@@ -23,7 +23,18 @@ for (const { data: d } of items) {
   if (d.type === "sort" && !(s.niveau in NIVEAUX_SORT)) ko(`${d.name}: niveau ${s.niveau}`);
   if (d.type === "armure" && !(Number.isInteger(s.protection) && s.protection > 0)) ko(`${d.name}: protection`);
 }
-for (const { data: d } of acteurs) if (!(d.system.categorie in CATEGORIES_ADVERSAIRE)) ko(`${d.name}: catégorie ${d.system.categorie}`);
+const FORMULE = /^\d+d\d+([+-]\d+)?(\+\d+d\d+)?(\+\d+)?$|^0$/;
+for (const { data: d } of acteurs) {
+  const s = d.system;
+  if (!(s.categorie in CATEGORIES_ADVERSAIRE)) ko(`${d.name}: catégorie ${s.categorie}`);
+  for (const k of ["ref", "con", "int", "pui", "cha", "vol"]) if (!Number.isInteger(s.caracs?.[k])) ko(`${d.name}: carac ${k}`);
+  for (const w of [s.attaque, ...s.attaquesSup]) {
+    if (!FORMULE.test(w.degats)) ko(`${d.name}: dégâts "${w.degats}"`);
+    if (!Number.isInteger(w.score)) ko(`${d.name}: score d'attaque`);
+  }
+  for (const k of ["defensePassive", "initiative", "mouvement"]) if (!Number.isInteger(s[k])) ko(`${d.name}: ${k}`);
+  if (!(s.endurance.max > 0) || !(s.actions >= 1) || typeof s.reaction !== "boolean") ko(`${d.name}: endurance/actions/réaction`);
+}
 const par = {}; for (const { data: d } of items) par[d.type] = (par[d.type] ?? 0) + 1;
 console.log({ items: items.length, acteurs: acteurs.length, dossiers: cheminsDistincts([...items, ...acteurs]).length, par });
 if (items.length < 250 || acteurs.length < 40) ko("effectifs trop bas");
