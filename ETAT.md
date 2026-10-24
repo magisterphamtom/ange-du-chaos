@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.19.0 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.19.1 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -81,13 +81,14 @@
   Aperçu hors Foundry fait avec un personnage d'exemple (toutes les pages rendues). Non testé dans Foundry : la fenêtre (880 × 960), les polices, les clics sur les cases de rang, le glisser-déposer sur les nouvelles zones, le défilement. Polices commerciales (Buckingham, Killigrew) : à n'utiliser que dans l'espace privé tant que l'éditeur n'a pas validé leur redistribution. Les glyphes absents des polices (K, W, X, Y, Z majuscules, accents sur capitales, ç, ù) retombent sur la police du système ; comme sur la fiche imprimée, les initiales de titre n'ont pas d'accent (« Equipement », « Etats préjudiciables »). Les fiches PNJ et créature gardent l'ancien habillage.
 
 ## À faire
-0. Tests wiki dans Foundry : ouvrir un monde neuf (le wiki se crée, une notification), vérifier la visibilité joueur (Joueurs oui, MJ non), le réglage, le bouton Journaux, la régénération `game.adc.creerWiki()`.
-1. **Lot 2** : jets (fenêtre DialogV2, d10 explosif dans les deux sens, Inspiration/Handicap, degrés, catastrophe), cartes de chat avec boutons, Nexus, Hors-Destin.
-2. **Lot 2 bis** : combat automatisé (initiative, attaque vs Défense passive, réactions −3 END, dégâts − Protection, Seuil de fatigue → Épuisé, Portes de Dame Mort).
-3. **Lot 4** : FAIT en 0.9.0 sous forme de documents du monde (pas de compendiums LevelDB). Reste : objets magiques, Talents d'Initié/Adepte, maladies, prétirés.
-4. **Lot 5** : wiki automatique (journal joueurs + journal MJ) à l'ouverture du monde.
-5. FAIT en 0.10.0 : assistant de création. FAIT en 0.11.0 : effets des Talents.
-6. Polices embarquées (`assets/fonts`) au lieu des polices système.
+1. **Tests dans Foundry** : liste « Tests 0.13.0 » (points 1 à 17) ; tests du wiki (monde neuf, visibilité joueur, réglage, `game.adc.creerWiki()`).
+2. **Contenu restant** : bestiaire de Monde des Plans (adversaires prêts à glisser dans une scène), prétirés, objets magiques, Talents d'Initié et d'Adepte, maladies, guides (Sources de Sang, Cité des nuages, Terres de l'Ouest).
+3. **Règles encore manuelles** : Armure du Chaos, Frénésie, Sens du Chaos, Nexus de Voie, Perforant, dés supplémentaires sur Surpris, table de localisation optionnelle, choix d'une autre académie via la Fortune « Académie magique ».
+4. **Hypothèses à confirmer** (voir plus haut) : degrés ND+5 / ND+10, plafonds de l'assistant, plafond de 4 armes de départ, écart de 1 dans les exemples chiffrés du livre.
+5. Polices embarquées (`assets/fonts`) au lieu des polices système (polices commerciales : espace privé uniquement).
+6. Fait : lots 2 (jets), 2 bis (combat), 4 (contenu du livre de base), 5 (wiki), assistant de création, effets des Talents, progression au Mérite.
+
+- 0.19.1 : vérification des 77 sorts contre le livre (p. 147-171) : les 6 champs d'en-tête (mana, difficulté, portée, incantation, cible, durée) comparés un à un. 7 sorts corrigés dans le pack privé `assets/contenu/contenu.json` (Orbe : mana 7, ND 20, portée 30 m ; Flèche-feu : portée Toucher ; Respirer sous l'eau : cible ; Point faible : ND 20 ; Étreinte des Ombres : ND 15, portée 15 m ; Étincelle de Kashgar : ND 25 ; Bienfaits de la nature : cible non précisée par le livre) et trois textes d'effet nettoyés. Les autres écarts relevés sont du bruit d'extraction (numéros de page). Les sorts à difficulté textuelle (« Défense passive de la cible », « Opposé », « Variable », « 10 + Charme de la cible »…) gardent ND 0 et la règle en tête de l'effet. À faire dans un monde existant : « Recréer le contenu du livre » pour récupérer les corrections.
 
 ## Tests jets (v0.2.0) à faire dans Foundry
 A. Onglet Caractéristiques : cliquer un score de compétence → fenêtre ; choisir ND 15, lancer → carte dans le chat avec dés, total, verdict.
