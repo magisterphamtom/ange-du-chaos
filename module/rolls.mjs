@@ -6,7 +6,8 @@ import { CARACS_PHYSIQUES, effetsDesEtats } from "./combat.mjs";
 import { carteHTML, dialogueHTML, esc } from "./rolls-html.mjs";
 import { resoudreTest } from "./jets.mjs";
 import { donneesDes } from "./des3d.mjs";
-import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML } from "./sorts.mjs";
+import { coutDuSort, peutLancer, consequencesSort, detailsSortHTML, analyserDifficulte, difficulteDepuisCible, SORTS_DEGATS, SORTS_ETATS } from "./sorts.mjs";
+import { statsActeur, lancerDegatsDe } from "./attaque.mjs";
 import { academieDe } from "./academies.mjs";
 import { estSortDeSoin } from "./drogues.mjs";
 import { niveauPermis } from "./progression.mjs";
@@ -57,6 +58,23 @@ async function demanderParametres(infos, { nd = null, etat, nexus = 0 } = {}) {
   });
 }
 
+
+/** Ce qu'un sort a besoin de savoir de sa cible (PJ : valeurs calculées ; PNJ / créature : leur profil). */
+function infosCible(acteur) {
+  const norm = (t) => String(t ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const d = acteur.system.derive;
+  return {
+    defense: statsActeur(acteur).defense,
+    carac: (cle) => (acteur.type === "personnage" ? d?.caracs?.[cle]?.valeur ?? null : null),
+    competence: (cle) => {
+      if (acteur.type === "personnage") return d?.competences?.[cle]?.score ?? null;
+      const nom = norm(COMPETENCES[cle]?.label);
+      const c = (acteur.system.competences ?? []).find(x => norm(x.nom) === nom);
+      return c ? Number(c.score) : null;
+    }
+  };
+}
+
 /**
  * Lance un test et publie la carte de chat.
  * @param {Actor} actor
@@ -89,7 +107,16 @@ export async function lancerTest(actor, type, cle, { rapide = false, sort = null
   const etat = effetsDesEtats(new Set(actor.statuses ?? []), { physique: infos.physique, fx: actor.system.derive?.effets ?? {}, cle: type === "competence" ? cle : null, carac: infos.carac });
   infos.bloque = infos.bloque || etat.bloque;
   const nexusDispo = (etat.sansInspiration || dr.nexusBloque) ? 0 : (actor.system.nexus?.value ?? 0);
-  const ndDepart = ndForce ?? (sort && sort.difficulte > 0 ? sort.difficulte : null);
+  // Sort : difficulté lue dans le livre (fixe, Défense passive de la cible, « 15 + Volonté », test opposé…).
+  let ndAuto = null, noteND = "", cibleSort = null;
+  if (sort) {
+    cibleSort = game.user.targets.first()?.actor ?? null;
+    const auto = difficulteDepuisCible(analyserDifficulte(sort), cibleSort ? infosCible(cibleSort) : null,
+      (score) => resoudreTest({ score }));
+    ndAuto = auto.nd; noteND = auto.note;
+    if (!auto.nd && auto.note) ui.notifications.info(auto.note);
+  }
+  const ndDepart = ndForce ?? ndAuto ?? (sort && sort.difficulte > 0 ? sort.difficulte : null);
   if (titre) infos.nom = titre;
   const params = rapide
     ? { nd: ndDepart, bonus: 0, inspire: etat.inspire, handicap: etat.handicap, nexus: false }
@@ -119,15 +146,26 @@ export async function lancerTest(actor, type, cle, { rapide = false, sort = null
       if (conseq.perte) maj["system.endurance.value"] = conseq.endurance;
     }
     if (Object.keys(maj).length) await actor.update(maj);
-    affichage.sousTitre = [affichage.sousTitre, surEndurance ? conseq.ligne.replace(/mana/g, "Endurance") : conseq.ligne].filter(Boolean).join(" · ");
+    affichage.sousTitre = [affichage.sousTitre, noteND, surEndurance ? conseq.ligne.replace(/mana/g, "Endurance") : conseq.ligne].filter(Boolean).join(" · ");
     if (conseq.issue === "reussite") actionsSort = detailsSortHTML(sort, esc);
   }
-  return ChatMessage.create({
+  const carte = await ChatMessage.create({
     ...(await donneesDes(resultat)),
     speaker: ChatMessage.getSpeaker({ actor }),
     content: carteHTML({ ...affichage, resultat, actions: actionsSort, relancable: (actor.system.nexus.value ?? 0) >= 1 && !sort }),
     flags: { [SYSTEM_ID]: { jet: { type, cle, resultat, actorId: actor.id, params: { nd: params.nd, bonus: params.bonus, inspire: params.inspire, handicap: params.handicap }, score: infos.score, bloque: infos.bloque, affichage } } }
   });
+
+  // Sort offensif réussi : dégâts lancés automatiquement (formule du livre, cible désignée).
+  const auto = sort && SORTS_DEGATS[sort.nom];
+  if (auto && actionsSort && resultat.reussite !== false) {
+    const degre = auto.attaque && resultat.degre && resultat.degre !== "echec" ? resultat.degre : "simple";
+    await lancerDegatsDe({ nom: sort.nom, formule: auto.formule, bonusDegats: 0, ajust: 0, desEnPlus: 0, loc: "aucune", nonLetal: false, ignoreArmure: !!auto.ignoreArmure, note: auto.note }, actor, cibleSort, degre);
+  }
+  // État infligé par le sort (Crépuscule : Aveuglé, Visage de Nocta : Trouille bleue, Foudres d'Eodh : Étourdi).
+  const etatSort = sort && SORTS_ETATS[sort.nom];
+  if (etatSort && actionsSort && resultat.reussite !== false && cibleSort) await cibleSort.toggleStatusEffect?.(etatSort, { active: true });
+  return carte;
 }
 
 /** Relance un test déjà publié en dépensant 1 point de Nexus (p. 85). */

@@ -210,7 +210,7 @@ export async function reagir(message, mode) {
 export async function lancerDegatsDe(f, attaquant, cible, degre) {
   const d = calculerDegats({
     formule: f.formule, degre, bonusDegats: f.bonusDegats, ajust: f.ajust, desEnPlus: f.desEnPlus,
-    protection: cible ? statsActeur(cible).protection : 0, ignoreArmure: false
+    protection: cible ? statsActeur(cible).protection : 0, ignoreArmure: !!f.ignoreArmure
   });
   const loc = LOCALISATIONS[f.loc] ?? LOCALISATIONS.aucune;
   const effets = [];
@@ -218,6 +218,8 @@ export async function lancerDegatsDe(f, attaquant, cible, degre) {
   if (loc.effet === "etourdi") effets.push("Entrejambe : état Étourdi");
   if (loc.effet === "membre") effets.push("Si les dégâts dépassent la Carrure de la cible, le membre est brisé");
   if (f.nonLetal) effets.push("Dégâts non létaux");
+  if (f.ignoreArmure) effets.push("Aucune armure ne réduit ces dégâts");
+  if (f.note) effets.push(f.note);
   return ChatMessage.create({
     ...(await donneesDes({ des: d.des, faces: d.faces })),
     speaker: ChatMessage.getSpeaker({ actor: attaquant }),
