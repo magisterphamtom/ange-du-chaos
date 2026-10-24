@@ -2,7 +2,7 @@
  * Contenu du livre → données de documents Foundry. Fonctions pures (testables sans Foundry).
  * Les textes viennent de `assets/contenu/contenu.json` (pack d'assets privé, jamais dans le dépôt).
  */
-import { iconeObjet } from "./icones.mjs";
+import { iconeObjet, iconeFichier } from "./icones.mjs";
 import { deriver } from "./calc.mjs";
 export const DOSSIER_RACINE = "L'Ange du Chaos — Contenu";
 
@@ -68,6 +68,16 @@ export function documentsItems(c) {
   }
   for (const t of c.talents ?? []) {
     add("talent", ["Talents"], t.nom, { origine: t.origine || "", description: t.description || "", paliers: "" });
+  }
+  for (const m of c.maladies ?? []) {
+    add("maladie", ["Maladies"], m.nom, { virulence: m.virulence, duree: m.duree || "", effet: para(m.effet), active: false, description: "" });
+  }
+  for (const m of c.materiaux ?? []) {
+    const rang = { mediocre: "Médiocre", standard: "Standard", superieur: "Supérieur", ultime: "Ultime" }[m.rang] ?? m.rang;
+    add("equipement", ["Matériaux", rang], m.nom, {
+      quantite: 1, cout: m.cout || "", disponibilite: dispo(m.dispo),
+      description: `<p><b>Armes :</b> ${esc(m.armes)}</p><p><b>Armures :</b> ${esc(m.armures)}</p>${m.texte ? `<p>${esc(m.texte)}</p>` : ""}<p><i>Choisissez ce matériau sur la fiche de l'arme ou de l'armure.</i></p>`
+    }, { img: iconeFichier(`icones/lingot-${m.rang}`) });
   }
   for (const f of c.fortunes ?? []) add("fortune", ["Fortunes"], f.nom, { description: para(f.description) });
   for (const f of c.maledictions ?? []) add("malediction", ["Malédictions"], f.nom, { description: para(f.description) });

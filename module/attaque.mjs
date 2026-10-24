@@ -2,6 +2,7 @@
  * Attaque, réactions, dégâts, états et Dernier soupir dans Foundry (règles pures dans combat.mjs).
  * Flux : fenêtre d'attaque → carte du jet → réaction de la cible (Esquive, Parade) ou « Subir » → carte de dégâts → « Appliquer ».
  */
+import { armeAvecMateriau, estArc } from "./materiaux.mjs";
 import { handicapContreZen, connaitZen } from "./initie-regles.mjs";
 import { effetsRunesArme, effetsRunesDefense } from "./runes.mjs";
 import { donneesDes } from "./des3d.mjs";
@@ -41,7 +42,8 @@ function infosAttaque(actor, item, sup = null) {
     const c = actor.system.derive?.competences?.[cle];
     if (!c) return null;
     const ru = effetsRunesArme(actor.items, item.id);
-    return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }) + ru.degatsPlus, cleCompetence: cle, runes: ru };
+    const mat = armeAvecMateriau(item.system.degats, item.system.materiau, { arc: estArc(item.name) });
+    return { nom: item.name, score: c.score, formule: mat.formule, notesMateriau: mat.notes, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }) + ru.degatsPlus + mat.plat, cleCompetence: cle, runes: ru };
   }
   const a = sup !== null && sup !== undefined ? actor.system.attaquesSup?.[sup] : actor.system.attaque;
   if (!a) return null;
@@ -140,7 +142,7 @@ export async function attaquer(actor, item = null, sup = null) {
   const flags = {
     attaquantUuid: actor.uuid, cibleUuid: cible?.uuid ?? null, total: resultat.total, nd, degre: resultat.degre, touche,
     formule: info.formule, bonusDegats: info.bonusDegats, ajust: action.degats, desEnPlus: loc.des + (params.sol ? 1 : 0) + (ru?.desPlus ?? 0),
-    desSup: ru?.elem ?? [], pisseLeSang: !!ru?.pisseLeSang, notesRunes: runesNotes(ru),
+    desSup: ru?.elem ?? [], pisseLeSang: !!ru?.pisseLeSang, notesRunes: [...runesNotes(ru), ...(info.notesMateriau ?? [])],
     nonLetal: params.nonLetal, loc: params.loc, nom: info.nom, protection: st?.protection ?? 0, resolu: false
   };
   const actions = touche ? (cible ? reactionsHTML({ cibleNom: cible.name, peutReagir: reactionPossible(st) && !etatsCible.has("surpris") }) : degatsBouton()) : "";

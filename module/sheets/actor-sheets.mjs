@@ -14,6 +14,8 @@ import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
 import { libererGemmelite } from "../gemmelite.mjs";
+import { resisterMaladie } from "../maladies.mjs";
+import { armeAvecMateriau, armureAvecMateriau, estArc, MATERIAUX } from "../materiaux.mjs";
 import { actionTalentInitie } from "../initie.mjs";
 import { actionInitie } from "../initie-regles.mjs";
 import { RANGS_RUNE, GRADES_GEMMELITE } from "../runes.mjs";
@@ -78,6 +80,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       graverRune: BaseActorSheet.#graverRune,
       libererGemmelite: BaseActorSheet.#libererGemmelite,
       actionInitie: BaseActorSheet.#actionInitie,
+      resisterMaladie: BaseActorSheet.#resisterMaladie,
       removeAttaque: BaseActorSheet.#removeAttaque
     }
   };
@@ -280,9 +283,10 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     return {
       armes: s("armes", "Armes", "arme", de("arme").map(i =>
-        ligne(i, `${i.system.degats} · ${i.system.typeDegats}${i.system.capacites ? " · " + i.system.capacites : ""}`, true))),
+        ligne(i, `${armeAvecMateriau(i.system.degats, i.system.materiau, { arc: estArc(i.name) }).formule} · ${i.system.typeDegats}${i.system.capacites ? " · " + i.system.capacites : ""}${i.system.materiau && i.system.materiau !== "standard" ? " · " + (MATERIAUX[i.system.materiau]?.label ?? "") : ""}`, true))),
       armures: s("armures", "Armures", "armure", de("armure").map(i =>
-        ligne(i, `PR ${i.system.protection} · ENC ${i.system.encombrement} · ${i.system.localisation}`, true))),
+        ligne(i, (() => { const a = armureAvecMateriau({ protection: i.system.protection, encombrement: i.system.encombrement }, i.system.materiau);
+          return `PR ${a.protection} · ENC ${a.encombrement} · ${i.system.localisation}${i.system.materiau && i.system.materiau !== "standard" ? " · " + (MATERIAUX[i.system.materiau]?.label ?? "") : ""}`; })(), true))),
       boucliers: s("boucliers", "Boucliers", "bouclier", de("bouclier").map(i =>
         ligne(i, `Défense +${i.system.bonusDefense} · Rés. ${i.system.resistance}`, true))),
       equipement: s("equipement", "Équipement", "equipement", de("equipement").map(i =>
@@ -303,6 +307,9 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         const l = ligne(i, `${RANGS_RUNE[i.system.rang] ?? ""} · ${hote ? "sur " + hote.name : "non gravée"}`);
         return { ...l, rune: null, activable: true, active: !!i.system.active, graveable: true };
       })),
+      maladies: s("maladies", "Maladies", "maladie", de("maladie").map(i => ({
+        ...ligne(i, `Virulence ${i.system.virulence}${i.system.duree ? " · " + i.system.duree : ""}${i.system.active ? " · INFECTÉ" : ""}`),
+        maladie: true, active: !!i.system.active }))),
       gemmelites: s("gemmelites", "Gemmelites", "gemmelite", de("gemmelite").map(i => {
         const l = ligne(i, `${GRADES_GEMMELITE[i.system.grade] ?? ""} · ${i.system.sortNom || "sans sort"} · ${i.system.charges.value}/${i.system.charges.max}`);
         return { ...l, liberable: true };
@@ -449,6 +456,11 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ok: { label: "Graver", callback: (e, b) => b.form.elements.o.value }, rejectClose: false
     });
     if (choix !== null && choix !== undefined) await rune.update({ "system.objetId": choix });
+  }
+
+  static async #resisterMaladie(event, target) {
+    const item = BaseActorSheet.#itemDe(this, target);
+    if (item) await resisterMaladie(this.actor, item);
   }
 
   static async #actionInitie(event, target) {

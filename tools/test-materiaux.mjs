@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import { ajouterDes, armeAvecMateriau, armureAvecMateriau, estArc } from "../module/materiaux.mjs";
+import { cumulerEffets } from "../module/effets.mjs";
+assert.equal(ajouterDes("2d6+1", 1), "3d6+1"); assert.equal(ajouterDes("1d6", -1), "1d6"); assert.equal(ajouterDes("5d8+2", 3), "8d8+2");
+assert.equal(armeAvecMateriau("2d6", "noirMetal").formule, "5d6");
+assert.equal(armeAvecMateriau("2d6", "yf", { arc: false }).formule, "2d6");
+assert.equal(armeAvecMateriau("2d6", "yf", { arc: true }).formule, "3d6");
+assert.equal(armeAvecMateriau("2d6", "garVallon").plat, 1);
+assert.equal(armeAvecMateriau("2d6", "standard").formule, "2d6");
+assert.equal(armeAvecMateriau("2d6", "inconnu").formule, "2d6");
+assert.deepEqual(armureAvecMateriau({ protection: 10, encombrement: 3 }, "mediocre"), { protection: 5, encombrement: 4 });
+assert.deepEqual(armureAvecMateriau({ protection: 10, encombrement: 1 }, "metalhion"), { protection: 13, encombrement: 0 });
+assert.deepEqual(armureAvecMateriau({ protection: 10, encombrement: 3 }, "runique"), { protection: 13, encombrement: 1 });
+assert.ok(estArc("Arc long")); assert.ok(!estArc("Arbalète"));
+const f = cumulerEffets(["Fièvre des marais", "Chaude-pisse", "Souffle noir"]);
+assert.equal(f.endurance, -10); assert.deepEqual(f.handicapCarac, ["ref"]); assert.equal(f.handicapPhysique, true);
+console.log("test-materiaux : OK");

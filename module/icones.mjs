@@ -35,6 +35,9 @@ export function iconeEquipement(nom) {
 }
 export function iconeSort(source) { return SORTS[source] ?? "mana"; }
 
+/** Chemin complet d'une image du pack (ex. « icones/lingot-ultime »). */
+export const iconeFichier = (f) => `${BASE}/${f}.webp`;
+
 /** Chemin complet de l'image d'un objet (type du système + données). */
 export function iconeObjet(type, sys = {}, nom = "") {
   let f;
@@ -45,13 +48,14 @@ export function iconeObjet(type, sys = {}, nom = "") {
     case "equipement": f = `icones/${iconeEquipement(nom)}`; break;
     case "drogue": f = "icones/drogue"; break;
     case "sort": { const s = SORTS[sys.source]; f = s ? `runes/${s}` : "icones/mana"; break; }
-    case "artmartial": f = "icones/art-martial"; break;
-    case "talent": f = "icones/talent"; break;
+    case "artmartial": f = /^(le )?rhys$/i.test(nom) ? "icones/initie" : "icones/art-martial"; break;
+    case "talent": f = /zen/i.test(nom) ? "icones/zen" : sys.origine === "Initié" ? "icones/initie" : "icones/talent"; break;
     case "fortune": f = "icones/fortune"; break;
     case "malediction": f = "icones/malediction"; break;
     case "maison": f = sys.cle === "loki" ? "icones/loki" : "icones/maison"; break;
     case "rune": f = "icones/rune"; break;
     case "gemmelite": f = "icones/gemmelite"; break;
+    case "maladie": f = "icones/maladie"; break;
     case "voie": f = sys.cle ? `voies/${sys.cle}` : "icones/talent"; break;
     default: f = "icones/sac";
   }

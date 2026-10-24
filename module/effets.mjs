@@ -42,7 +42,11 @@ export const EFFETS = {
   "academie:arbre-monde": { rang: { nature: 1 } },
   "academie:tenebres": { rang: { intimidation: 1 } },
   // — Malédictions
-  "naif": { handicap: ["sagacite"] }
+  "naif": { handicap: ["sagacite"] },
+  // — Maladies (actives) : table des maladies, livre de base p. 118
+  "fievre des marais": { endurance: -10 },
+  "chaude-pisse": { handicapCarac: ["ref"] },
+  "souffle noir": { handicapPhysique: true }
 };
 
 const indexGrade = (g) => ({ maraudeur: 0, capitaine: 1, ombre: 2 }[g] ?? 0);
@@ -53,7 +57,7 @@ export function cumulerEffets(noms, grade = "maraudeur") {
   const i = indexGrade(grade);
   const t = { endurance: 0, initiative: 0, degats: 0, degatsDistance: 0, degatsArc: 0, degatsNaturelles: 0, mouvement: 0,
     protectionNaturelle: 0, protectionArmures: 0, encombrementArmures: 0, horsDestin: 0, mana: 0,
-    rang: {}, score: {}, handicap: [], ignoreEpuise: false, immunise: [], sources: [] };
+    rang: {}, score: {}, handicap: [], handicapCarac: [], handicapPhysique: false, ignoreEpuise: false, immunise: [], sources: [] };
   for (const nom of noms ?? []) {
     const e = EFFETS[norm(nom)];
     if (!e) continue;
@@ -64,6 +68,8 @@ export function cumulerEffets(noms, grade = "maraudeur") {
     for (const [c, n] of Object.entries(e.score ?? {})) t.score[c] = (t.score[c] ?? 0) + val(n, i);
     for (const c of e.handicap ?? []) if (!t.handicap.includes(c)) t.handicap.push(c);
     for (const c of e.immunise ?? []) if (!t.immunise.includes(c)) t.immunise.push(c);
+    for (const c of e.handicapCarac ?? []) if (!t.handicapCarac.includes(c)) t.handicapCarac.push(c);
+    if (e.handicapPhysique) t.handicapPhysique = true;
     if (e.ignoreEpuise) t.ignoreEpuise = true;
   }
   return t;

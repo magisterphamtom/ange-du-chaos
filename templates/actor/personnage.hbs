@@ -237,6 +237,10 @@
       <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="gemmelites" data-tooltip="Cliquer pour replier / déplier">Gemmelites <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
       <ul class="adc-f-liste">{{#each sections.gemmelites.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : une gemmelite</li>{{/each}}</ul>
     </div>
+    <div class="adc-f-repli" data-repli="maladies" data-type="maladie">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="maladies" data-tooltip="Cliquer pour replier / déplier">Maladies <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
+      <ul class="adc-f-liste">{{#each sections.maladies.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : une maladie</li>{{/each}}</ul>
+    </div>
   </div>
   <div class="adc-f-repli" data-repli="drogues">
   <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="drogues" data-tooltip="Cliquer pour replier / déplier">Drogues &amp; dépendances <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>

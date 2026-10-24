@@ -10,6 +10,7 @@ import {
 import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
 import { effetsDrogues } from "./drogues.mjs";
+import { CHOIX_MATERIAUX, armureAvecMateriau } from "./materiaux.mjs";
 import { bonusFrappeNexus } from "./initie-regles.mjs";
 import { RUNES, RANGS_RUNE, GRADES_GEMMELITE, effetsRunesArmures } from "./runes.mjs";
 import { ACADEMIES, FORTUNE_SOEUR_GRISE, academieDe, nomEffetAcademie } from "./academies.mjs";
@@ -86,7 +87,7 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
   prepareDerivedData() {
     const items = this.parent?.items ?? [];
     // Effets chiffrés des Talents, Fortunes et Malédictions possédés (au grade du personnage).
-    const objetsEffets = [...items].filter(it => ["talent", "fortune", "malediction"].includes(it.type)).map(it => it.name);
+    const objetsEffets = [...items].filter(it => ["talent", "fortune", "malediction"].includes(it.type) || (it.type === "maladie" && it.system.active)).map(it => it.name);
     const academie = academieDe({ voie: this.voie, academie: this.academie, fortune: objetsEffets.find(n => n === FORTUNE_SOEUR_GRISE) ?? "" });
     const effets = cumulerEffets(
       [...objetsEffets, nomEffetAcademie(academie)].filter(Boolean),
@@ -112,9 +113,10 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
     for (const it of items) {
       if (!it.system.equipee) continue;
       if (it.type === "armure") {
-        encombrement += Math.max(0, (it.system.encombrement ?? 0) + effets.encombrementArmures);
-        protectionBase = Math.max(protectionBase, it.system.protection ?? 0);
-        protectionMax = Math.max(protectionMax, (it.system.protection ?? 0) + effets.protectionArmures);
+        const am = armureAvecMateriau({ protection: it.system.protection, encombrement: it.system.encombrement }, it.system.materiau);
+        encombrement += Math.max(0, am.encombrement + effets.encombrementArmures);
+        protectionBase = Math.max(protectionBase, am.protection);
+        protectionMax = Math.max(protectionMax, am.protection + effets.protectionArmures);
       }
       if (it.type === "bouclier") bonusDefense += it.system.bonusDefense ?? 0;
     }
@@ -215,6 +217,7 @@ export class ArmeData extends ObjetBase {
       degats: texte("Dégâts (ex. 2d6+1)", "2d6"),
       typeDegats: choix("Type de dégâts", TYPES_DEGATS_MODELE, "T"),
       capacites: texte("Capacités (ex. Équilibré, Perforant)"),
+      materiau: choix("Matériau", CHOIX_MATERIAUX, "standard"),
       puissanceRequise: entier(0, { min: 0, label: "Puissance requise" }),
       porteeEffective: texte("Portée effective"),
       porteeMax: texte("Portée maximale"),
@@ -234,9 +237,23 @@ export class ArmureData extends ObjetBase {
       localisation: texte("Localisation (To, T, BD, BG, JD, JG)", "To"),
       categorieProtection: new f.StringField({ required: true, blank: true, initial: "", choices: { "": "—", ...TYPES_DEGATS_MODELE }, label: "Catégorie de protection (option)" }),
       capacites: texte("Capacités (Résistant, Encombrant…)"),
+      materiau: choix("Matériau", CHOIX_MATERIAUX, "standard"),
       disponibilite: choix("Disponibilité", DISPOS, "commun"),
       cout: texte("Coût (£A)"),
       equipee: new f.BooleanField({ initial: false, label: "Portée" })
+    };
+  }
+}
+
+/** Maladie (livre de base p. 118) : virulence, durée d'infection, effets ; active = le personnage en souffre. */
+export class MaladieData extends ObjetBase {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      virulence: entier(10, { min: 0, label: "Virulence (ND de Résilience)" }),
+      duree: texte("Durée d'infection"),
+      effet: html("Effets"),
+      active: new f.BooleanField({ initial: false, label: "Infecté (effets en cours)" })
     };
   }
 }
@@ -388,5 +405,5 @@ export const ITEM_MODELS = {
   arme: ArmeData, armure: ArmureData, bouclier: BouclierData, equipement: EquipementData,
   drogue: DrogueData, sort: SortData, artmartial: ArtMartialData, talent: TalentData,
   fortune: FortuneData, malediction: Malediction, maison: MaisonData, voie: VoieData,
-  rune: RuneData, gemmelite: GemmeliteData
+  rune: RuneData, gemmelite: GemmeliteData, maladie: MaladieData
 };
