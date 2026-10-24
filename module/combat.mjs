@@ -53,15 +53,18 @@ export const desDegre = (degre) => (degre === "critique" ? 2 : degre === "majeur
  * @param {number} [p.protection=0]
  * @param {boolean} [p.ignoreArmure=false]
  */
-export function calculerDegats({ formule, degre, bonusDegats = 0, ajust = 0, desEnPlus = 0, protection = 0, ignoreArmure = false, rng = Math.random }) {
+export function calculerDegats({ formule, degre, bonusDegats = 0, ajust = 0, desEnPlus = 0, desSup = [], protection = 0, ignoreArmure = false, rng = Math.random }) {
   const { n, faces, fixe } = analyserDegats(formule);
   const nbDes = n + desDegre(degre) + desEnPlus;
   const des = Array.from({ length: nbDes }, () => Math.floor(rng() * faces) + 1);
   const somme = des.reduce((a, b) => a + b, 0);
-  const brut = somme + fixe + bonusDegats + ajust;
+  // Dés d'un autre type (runes de feu, de froid, de foudre : + 1d6).
+  const extras = desSup.map(x => ({ nom: x.nom ?? "", faces: x.faces, des: Array.from({ length: x.n ?? 1 }, () => Math.floor(rng() * x.faces) + 1) }));
+  const sommeExtra = extras.reduce((a, x) => a + x.des.reduce((p, q) => p + q, 0), 0);
+  const brut = somme + sommeExtra + fixe + bonusDegats + ajust;
   const prot = ignoreArmure ? 0 : protection;
   const net = Math.max(0, brut - prot);
-  return { des, faces, fixe, bonusDegats, ajust, desEnPlus, brut, protection: prot, net, absorbe: brut > 0 && net === 0 };
+  return { des, faces, fixe, bonusDegats, ajust, desEnPlus, extras, brut, protection: prot, net, absorbe: brut > 0 && net === 0 };
 }
 
 /**

@@ -13,5 +13,7 @@
   "TYPES.Item.fortune": "Fortune",
   "TYPES.Item.malediction": "Malédiction",
   "TYPES.Item.maison": "Maison du Chaos",
-  "TYPES.Item.voie": "Voie de formation"
+  "TYPES.Item.voie": "Voie de formation",
+  "TYPES.Item.rune": "Rune",
+  "TYPES.Item.gemmelite": "Gemmelite"
 }

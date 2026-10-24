@@ -50,6 +50,8 @@ for (const [i, pt] of pretires.entries()) {
   if (!Number.isInteger(d.enduranceMax) || d.enduranceMax <= 0) ko(`${pt.data.name}: endurance`);
   if (s.endurance.value !== src.controle.endurance) ko(`${pt.data.name}: endurance ${s.endurance.value}`);
 }
+if ((c.runes ?? []).length !== 26 || items.filter(i => i.data.type === "rune").length !== 26) ko("runes : 26 attendues");
+if (items.filter(i => i.data.type === "gemmelite").length !== 3) ko("gemmelites : 3 attendues");
 const par = {}; for (const { data: d } of items) par[d.type] = (par[d.type] ?? 0) + 1;
 console.log({ items: items.length, acteurs: acteurs.length, pretires: pretires.length, dossiers: cheminsDistincts([...items, ...acteurs]).length, par });
 if (items.length < 250 || acteurs.length < 40) ko("effectifs trop bas");

@@ -10,6 +10,7 @@ import {
 import { deriver, enduranceBase, seuilFatigue, gradeSelonMerite } from "./calc.mjs";
 import { cumulerEffets } from "./effets.mjs";
 import { effetsDrogues } from "./drogues.mjs";
+import { RUNES, RANGS_RUNE, GRADES_GEMMELITE, effetsRunesArmures } from "./runes.mjs";
 import { ACADEMIES, FORTUNE_SOEUR_GRISE, academieDe, nomEffetAcademie } from "./academies.mjs";
 
 const f = foundry.data.fields;
@@ -90,6 +91,13 @@ export class PersonnageData extends foundry.abstract.TypeDataModel {
       [...objetsEffets, nomEffetAcademie(academie)].filter(Boolean),
       gradeSelonMerite(this.merite ?? 0).id
     );
+    // Runes d'armures actives, gravées sur une armure portée.
+    const ra = effetsRunesArmures(items);
+    effets.protectionArmures += ra.protection;
+    effets.encombrementArmures += ra.encombrement;
+    effets.endurance += ra.endurance;
+    if (ra.furtivite) effets.score.furtivite = (effets.score.furtivite ?? 0) + ra.furtivite;
+    effets.runes = ra;
     // Drogues absorbées et dépendances (drapeau de l'acteur) : effets positifs, négatifs, manque.
     const dr = effetsDrogues(this.parent?.getFlag?.(SYSTEM_ID, "drogues"));
     if (dr.ignoreEpuise) effets.ignoreEpuise = true;
@@ -340,9 +348,42 @@ export class VoieData extends ObjetBase {
   }
 }
 
+/** Rune gravée sur une arme ou une armure (livre de base p. 169-171). */
+export class RuneData extends ObjetBase {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      cle: choix("Rune", Object.fromEntries(Object.entries(RUNES).map(([k, v]) => [k, v.nom])), "acere"),
+      rang: choix("Rang", RANGS_RUNE, "apprenti"),
+      cible: choix("Se grave sur", { arme: "Une arme", armure: "Une armure" }, "arme"),
+      emplacements: entier(1, { min: 1, max: 3, label: "Emplacements de rune utilisés" }),
+      objetId: new f.StringField({ required: true, blank: true, initial: "", label: "Gravée sur (identifiant de l'objet)" }),
+      active: new f.BooleanField({ initial: false, label: "Active (mot de pouvoir prononcé, 1 heure)" }),
+      effet: html("Effet")
+    };
+  }
+}
+
+/** Gemmelite : cristal qui stocke un sort (livre de base p. 169). */
+export class GemmeliteData extends ObjetBase {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      grade: choix("Grade", GRADES_GEMMELITE, "commune"),
+      source: texte("Source de mana (couleur du cristal)"),
+      sortNom: texte("Sort stocké"),
+      niveauSort: choix("Niveau du sort", { apprenti: "Apprenti", expert: "Expert" }, "apprenti"),
+      charges: new f.SchemaField({ value: entier(1, { min: 0 }), max: entier(1, { min: 0 }) }),
+      motDePouvoir: texte("Mot de pouvoir"),
+      effet: html("Effets")
+    };
+  }
+}
+
 export const ACTOR_MODELS = { personnage: PersonnageData, pnj: PnjData, creature: CreatureData };
 export const ITEM_MODELS = {
   arme: ArmeData, armure: ArmureData, bouclier: BouclierData, equipement: EquipementData,
   drogue: DrogueData, sort: SortData, artmartial: ArtMartialData, talent: TalentData,
-  fortune: FortuneData, malediction: Malediction, maison: MaisonData, voie: VoieData
+  fortune: FortuneData, malediction: Malediction, maison: MaisonData, voie: VoieData,
+  rune: RuneData, gemmelite: GemmeliteData
 };

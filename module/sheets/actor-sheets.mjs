@@ -13,6 +13,8 @@ import { lancerTest } from "../rolls.mjs";
 import { ACADEMIES, academieDe, coutMana } from "../academies.mjs";
 import { depenserNexus, depenserHorsDestin, reposer } from "../destin.mjs";
 import { attaquer } from "../attaque.mjs";
+import { libererGemmelite } from "../gemmelite.mjs";
+import { RANGS_RUNE, GRADES_GEMMELITE } from "../runes.mjs";
 import { esc } from "../rolls-html.mjs";
 import { decrireCompetence } from "../competence-info.mjs";
 import { tenterRemede } from "../etats.mjs";
@@ -28,7 +30,7 @@ const TPL = (nom) => `systems/${SYSTEM_ID}/templates/actor/${nom}.hbs`;
 /** Types d'objets autorisés par type d'acteur. */
 const OBJETS_AUTORISES = {
   personnage: null, // tous
-  pnj: ["arme", "armure", "bouclier", "equipement", "sort", "talent", "artmartial", "drogue"],
+  pnj: ["arme", "armure", "bouclier", "equipement", "sort", "talent", "artmartial", "drogue", "rune"],
   creature: ["arme", "sort", "talent", "equipement"]
 };
 
@@ -70,6 +72,9 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       addCompetence: BaseActorSheet.#addCompetence,
       removeCompetence: BaseActorSheet.#removeCompetence,
       addAttaque: BaseActorSheet.#addAttaque,
+      toggleRune: BaseActorSheet.#toggleRune,
+      graverRune: BaseActorSheet.#graverRune,
+      libererGemmelite: BaseActorSheet.#libererGemmelite,
       removeAttaque: BaseActorSheet.#removeAttaque
     }
   };
@@ -288,7 +293,16 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       fortunes: s("fortunes", "Fortune", "fortune", de("fortune").map(i => ligne(i, ""))),
       maledictions: s("maledictions", "Malédiction", "malediction", de("malediction").map(i => ligne(i, ""))),
       maisons: s("maisons", "Maison du Chaos", "maison", de("maison").map(i => ligne(i, ""))),
-      voies: s("voies", "Voie de formation", "voie", de("voie").map(i => ligne(i, "")))
+      voies: s("voies", "Voie de formation", "voie", de("voie").map(i => ligne(i, ""))),
+      runes: s("runes", "Runes", "rune", de("rune").map(i => {
+        const hote = this.actor.items.get(i.system.objetId);
+        const l = ligne(i, `${RANGS_RUNE[i.system.rang] ?? ""} · ${hote ? "sur " + hote.name : "non gravée"}`);
+        return { ...l, rune: null, activable: true, active: !!i.system.active, graveable: true };
+      })),
+      gemmelites: s("gemmelites", "Gemmelites", "gemmelite", de("gemmelite").map(i => {
+        const l = ligne(i, `${GRADES_GEMMELITE[i.system.grade] ?? ""} · ${i.system.sortNom || "sans sort"} · ${i.system.charges.value}/${i.system.charges.max}`);
+        return { ...l, liberable: true };
+      }))
     };
   }
 
@@ -410,6 +424,32 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const liste = foundry.utils.deepClone(this.actor.system.toObject().competences ?? []);
     liste.push({ nom: "Nouvelle compétence", score: 10 });
     await this.actor.update({ "system.competences": liste });
+  }
+
+  /** Mot de pouvoir : active ou désactive une rune. */
+  static async #toggleRune(event, target) {
+    const item = BaseActorSheet.#itemDe(this, target);
+    if (item) await item.update({ "system.active": !item.system.active });
+  }
+
+  /** Choisit l'arme ou l'armure sur laquelle la rune est gravée. */
+  static async #graverRune(event, target) {
+    const rune = BaseActorSheet.#itemDe(this, target);
+    if (!rune) return;
+    const cibles = this.actor.items.filter(i => i.type === rune.system.cible);
+    if (!cibles.length) return ui.notifications.warn(rune.system.cible === "arme" ? "Aucune arme sur cette fiche." : "Aucune armure sur cette fiche.");
+    const choix = await foundry.applications.api.DialogV2.prompt({
+      classes: [SYSTEM_ID, "adc-dialog-jet"], window: { title: `Graver : ${rune.name}`, icon: "fa-solid fa-gem" }, position: { width: 380 },
+      content: `<div class="adc-dialogue-jet"><fieldset><legend>Gravée sur</legend><div class="adc-choix-liste">${[{ id: "", name: "— aucune (non gravée) —" }, ...cibles.map(c => ({ id: c.id, name: c.name }))].map(c =>
+        `<label class="adc-choix"><input type="radio" name="o" value="${c.id}" ${c.id === rune.system.objetId ? "checked" : ""}><span><b>${foundry.utils.escapeHTML(c.name)}</b></span></label>`).join("")}</div></fieldset></div>`,
+      ok: { label: "Graver", callback: (e, b) => b.form.elements.o.value }, rejectClose: false
+    });
+    if (choix !== null && choix !== undefined) await rune.update({ "system.objetId": choix });
+  }
+
+  static async #libererGemmelite(event, target) {
+    const item = BaseActorSheet.#itemDe(this, target);
+    if (item) await libererGemmelite(this.actor, item);
   }
 
   static async #addAttaque() {

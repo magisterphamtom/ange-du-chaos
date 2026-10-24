@@ -228,6 +228,16 @@
       <div class="adc-f-carac"><span class="adc-f-plain">Licornes de Bronze</span><span class="adc-f-case-val"><input type="number" name="system.monnaie.bronze" value="{{system.monnaie.bronze}}" min="0"></span></div>
     </div>
   </div>
+  <div class="adc-f-haut deux bas">
+    <div class="adc-f-repli" data-repli="runes" data-type="rune">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="runes" data-tooltip="Cliquer pour replier / déplier">Runes <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
+      <ul class="adc-f-liste">{{#each sections.runes.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : une rune</li>{{/each}}</ul>
+    </div>
+    <div class="adc-f-repli" data-repli="gemmelites" data-type="gemmelite">
+      <h2 class="adc-f-titre adc-f-replitit" data-action="replier" data-cle="gemmelites" data-tooltip="Cliquer pour replier / déplier">Gemmelites <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
+      <ul class="adc-f-liste">{{#each sections.gemmelites.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : une gemmelite</li>{{/each}}</ul>
+    </div>
+  </div>
   <div class="adc-f-repli" data-repli="drogues">
   <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="drogues" data-tooltip="Cliquer pour replier / déplier">Drogues &amp; dépendances <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   {{#unless drogueEtat.vide}}

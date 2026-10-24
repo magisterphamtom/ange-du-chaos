@@ -2,6 +2,7 @@
  * Attaque, réactions, dégâts, états et Dernier soupir dans Foundry (règles pures dans combat.mjs).
  * Flux : fenêtre d'attaque → carte du jet → réaction de la cible (Esquive, Parade) ou « Subir » → carte de dégâts → « Appliquer ».
  */
+import { effetsRunesArme, effetsRunesDefense } from "./runes.mjs";
 import { donneesDes } from "./des3d.mjs";
 import { degatsArme } from "./effets.mjs";
 import { SYSTEM_ID, COMPETENCES, COMPETENCES_ARMES } from "./config.mjs";
@@ -38,7 +39,8 @@ function infosAttaque(actor, item, sup = null) {
     const cle = item.system.competence;
     const c = actor.system.derive?.competences?.[cle];
     if (!c) return null;
-    return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }), cleCompetence: cle };
+    const ru = effetsRunesArme(actor.items, item.id);
+    return { nom: item.name, score: c.score, formule: item.system.degats, bloque: !!c.inapte, physique: CARACS_PHYSIQUES.includes(COMPETENCES[cle]?.carac), bonusDegats: statsActeur(actor).bonusDegats + degatsArme(actor.system.derive?.effets ?? {}, { competence: cle, nom: item.name }) + ru.degatsPlus, cleCompetence: cle, runes: ru };
   }
   const a = sup !== null && sup !== undefined ? actor.system.attaquesSup?.[sup] : actor.system.attaque;
   if (!a) return null;
@@ -73,8 +75,18 @@ const brancherPas = (dialog) => {
 /*  Attaque                                                                    */
 /* -------------------------------------------------------------------------- */
 
+/** Lignes d'information sur les runes qui agissent sur une attaque. */
+function runesNotes(ru) {
+  if (!ru?.sources?.length) return [];
+  const n = [`Runes actives : ${ru.sources.join(", ")}`];
+  if (ru.perforant) n.push("Capacité Perforant (rune)");
+  if (ru.destructionPR) n.push(`Rune de destruction : la Protection de l'armure touchée baisse définitivement de ${ru.destructionPR}`);
+  return n;
+}
+
 export async function attaquer(actor, item = null, sup = null) {
   const info = infosAttaque(actor, item, sup);
+  const ru = info?.runes ?? null;
   if (!info) return ui.notifications.warn("Cette arme n'a pas de compétence utilisable.");
   const cible = game.user.targets.first()?.actor ?? null;
   const st = cible ? statsActeur(cible) : null;
@@ -111,19 +123,22 @@ export async function attaquer(actor, item = null, sup = null) {
   const action = ACTIONS_ATTAQUE[params.action];
   const loc = LOCALISATIONS[params.loc];
   const nd = params.nd + loc.defense;
-  let inspire = eff.inspire || params.inspire || params.dos || params.sol || params.submerge || action.inspire;
-  let handicap = params.handicap || action.handicap || eff.handicap;
+  let inspire = eff.inspire || params.inspire || params.dos || params.sol || params.submerge || action.inspire || !!ru?.inspireAttaque;
+  // Rune de défense (Maître) de la cible : les attaques qui la visent subissent un dé de Handicap.
+  const defRunes = cible ? effetsRunesDefense(cible) : null;
+  let handicap = params.handicap || action.handicap || eff.handicap || !!defRunes?.handicapAttaquants;
   if (eff.sansInspiration) inspire = false;
   if (params.nexus && nexusDispo > 0 && !eff.sansInspiration && !nexusBloque) {
     if (handicap) handicap = false; else inspire = true;
     await actor.update({ "system.nexus.value": nexusDispo - 1 });
   }
-  const resultat = resoudreTest({ score: info.score, bonus: params.bonus, nd, inspire, handicap, bloque: info.bloque || eff.bloque });
+  const resultat = resoudreTest({ score: info.score, bonus: params.bonus + (ru?.attaque ?? 0), nd, inspire, handicap, bloque: info.bloque || eff.bloque });
   const touche = !!resultat.reussite;
 
   const flags = {
     attaquantUuid: actor.uuid, cibleUuid: cible?.uuid ?? null, total: resultat.total, nd, degre: resultat.degre, touche,
-    formule: info.formule, bonusDegats: info.bonusDegats, ajust: action.degats, desEnPlus: loc.des + (params.sol ? 1 : 0),
+    formule: info.formule, bonusDegats: info.bonusDegats, ajust: action.degats, desEnPlus: loc.des + (params.sol ? 1 : 0) + (ru?.desPlus ?? 0),
+    desSup: ru?.elem ?? [], pisseLeSang: !!ru?.pisseLeSang, notesRunes: runesNotes(ru),
     nonLetal: params.nonLetal, loc: params.loc, nom: info.nom, protection: st?.protection ?? 0, resolu: false
   };
   const actions = touche ? (cible ? reactionsHTML({ cibleNom: cible.name, peutReagir: reactionPossible(st) && !etatsCible.has("surpris") }) : degatsBouton()) : "";
@@ -186,9 +201,13 @@ export async function reagir(message, mode) {
   }
   const eff = effetsDesEtats(etatsDe(cible), { physique: true, fx: cible.system?.derive?.effets ?? {}, carac: "ref", cle: "esquive" });
   const handicap = eff.handicap || etatsDe(cible).has("faceContreTerre");
+  const defRu = effetsRunesDefense(cible);
+  const bonusRune = mode === "esquive" ? defRu.esquive : defRu.parade;
+  const inspireRune = mode === "esquive" ? defRu.inspireEsquive : defRu.inspireParade;
+  score += bonusRune;
   await cible.update({ "system.endurance.value": Math.max(0, st.endurance - COUT_REACTION) });
 
-  const r = resoudreReaction({ totalAttaque: f.total, scoreReaction: score, bloque: bloque || eff.bloque, handicap });
+  const r = resoudreReaction({ totalAttaque: f.total, scoreReaction: score, bloque: bloque || eff.bloque, handicap: handicap && !inspireRune, inspire: inspireRune && !handicap });
   const resultat = { ...r, nd: f.total + 1, degre: r.evite ? (r.degre === "catastrophe" ? "catastrophe" : "simple") : (r.catastrophe ? "catastrophe" : "echec") };
   await ChatMessage.create({
     ...(await donneesDes(r)),
@@ -209,7 +228,7 @@ export async function reagir(message, mode) {
 
 export async function lancerDegatsDe(f, attaquant, cible, degre) {
   const d = calculerDegats({
-    formule: f.formule, degre, bonusDegats: f.bonusDegats, ajust: f.ajust, desEnPlus: f.desEnPlus,
+    formule: f.formule, degre, bonusDegats: f.bonusDegats, ajust: f.ajust, desEnPlus: f.desEnPlus, desSup: f.desSup ?? [],
     protection: cible ? statsActeur(cible).protection : 0, ignoreArmure: !!f.ignoreArmure
   });
   const loc = LOCALISATIONS[f.loc] ?? LOCALISATIONS.aucune;
@@ -220,11 +239,14 @@ export async function lancerDegatsDe(f, attaquant, cible, degre) {
   if (f.nonLetal) effets.push("Dégâts non létaux");
   if (f.ignoreArmure) effets.push("Aucune armure ne réduit ces dégâts");
   if (f.note) effets.push(f.note);
+  for (const e of d.extras ?? []) effets.push(`+ ${e.des.length}d${e.faces} de dégâts de ${e.nom} : ${e.des.join(" + ")}`);
+  for (const n of f.notesRunes ?? []) effets.push(n);
+  if (f.pisseLeSang) effets.push("Rune de cruauté : Pisse le sang");
   return ChatMessage.create({
     ...(await donneesDes({ des: d.des, faces: d.faces })),
     speaker: ChatMessage.getSpeaker({ actor: attaquant }),
     content: carteDegatsHTML({ nom: attaquant?.name ?? "", portrait: attaquant?.img, titre: `Dégâts — ${f.nom}`, cibleNom: cible?.name ?? "", degre, d, appliquable: !!cible, localisation: f.loc !== "aucune" ? loc.label : "", effets }),
-    flags: { [SYSTEM_ID]: { degats: { cibleUuid: cible?.uuid ?? null, net: d.net, nonLetal: f.nonLetal, loc: f.loc, appliques: false } } }
+    flags: { [SYSTEM_ID]: { degats: { cibleUuid: cible?.uuid ?? null, net: d.net, nonLetal: f.nonLetal, loc: f.loc, pisseLeSang: !!f.pisseLeSang, appliques: false } } }
   });
 }
 
@@ -248,6 +270,7 @@ export async function appliquerALaCible(message) {
   const loc = LOCALISATIONS[g.loc];
   if (loc?.effet === "aveugle") await cible.toggleStatusEffect?.("aveugle", { active: true });
   if (loc?.effet === "etourdi") await cible.toggleStatusEffect?.("etourdi", { active: true });
+  if (g.pisseLeSang && g.net > 0) await cible.toggleStatusEffect?.("pisseLeSang", { active: true });
   await majMessage(message, { [`flags.${SYSTEM_ID}.degats.appliques`]: true });
   const lignes = [`${esc(cible.name)} : Endurance <b>${r.avant} → ${r.apres}</b>`];
   if (loc?.effet === "membre" && g.net > st.carrure) lignes.push("Le membre est brisé (dégâts supérieurs à la Carrure).");

@@ -71,6 +71,16 @@ export function documentsItems(c) {
   }
   for (const f of c.fortunes ?? []) add("fortune", ["Fortunes"], f.nom, { description: para(f.description) });
   for (const f of c.maledictions ?? []) add("malediction", ["Malédictions"], f.nom, { description: para(f.description) });
+  for (const r of c.runes ?? []) {
+    add("rune", ["Runes", r.cible === "arme" ? "Runes d'armes" : "Runes d'armures"], r.nom, {
+      cle: r.cle, rang: r.rang, cible: r.cible, emplacements: r.emplacements || 1, objetId: "", active: false, effet: para(r.effet), description: ""
+    });
+  }
+  for (const g of c.gemmelites ?? []) {
+    add("gemmelite", ["Gemmelites"], g.nom, {
+      grade: g.grade, source: "", sortNom: "", niveauSort: "apprenti", charges: { value: 1, max: 1 }, motDePouvoir: "", effet: para(g.effet), description: ""
+    });
+  }
   for (const m of c.maisons ?? []) {
     add("maison", ["Maisons"], m.nom, { cle: m.cle, description: m.description || "", competences: m.competences || "", talentsSecrets: m.talentsSecrets || "" });
   }

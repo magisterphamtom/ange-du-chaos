@@ -50,6 +50,8 @@ export function iconeObjet(type, sys = {}, nom = "") {
     case "fortune": f = "icones/fortune"; break;
     case "malediction": f = "icones/malediction"; break;
     case "maison": f = sys.cle === "loki" ? "icones/loki" : "icones/maison"; break;
+    case "rune": f = "icones/rune"; break;
+    case "gemmelite": f = "icones/gemmelite"; break;
     case "voie": f = sys.cle ? `voies/${sys.cle}` : "icones/talent"; break;
     default: f = "icones/sac";
   }
