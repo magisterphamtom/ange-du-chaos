@@ -185,8 +185,7 @@ export function artDe(voie, maison) {
 
 /* Illustrations officielles des adversaires et PNJ (pack d'assets privés). */
 export const ADVERSAIRES = {
-  arkanost: "bestiaire", chimere_de_sang: "bestiaire", ghonaki: "bestiaire", goule: "bestiaire",
-  mante: "bestiaire", sangh: "bestiaire", serpentere: "bestiaire", squazz: "bestiaire",
+  ghonaki: "bestiaire", mante: "bestiaire", sangh: "bestiaire", serpentere: "bestiaire", squazz: "bestiaire",
   cellendhyll: "pnj", estree: "pnj", xelshalee: "pnj",
   // illustrations réalisées pour le système (jetons ronds)
   ...Object.fromEntries(["animal_de_monte", "animal_feroce", "bete_de_somme", "centaure", "chasseur_ikshite", "conteur_rhitan", "cristalik",
@@ -195,7 +194,7 @@ export const ADVERSAIRES = {
     "petit_animal", "sorcier_thog", "taride", "tireur_d_elite_fendyr", "traqueur_arikari", "vorpal",
     "assassin_type", "bandit", "beret_rouge", "brako_chef_de_bande", "brasseur_d_ecume", "chef_de_bande", "enrage", "frere_grieger",
     "inquisiteur_de_l_orage", "maitre_assassin", "mercenaire_sentinelle", "paladin_bleu", "reine_de_sang", "samson_grieger", "shenn_gath",
-    "soldat_tenebreux", "sorcier_de_sang_tenebreux", "surineur", "templier_de_l_orage"].map(k => [k, "jeton"]))
+    "arkanost", "chimere_de_sang", "goule", "soldat_tenebreux", "sorcier_de_sang_tenebreux", "surineur", "templier_de_l_orage"].map(k => [k, "jeton"]))
 };
 
 /** Retrouve l'adversaire connu d'après le nom d'un acteur (accents et casse ignorés). */
