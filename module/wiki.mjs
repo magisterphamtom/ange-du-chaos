@@ -7,6 +7,8 @@
  * Réglages : « Ouverture du wiki » (client). API : `game.adc.creerWiki()` / `game.adc.ouvrirWiki()`.
  */
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
+import { guidesExtensions, signatureActuelle } from "./extensions.mjs";
+import { fusionnerGuides } from "./extensions-regles.mjs";
 
 /** À incrémenter quand le contenu de wiki.json change : le MJ obtient alors une régénération automatique. */
 export const WIKI_VERSION = 2;
@@ -25,6 +27,7 @@ export function enregistrerReglagesWiki() {
   });
   game.settings.register(SYSTEM_ID, "wikiVu", { scope: "client", config: false, type: String, default: "" });
   game.settings.register(SYSTEM_ID, "wikiVersion", { scope: "world", config: false, type: Number, default: 0 });
+  game.settings.register(SYSTEM_ID, "wikiExtensions", { scope: "world", config: false, type: String, default: "" });
 }
 
 const enveloppe = (html) => `<div class="adc-wiki">${html}</div>`;
@@ -44,12 +47,12 @@ async function chargerDonnees() {
 
 /** Guides et campagnes (facultatif) : { guides: [{ nom, journaux: [{ name, pages: [{ name, html }] }] }] }. */
 async function chargerGuides() {
+  let base = [];
   try {
     const r = await fetch(GUIDES_URL);
-    if (!r.ok) return [];
-    const d = await r.json();
-    return Array.isArray(d?.guides) ? d.guides : [];
-  } catch (e) { return []; }
+    if (r.ok) { const d = await r.json(); base = Array.isArray(d?.guides) ? d.guides : []; }
+  } catch (e) { base = []; }
+  return fusionnerGuides(base, await guidesExtensions());
 }
 
 function estWiki(doc) { return !!doc.getFlag?.(SYSTEM_ID, "wiki"); }
@@ -139,6 +142,7 @@ export async function creerWiki() {
   });
 
   await game.settings.set(SYSTEM_ID, "wikiVersion", WIKI_VERSION);
+  await game.settings.set(SYSTEM_ID, "wikiExtensions", signatureActuelle());
   ui.notifications.info("Wiki de L'Ange du Chaos créé dans l'onglet Journaux.");
   return true;
 }
@@ -193,7 +197,7 @@ export function initialiserWiki() {
     try {
       if (game.user.isGM) {
         const existe = game.journal.some(estWiki);
-        if (!existe || game.settings.get(SYSTEM_ID, "wikiVersion") < WIKI_VERSION) await creerWiki();
+        if (!existe || game.settings.get(SYSTEM_ID, "wikiVersion") < WIKI_VERSION || game.settings.get(SYSTEM_ID, "wikiExtensions") !== signatureActuelle()) await creerWiki();
       }
       if (!(await ouvrirWiki()) && !game.user.isGM) {
         // Le MJ n'a pas encore créé le wiki : on ouvre l'accueil dès qu'il apparaît.

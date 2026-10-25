@@ -5,6 +5,8 @@
  * création les remplace (les modifications faites dessus sont perdues).
  */
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
+import { contenusExtensions } from "./extensions.mjs";
+import { fusionnerContenus } from "./extensions-regles.mjs";
 import { iconeObjet } from "./icones.mjs";
 import { DOSSIER_RACINE, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
 
@@ -14,7 +16,13 @@ const flags = () => ({ [SYSTEM_ID]: { contenu: true } });
 const estContenu = (doc) => !!doc.getFlag?.(SYSTEM_ID, "contenu");
 
 async function charger() {
-  try { const r = await fetch(URL_CONTENU); return r.ok ? await r.json() : null; } catch (e) { return null; }
+  try {
+    const r = await fetch(URL_CONTENU);
+    const base = r.ok ? await r.json() : null;
+    const extras = await contenusExtensions();
+    if (!base && !extras.length) return null;
+    return { ...(base ?? {}), contenu: fusionnerContenus(base?.contenu ?? {}, extras) };
+  } catch (e) { return null; }
 }
 
 export function enregistrerReglagesContenu() {

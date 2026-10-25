@@ -1,6 +1,8 @@
 /**
  * Assistant de création de personnage : une seule fenêtre, 9 étapes (p. 43), relançable depuis la fiche.
  */
+import { contenusExtensions } from "./extensions.mjs";
+import { fusionnerContenus } from "./extensions-regles.mjs";
 import { SYSTEM_ID, ASSETS } from "./config.mjs";
 import { etatInitial, erreursEtape, agir, appliquer } from "./creation-data.mjs";
 import { vueHTML } from "./creation-html.mjs";
@@ -14,7 +16,7 @@ async function chargerContenu() {
   if (_contenu) return _contenu;
   try {
     const r = await fetch(`${ASSETS}/contenu/contenu.json`);
-    _contenu = r.ok ? (await r.json()).contenu : {};
+    _contenu = fusionnerContenus(r.ok ? (await r.json()).contenu : {}, await contenusExtensions());
   } catch (e) { _contenu = {}; }
   return _contenu;
 }

@@ -12,7 +12,7 @@ const mk = (type) => ({ create: async (d) => { const doc = { ...d, id: `${type}$
   deleteDocuments: async () => {} });
 globalThis.Folder = mk("Folder"); globalThis.JournalEntry = mk("JournalEntry");
 const reglages = {};
-globalThis.game = { user: { isGM: true }, journal: [], folders: [], world: { id: "w" },
+globalThis.game = { user: { isGM: true }, modules: new Map(), journal: [], folders: [], world: { id: "w" },
   settings: { set: async (s, k, v) => { reglages[k] = v; }, get: (s, k) => reglages[k], register() {} } };
 const guides = process.argv[3] && fs.existsSync(process.argv[3]) ? JSON.parse(fs.readFileSync(process.argv[3], "utf8")) : null;
 globalThis.fetch = async (url) => /guides\.json/.test(url) ? ({ ok: !!guides, json: async () => guides }) : ({ ok: true, json: async () => data });
