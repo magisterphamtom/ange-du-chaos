@@ -335,3 +335,44 @@ a.adc-f-compnom:hover { text-decoration: underline dotted; text-underline-offset
 .adc-f-sup input.l { min-width: 0; flex: 1; }
 .adc-f-sup input.c { width: 3em; text-align: center; }
 .adc-f-protnom { width: 6em; font-size: 11px; border: 0; border-bottom: 1px dotted var(--f-trait); background: transparent; }
+
+
+/* ---- Fiche PNJ / Créature V2 : plaques vitales, médaillons, puces, tableau d'attaques ---- */
+.adc-p2-vitaux { display: grid; grid-template-columns: 2.1fr 1fr 1fr 1fr; gap: 10px; margin: 4px 0 14px; }
+.adc-p2-tuile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 10px 8px; text-align: center; color: #f3ead2;
+  background: linear-gradient(180deg, #2a2548, #1a1636); border: 2px solid #b8913a; border-radius: 10px; box-shadow: inset 0 0 0 1px #0008, 0 2px 4px #0005; }
+.adc-p2-lib { font: 600 11px/1 var(--f-corps, sans-serif); letter-spacing: 0.14em; text-transform: uppercase; color: #d9c48a; }
+.adc-p2-val { display: flex; align-items: baseline; justify-content: center; gap: 4px; }
+.adc-p2-val input { width: 2.3em; height: 40px; border: 0 !important; background: transparent !important; text-align: center; font: 700 34px/1 Georgia, "Times New Roman", serif !important; color: #fff !important; padding: 0; box-shadow: none !important; }
+.adc-p2-val small { font: 20px Georgia, serif; color: #c9b98a; }
+.adc-p2-sous { font: 11px var(--f-corps, sans-serif); color: #c9c2d8; background: transparent !important; border: 0 !important; text-align: center; width: 100%; padding: 0; }
+.adc-p2-barre { width: 100%; height: 8px; border-radius: 4px; background: #0006; overflow: hidden; margin-top: 2px; }
+.adc-p2-barre i { display: block; height: 100%; max-width: 100%; background: linear-gradient(90deg, #a32f2f, #d4574a); }
+.adc-p2-caracs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 6px; }
+.adc-p2-med { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.adc-p2-rond { width: 74px; height: 74px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #4a4280, #1a1636); border: 3px solid #b8913a; box-shadow: 0 0 0 2px #7a5c1c, 0 3px 6px #0007; }
+.adc-p2-rond input { width: 100%; height: 100%; border: 0 !important; background: transparent !important; text-align: center; font: 700 34px Georgia, "Times New Roman", serif !important; color: #fff !important; padding: 0; box-shadow: none !important; }
+.adc-p2-med b { font: 700 14px Georgia, serif; letter-spacing: 0.1em; margin-top: 6px; color: var(--f-encre); }
+.adc-p2-med small { font: 11px var(--f-corps, sans-serif); color: #5a4d3a; }
+.adc-p2-puces { display: flex; justify-content: center; gap: 8px; margin: 10px 0 14px; flex-wrap: wrap; }
+.adc-p2-puce { display: flex; gap: 6px; align-items: center; background: #efe6cf; border: 1px solid #a89870; border-radius: 14px; padding: 2px 10px 2px 12px; }
+.adc-p2-puce span { font: 600 10px var(--f-corps, sans-serif); letter-spacing: 0.1em; text-transform: uppercase; color: #6b5a3a; }
+.adc-p2-puce input[type="number"] { width: 2.6em; height: 24px; border: 0 !important; background: transparent !important; text-align: center; font: 700 16px Georgia, serif !important; color: var(--f-encre) !important; padding: 0; }
+.adc-p2-att { width: 100%; border-collapse: collapse; background: #efe6cf88; border: 1px solid #a89870; margin-bottom: 12px; }
+.adc-p2-att th { font: 600 10px var(--f-corps, sans-serif); letter-spacing: 0.12em; text-transform: uppercase; color: #6b5a3a; text-align: left; padding: 4px 8px; background: #d8c9a2; }
+.adc-p2-att td { padding: 3px 6px; border-top: 1px solid #c5b78e; }
+.adc-p2-att td input { width: 100%; background: transparent !important; border: 0 !important; border-bottom: 1px dotted #a89870 !important; font: 14px var(--f-corps, sans-serif); color: var(--f-encre); }
+.adc-p2-att td input.n { font: 700 15px Georgia, serif; }
+.adc-p2-att td input.s { width: 3.4em; text-align: center; font: 700 17px Georgia, serif; }
+.adc-p2-att td.b { white-space: nowrap; text-align: right; }
+.adc-p2-go { display: inline-block; background: #8c2b2b; color: #fff !important; border-radius: 6px; padding: 4px 9px; font-size: 13px; cursor: pointer; }
+.adc-p2-go:hover { background: #a63434; }
+.adc-p2-comps { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-bottom: 8px; }
+.adc-p2-comp { display: flex; align-items: center; gap: 6px; background: #efe6cf; border: 1px solid #a89870; border-radius: 6px; padding: 2px 6px 2px 10px; }
+.adc-p2-comp input[type="text"] { flex: 1; min-width: 0; background: transparent !important; border: 0 !important; font: 14px var(--f-corps, sans-serif); color: var(--f-encre); }
+.adc-p2-comp input.v { width: 3em; height: 24px; background: #2a2548 !important; color: #fff !important; border-radius: 5px; text-align: center; font: 700 16px Georgia, serif; border: 0 !important; }
+.adc-feuille label.adc-p2-med { display: flex !important; flex-direction: column; align-items: center; text-align: center; width: auto; }
+.adc-feuille label.adc-p2-puce { display: flex !important; flex-direction: row; width: auto; }
+.adc-feuille input.adc-p2-sous { color: #c9c2d8 !important; font: 11px var(--f-corps, sans-serif) !important; height: 16px; }
+.adc-feuille input.adc-p2-sous::placeholder { color: #8d86a8; }

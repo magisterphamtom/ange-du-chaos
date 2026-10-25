@@ -164,7 +164,7 @@ export class PnjData extends foundry.abstract.TypeDataModel {
         note: texte("Capacités de l'arme")
       }),
       attaquesSup: new f.ArrayField(new f.SchemaField({
-        nom: texte("Attaque", "Arme"), score: entier(12), degats: texte("Dégâts", "2d6")
+        nom: texte("Attaque", "Arme"), score: entier(12), degats: texte("Dégâts", "2d6"), note: texte("Capacités")
       })),
       caracs: new f.SchemaField(Object.fromEntries(["ref", "con", "int", "pui", "cha", "vol"].map(k => [k, entier(5, { min: 0 })]))),
       nexus: entier(0, { min: 0 }),

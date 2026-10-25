@@ -686,7 +686,10 @@ export class PnjSheet extends BaseActorSheet {
     const context = await super._prepareContext(options);
     context.categories = Object.fromEntries(Object.entries(CATEGORIES_ADVERSAIRE).map(([k, v]) => [k, v.label]));
     context.estCreature = this.actor.type === "creature";
-    context.caracsListe = ["ref", "con", "pui", "cha", "int", "vol"].map(k => ({ cle: k, label: k.toUpperCase(), valeur: this.actor.system.caracs?.[k] ?? 0 }));
+    const NOMS_CARACS = { ref: "Réflexes", con: "Constitution", pui: "Puissance", cha: "Charme", int: "Intelligence", vol: "Volonté" };
+    context.caracsListe = ["ref", "con", "pui", "cha", "int", "vol"].map(k => ({ cle: k, label: k.toUpperCase(), nom: NOMS_CARACS[k], valeur: this.actor.system.caracs?.[k] ?? 0 }));
+    const end = this.actor.system.endurance;
+    context.pctEndurance = end?.max > 0 ? Math.max(0, Math.min(100, Math.round(100 * end.value / end.max))) : 0;
     context.assets = ASSETS;
     context.artAdversaire = adversaireDe(this.actor.name)?.filigrane ?? null;
     context.sectionsListe = ["armes", "sorts", "talents", "equipement"].map(k => context.sections?.[k]).filter(Boolean);

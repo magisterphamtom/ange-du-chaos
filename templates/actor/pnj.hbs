@@ -16,64 +16,65 @@
   </div>
 </header>
 <div class="adc-f-pages">
-  <h2 class="adc-f-titre large">Caractéristiques</h2>
-  <div class="adc-f-caracs">
-    {{#each caracsListe}}<label class="c"><b>{{this.label}}</b><input type="number" name="system.caracs.{{this.cle}}" value="{{this.valeur}}" min="0"></label>{{/each}}
+  <div class="adc-p2-vitaux">
+    <div class="adc-p2-tuile fin"><span class="adc-p2-lib">Endurance</span>
+      <span class="adc-p2-val"><input type="number" name="system.endurance.value" value="{{system.endurance.value}}" min="0"><small>/</small><input type="number" name="system.endurance.max" value="{{system.endurance.max}}" min="0"></span>
+      <span class="adc-p2-barre"><i style="width:{{pctEndurance}}%"></i></span></div>
+    <div class="adc-p2-tuile"><span class="adc-p2-lib">Seuil de fatigue</span>
+      <span class="adc-p2-val"><input type="number" name="system.seuilFatigue" value="{{system.seuilFatigue}}" min="0"></span><span class="adc-p2-sous">Réaction : 3 END</span></div>
+    <div class="adc-p2-tuile"><span class="adc-p2-lib">Défense passive</span>
+      <span class="adc-p2-val"><input type="number" name="system.defensePassive" value="{{system.defensePassive}}"></span></div>
+    <div class="adc-p2-tuile"><span class="adc-p2-lib">Protection</span>
+      <span class="adc-p2-val"><input type="number" name="system.protection" value="{{system.protection}}" min="0"></span>
+      <input class="adc-p2-sous" type="text" name="system.protectionNom" value="{{system.protectionNom}}" placeholder="(nom)"></div>
   </div>
 
-  <div class="adc-f-haut">
-    <div class="adc-f-colperso">
-      <h2 class="adc-f-titre">Attaque <a class="adc-f-mini adc-f-gros" data-action="attaquer" data-tooltip="Attaquer (cible désignée)"><i class="fa-solid fa-khanda"></i></a></h2>
-      <div class="adc-f-pt"><label>Arme : <input class="l" type="text" name="system.attaque.nom" value="{{system.attaque.nom}}"></label></div>
-      <div class="adc-f-pt">
-        <label>Score d'attaque : <input class="c" type="number" name="system.attaque.score" value="{{system.attaque.score}}"></label>
-        <label>Dégâts : <input class="l" type="text" name="system.attaque.degats" value="{{system.attaque.degats}}"></label>
-      </div>
-      <div class="adc-f-pt"><label>Capacités : <input class="l" type="text" name="system.attaque.note" value="{{system.attaque.note}}"></label></div>
+  <div class="adc-p2-caracs">
+    {{#each caracsListe}}<label class="adc-p2-med"><span class="adc-p2-rond"><input type="number" name="system.caracs.{{this.cle}}" value="{{this.valeur}}" min="0"></span><b>{{this.label}}</b><small>{{this.nom}}</small></label>{{/each}}
+  </div>
+  <div class="adc-p2-puces">
+    <label class="adc-p2-puce"><span>Initiative</span><input type="number" name="system.initiative" value="{{system.initiative}}"></label>
+    <label class="adc-p2-puce"><span>Mouvement</span><input type="number" name="system.mouvement" value="{{system.mouvement}}" min="0"></label>
+    <label class="adc-p2-puce"><span>Actions / tour</span><input type="number" name="system.actions" value="{{system.actions}}" min="1"></label>
+    <label class="adc-p2-puce"><span>Bonus dégâts</span><input type="number" name="system.bonusDegats" value="{{system.bonusDegats}}"></label>
+    <label class="adc-p2-puce"><span>Nexus</span><input type="number" name="system.nexus" value="{{system.nexus}}" min="0"></label>
+    <label class="adc-p2-puce"><span>Arts étranges</span><input type="number" name="system.artsEtranges" value="{{system.artsEtranges}}" min="0"></label>
+    <label class="adc-p2-puce"><span>Réaction</span><input type="checkbox" name="system.reaction" {{checked system.reaction}}></label>
+  </div>
+
+  <h2 class="adc-f-titre large">Attaques <a class="adc-f-mini adc-f-gros" data-action="addAttaque" data-tooltip="Ajouter une attaque"><i class="fa-solid fa-plus"></i></a></h2>
+  <table class="adc-p2-att">
+    <thead><tr><th>Arme</th><th>Score</th><th>Dégâts</th><th>Capacités</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><input class="n" type="text" name="system.attaque.nom" value="{{system.attaque.nom}}" placeholder="Arme"></td>
+        <td><input class="s" type="number" name="system.attaque.score" value="{{system.attaque.score}}"></td>
+        <td><input type="text" name="system.attaque.degats" value="{{system.attaque.degats}}"></td>
+        <td><input type="text" name="system.attaque.note" value="{{system.attaque.note}}"></td>
+        <td class="b"><a class="adc-p2-go" data-action="attaquer" data-tooltip="Attaquer (cible désignée)"><i class="fa-solid fa-khanda"></i> Attaquer</a></td>
+      </tr>
       {{#each system.attaquesSup}}
-      <div class="adc-f-pt adc-f-sup">
-        <a class="adc-f-mini" data-action="attaquer" data-sup="{{@index}}" data-tooltip="Attaquer avec {{this.nom}}"><i class="fa-solid fa-khanda"></i></a>
-        <input class="l" type="text" name="system.attaquesSup.{{@index}}.nom" value="{{this.nom}}">
-        <input class="c" type="number" name="system.attaquesSup.{{@index}}.score" value="{{this.score}}">
-        <input class="l" type="text" name="system.attaquesSup.{{@index}}.degats" value="{{this.degats}}">
-        <a class="adc-f-btn" data-action="removeAttaque" data-index="{{@index}}" data-tooltip="Retirer"><i class="fa-solid fa-trash"></i></a>
-      </div>
+      <tr>
+        <td><input class="n" type="text" name="system.attaquesSup.{{@index}}.nom" value="{{this.nom}}"></td>
+        <td><input class="s" type="number" name="system.attaquesSup.{{@index}}.score" value="{{this.score}}"></td>
+        <td><input type="text" name="system.attaquesSup.{{@index}}.degats" value="{{this.degats}}"></td>
+        <td><input type="text" name="system.attaquesSup.{{@index}}.note" value="{{this.note}}"></td>
+        <td class="b"><a class="adc-p2-go" data-action="attaquer" data-sup="{{@index}}" data-tooltip="Attaquer avec {{this.nom}}"><i class="fa-solid fa-khanda"></i> Attaquer</a>
+          <a class="adc-f-btn" data-action="removeAttaque" data-index="{{@index}}" data-tooltip="Retirer"><i class="fa-solid fa-trash"></i></a></td>
+      </tr>
       {{/each}}
-      <div class="adc-f-pt"><a class="adc-f-mini" data-action="addAttaque" data-tooltip="Ajouter une attaque"><i class="fa-solid fa-plus"></i> Autre attaque</a></div>
+    </tbody>
+  </table>
 
-      <h2 class="adc-f-titre large">Compétences <a class="adc-f-mini adc-f-gros" data-action="addCompetence" data-tooltip="Ajouter une compétence"><i class="fa-solid fa-plus"></i></a></h2>
-      <ul class="adc-f-liste">
-        {{#each system.competences}}
-        <li class="adc-f-ligne">
-          <input class="adc-f-compnomchamp" type="text" name="system.competences.{{@index}}.nom" value="{{this.nom}}">
-          <span class="adc-f-case-val"><input type="number" name="system.competences.{{@index}}.score" value="{{this.score}}"></span>
-          <a class="adc-f-btn" data-action="removeCompetence" data-index="{{@index}}" data-tooltip="Retirer"><i class="fa-solid fa-trash"></i></a>
-        </li>
-        {{else}}<li class="adc-f-vide">Aucune compétence : utilisez le + pour en ajouter.</li>{{/each}}
-      </ul>
+  <h2 class="adc-f-titre large">Compétences <a class="adc-f-mini adc-f-gros" data-action="addCompetence" data-tooltip="Ajouter une compétence"><i class="fa-solid fa-plus"></i></a></h2>
+  <div class="adc-p2-comps">
+    {{#each system.competences}}
+    <div class="adc-p2-comp">
+      <input type="text" name="system.competences.{{@index}}.nom" value="{{this.nom}}">
+      <input class="v" type="number" name="system.competences.{{@index}}.score" value="{{this.score}}">
+      <a class="adc-f-btn" data-action="removeCompetence" data-index="{{@index}}" data-tooltip="Retirer"><i class="fa-solid fa-trash"></i></a>
     </div>
-
-    <div class="adc-f-colmid">
-      <h2 class="adc-f-titre">Endurance</h2>
-      <div class="adc-f-jauge"><div class="adc-f-case-val">
-        <input type="number" name="system.endurance.value" value="{{system.endurance.value}}" min="0"><small>/</small>
-        <input type="number" name="system.endurance.max" value="{{system.endurance.max}}" min="0">
-      </div></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Seuil de fatigue</span><span class="adc-f-case-val"><input type="number" name="system.seuilFatigue" value="{{system.seuilFatigue}}" min="0"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Protection <input class="adc-f-protnom" type="text" name="system.protectionNom" value="{{system.protectionNom}}" placeholder="(nom)"></span><span class="adc-f-case-val"><input type="number" name="system.protection" value="{{system.protection}}" min="0"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Défense passive</span><span class="adc-f-case-val"><input type="number" name="system.defensePassive" value="{{system.defensePassive}}"></span></div>
-    </div>
-
-    <div class="adc-f-coldroite">
-      <h2 class="adc-f-titre">Combat</h2>
-      <div class="adc-f-carac"><span class="adc-f-sous">Initiative</span><span class="adc-f-case-val"><input type="number" name="system.initiative" value="{{system.initiative}}"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Mouvement</span><span class="adc-f-case-val"><input type="number" name="system.mouvement" value="{{system.mouvement}}" min="0"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Actions par tour</span><span class="adc-f-case-val"><input type="number" name="system.actions" value="{{system.actions}}" min="1"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Nexus</span><span class="adc-f-case-val"><input type="number" name="system.nexus" value="{{system.nexus}}" min="0"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Réaction</span><span class="adc-f-case-val"><input type="checkbox" name="system.reaction" {{checked system.reaction}}></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Arts étranges</span><span class="adc-f-case-val"><input type="number" name="system.artsEtranges" value="{{system.artsEtranges}}" min="0"></span></div>
-      <div class="adc-f-carac"><span class="adc-f-sous">Bonus aux dégâts</span><span class="adc-f-case-val"><input type="number" name="system.bonusDegats" value="{{system.bonusDegats}}"></span></div>
-    </div>
+    {{else}}<p class="adc-f-vide">Aucune compétence : utilisez le + pour en ajouter.</p>{{/each}}
   </div>
 
   <h2 class="adc-f-titre large">Description</h2>

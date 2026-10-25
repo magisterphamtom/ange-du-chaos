@@ -113,7 +113,7 @@ export function documentsActeurs(c) {
         initiative: a.initiative, mouvement: a.mouvement,
         nexus: a.nexus ?? 0, actions: a.actions ?? 1, reaction: !!a.reaction, artsEtranges: a.artsEtranges ?? 0,
         attaque: { nom: a.attaque?.nom || "Attaque", score: a.attaque?.score ?? 10, degats: a.attaque?.degats || "2d6", note: a.attaqueNote ?? "" },
-        attaquesSup: (a.attaquesSup ?? []).map(w => ({ nom: w.nom || "Attaque", score: w.score ?? 10, degats: w.degats || "2d6" })),
+        attaquesSup: (a.attaquesSup ?? []).map(w => ({ nom: w.nom || "Attaque", score: w.score ?? 10, degats: w.degats || "2d6", note: w.note || "" })),
         competences: (a.competences ?? []).map(k => ({ nom: k.nom, score: k.score })),
         talents: a.talents || "",
         notes: a.notes || ""
