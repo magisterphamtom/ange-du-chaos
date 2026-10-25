@@ -8,7 +8,7 @@ import { SYSTEM_ID, ASSETS } from "./config.mjs";
 import { contenusExtensions } from "./extensions.mjs";
 import { fusionnerContenus } from "./extensions-regles.mjs";
 import { iconeObjet } from "./icones.mjs";
-import { DOSSIER_RACINE, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
+import { DOSSIER_RACINE, acteursSupplements, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
 
 export const CONTENU_VERSION = 1;
 const URL_CONTENU = `${ASSETS}/contenu/contenu.json`;
@@ -27,6 +27,26 @@ async function charger() {
 
 export function enregistrerReglagesContenu() {
   game.settings.register(SYSTEM_ID, "contenuVersion", { scope: "world", config: false, type: Number, default: 0 });
+  game.settings.register(SYSTEM_ID, "supplementsRetires", { scope: "world", config: false, type: Number, default: 0 });
+}
+
+/** Une fois : retire du monde les créatures et prétirés des suppléments (ils vivent désormais dans les compendiums des modules). */
+export async function retirerSupplements() {
+  if (!game.user.isGM || game.settings.get(SYSTEM_ID, "supplementsRetires") >= 1) return 0;
+  const r = await fetch(URL_CONTENU); const base = r.ok ? await r.json() : null;
+  if (!base?.contenu?.adversaires?.length) return 0;
+  const cibles = acteursSupplements(game.actors.map(a => ({ id: a.id, name: a.name, contenu: estContenu(a) })), base.contenu.adversaires);
+  if (cibles.length) await Actor.deleteDocuments(cibles.map(c => c.id));
+  // dossiers du contenu devenus vides
+  for (let tour = 0; tour < 6; tour++) {
+    const vides = game.folders.filter(f => f.type === "Actor" && estContenu(f) && f.name !== DOSSIER_RACINE
+      && !f.contents.length && !f.children?.length).map(f => f.id);
+    if (!vides.length) break;
+    await Folder.deleteDocuments(vides);
+  }
+  await game.settings.set(SYSTEM_ID, "supplementsRetires", 1);
+  if (cibles.length) ui.notifications.info(`L'Ange du Chaos : ${cibles.length} fiches de suppléments retirées du monde (elles sont dans les compendiums des modules).`);
+  return cibles.length;
 }
 
 /** Crée (ou recrée) les dossiers, objets et créatures du livre. */
@@ -123,6 +143,7 @@ export function initialiserContenu() {
       if (game.user.isGM && game.settings.get(SYSTEM_ID, "contenuVersion") < CONTENU_VERSION
         && !game.items.some(estContenu)) await creerContenu();
     } catch (e) { console.error(`${SYSTEM_ID} | Contenu`, e); }
+    try { await retirerSupplements(); } catch (e) { console.error(`${SYSTEM_ID} | Suppléments`, e); }
     try { await corrigerIcones(); } catch (e) { console.error(`${SYSTEM_ID} | Icônes`, e); }
   });
 }

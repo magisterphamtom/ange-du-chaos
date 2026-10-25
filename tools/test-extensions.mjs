@@ -8,3 +8,10 @@ assert.deepEqual(fusionnerContenus(undefined, undefined), {});
 assert.equal(fusionnerGuides([{ nom: "x" }], [{ guides: [{ nom: "y" }] }, null, {}]).length, 2);
 assert.equal(signatureExtensions([{ id: "b", version: "1.0" }, { id: "a", version: "2" }]), "a@2|b@1.0");
 console.log("test-extensions : OK");
+// retrait des suppléments du monde
+{
+  const { acteursSupplements } = await import("../module/contenu-data.mjs");
+  const acts = [{ id: "1", name: "Goule", contenu: true }, { id: "2", name: "Wendigo de Sang", contenu: true }, { id: "3", name: "Mon PNJ", contenu: false }];
+  const r = acteursSupplements(acts, [{ nom: "Goule" }]);
+  if (r.length !== 1 || r[0].id !== "2" || acteursSupplements(acts, []).length) { console.log("KO retrait suppléments"); process.exitCode = 1; } else console.log("OK retrait suppléments");
+}

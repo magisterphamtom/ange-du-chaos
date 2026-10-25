@@ -216,3 +216,10 @@ export function documentsPretires(c, items = documentsItems(c)) {
     };
   });
 }
+
+/** Acteurs « contenu du livre » du monde qui ne font pas partie du livre de base (anciens suppléments à retirer). */
+export function acteursSupplements(acteurs, adversairesBase) {
+  const base = new Set((adversairesBase ?? []).map(a => normNom(a.nom)));
+  if (!base.size) return [];
+  return acteurs.filter(a => a.contenu && !base.has(normNom(a.name)));
+}
