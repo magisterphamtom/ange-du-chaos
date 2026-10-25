@@ -80,7 +80,7 @@ export async function creerContenu({ confirmer = false } = {}) {
   return true;
 }
 
-const IMG_DEFAUT = (img) => !img || /^icons\/svg\//.test(img);
+const IMG_DEFAUT = (img) => !img || /^icons\/svg\//.test(img) || /\/voies\/(protecteur|duelliste|tireur|assassin|conspirateur|sorcier)\.webp$/.test(img);
 
 /** Donne leur icône aux objets du monde (et des fiches) qui ont encore l'image par défaut de Foundry. */
 export async function corrigerIcones() {

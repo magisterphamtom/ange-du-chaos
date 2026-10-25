@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.28.4 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.28.5 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -146,3 +146,4 @@ E. Aucune erreur rouge en console pendant ces jets.
 - 0.28.2 : fiche PNJ/Créature, la zone défilante est maintenant `.adc-f-pages` (comme la fiche de personnage) : la poignée d'étirement revient en bas à droite de la fenêtre, le contenu défile dans la fenêtre. À tester : redimensionner une fiche PNJ.
 - 0.28.3 : fiche PNJ, la zone de contenu est bornée à la fenêtre (css/fiche.css, fin de fichier) : la poignée d'étirement doit être en bas à droite et le contenu défiler. Si ça ne marche pas : capture de l'inspecteur (clic droit > Inspecter sur la fiche).
 - 0.28.4 : icônes des 6 voies refaites dans le style des autres icônes (bouclier à croix violette, deux épées croisées, arc et flèche, dague + croissant, masque, bâton à orbe étoilé) : générées par `tools/icones_voies.py <assets/icones>` -> `icones/voie-<cle>.webp` ; les objets Voie les utilisent à la place des grandes silhouettes du livre (`icones.mjs`). À tester : onglet Objets/Voies du monde, et les voies glissées sur une fiche.
+- 0.28.5 : les Voies déjà présentes dans le monde (et sur les fiches) gardaient l'ancienne image enregistrée ; `corrigerIcones` (au chargement, MJ) remplace aussi les anciennes silhouettes `voies/<cle>.webp` par les icônes `icones/voie-<cle>.webp`.
