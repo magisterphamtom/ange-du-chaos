@@ -41,7 +41,7 @@ t(iconeObjet("arme", { competence: "armesDeTir" }, "Arbalète légère").endsWit
 t(iconeObjet("arme", { competence: "massesEtHaches" }, "Hache de guerre").endsWith("icones/hache.webp"), "icône hache");
 t(iconeObjet("armure", { localisation: "JD, JG" }, "Jambières de cuir").endsWith("icones/jambes.webp"), "icône jambières");
 t(iconeObjet("sort", { source: "Sang" }, "x").endsWith("runes/sang.webp") && iconeObjet("sort", { source: "Communs" }, "x").endsWith("icones/mana.webp"), "icônes de sorts");
-t(iconeObjet("voie", { cle: "assassin" }, "x").endsWith("voies/assassin.webp") && iconeObjet("maison", { cle: "loki" }, "x").endsWith("icones/loki.webp"), "icônes de voie et de Maison");
+t(iconeObjet("voie", { cle: "assassin" }, "x").endsWith("icones/voie-assassin.webp") && iconeObjet("maison", { cle: "loki" }, "x").endsWith("icones/loki.webp"), "icônes de voie et de Maison");
 t(iconeObjet("equipement", {}, "Cheval de guerre").endsWith("icones/monture.webp"), "icône monture");
 if (ko) { console.error(`ÉCHEC : ${ko}`); process.exit(1); }
 console.log("OK : effets et icônes.");
