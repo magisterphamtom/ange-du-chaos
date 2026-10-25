@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.31.3 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.32.0 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -159,3 +159,4 @@ E. Aucune erreur rouge en console pendant ces jets.
 - 0.31.1 : guides des modules améliorés (outil `tools/guide_ameliorer.py`) : traits d'union perdus restaurés (voulez-vous, peut-être…), césures recollées, pieds de page du livre retirés, longues pages découpées par titre (≈110 pages pour Monde des Plans, 110 pour Sources de sang, 31 Terres de l'Ouest, 19 Cité des nuages), puces et titres d'encadrés stylés (CSS). Modules : monde-des-plans 0.3.1, cite-des-nuages 0.1.1, terres-de-l-ouest 0.3.1, sources-de-sang 0.2.1.
 - 0.31.2 : 19 illustrations d'adversaires ajoutées (Assassin, Maître-Assassin, Bandit, Chef de bande, Brako, Enragé, Surineur, Mercenaire sentinelle, Brasseur d'écume, Béret rouge, Paladin bleu, Templier et Inquisiteur de l'Orage, Frère et Samson Grieger, Soldat ténébreux, Sorcier de Sang, Reine de Sang, Shenn'Gath) : tous les adversaires du livre de base ont maintenant leur illustration + jeton.
 - 0.31.3 : nouvelles illustrations d'Arkanôst de Valkyr, Goule et Chimère de sang (jeton + portrait, remplacent celles du livre).
+- 0.32.0 : onglet « Illustration » sur toutes les fiches (personnage, PNJ, créature) : grande image cliquable (agrandissement), bouton « Changer l'image ». Icône assets/onglets/illustration.webp.

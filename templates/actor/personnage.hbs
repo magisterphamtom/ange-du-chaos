@@ -322,5 +322,12 @@
   <h2 class="adc-f-titre large">Notes</h2>
   {{formInput champs.notes value=system.notes enriched=enrichi.notes toggled=true}}
 </section>
+<section class="adc-onglet tab adc-f-page" data-tab="illustration">
+  <div class="adc-ill">
+    <img class="adc-ill-img" src="{{actor.img}}" alt="{{actor.name}}" data-action="voirImage" data-tooltip="Cliquer pour agrandir">
+    <p class="adc-ill-nom">{{actor.name}}</p>
+    {{#if editable}}<a class="adc-f-btn adc-ill-chg" data-edit="img" data-action="editImage"><i class="fa-solid fa-image"></i> Changer l'image</a>{{/if}}
+  </div>
+</section>
 </div>
 </div>

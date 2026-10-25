@@ -394,3 +394,9 @@ a.adc-f-compnom:hover { text-decoration: underline dotted; text-underline-offset
 .ange-du-chaos.feuille .window-content > [data-application-part] { flex: 1 1 0; min-height: 0; height: 100%; display: flex; flex-direction: column; overflow: visible; }
 .ange-du-chaos.feuille .window-content > [data-application-part] > .adc-feuille { flex: 1 1 0; min-height: 0; height: auto; }
 .ange-du-chaos.feuille .window-content { overflow: visible; }
+
+/* Onglet Illustration */
+.adc-ill { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 8px 0 16px; }
+.adc-ill-img { max-width: 100%; max-height: 62vh; width: auto; height: auto; object-fit: contain; border: 3px solid #3a2317; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.55); background: #111; cursor: zoom-in; }
+.adc-ill-nom { margin: 0; font: 600 26px var(--f-titre, Georgia, serif); color: var(--f-encre, #2b2016); text-align: center; }
+.adc-ill-chg { cursor: pointer; }

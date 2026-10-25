@@ -60,6 +60,7 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       toggleEquip: BaseActorSheet.#toggleEquip,
       toggleEtat: BaseActorSheet.#toggleEtat,
       adcOnglet: BaseActorSheet.#changerOnglet,
+      voirImage: BaseActorSheet.#voirImage,
       basculerHaut: BaseActorSheet.#basculerHaut,
       lancerSort: BaseActorSheet.#lancerSort,
       infoCompetence: BaseActorSheet.#infoCompetence,
@@ -248,6 +249,12 @@ class BaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const id = target.closest("[data-item-id]")?.dataset.itemId;
     const sup = target.dataset.sup;
     await attaquer(this.actor, id ? this.actor.items.get(id) : null, sup !== undefined && sup !== "" ? Number(sup) : null);
+  }
+
+  /** Affiche l'illustration de l'acteur en grand. */
+  static async #voirImage(event, target) {
+    const Popout = foundry.applications?.apps?.ImagePopout ?? ImagePopout;
+    new Popout({ src: this.actor.img, window: { title: this.actor.name } }).render({ force: true });
   }
 
   static async #changerOnglet(event, target) {
@@ -519,7 +526,8 @@ export class PersonnageSheet extends BaseActorSheet {
     { id: "combat", label: "Combat" },
     { id: "equipement", label: "Équipement" },
     { id: "magie", label: "Magie" },
-    { id: "biographie", label: "Biographie" }
+    { id: "biographie", label: "Biographie" },
+    { id: "illustration", label: "Illustration" }
   ];
 
   /** Clic sur une case de rang : fixe le rang (re-clic sur le rang actuel : −1). */
@@ -682,7 +690,8 @@ export class PnjSheet extends BaseActorSheet {
     { id: "profil", label: "Profil" },
     { id: "combat", label: "Combat" },
     { id: "biographie", label: "Description" },
-    { id: "equipement", label: "Objets" }
+    { id: "equipement", label: "Objets" },
+    { id: "illustration", label: "Illustration" }
   ];
 
   /** Sections repliées par défaut à la première ouverture (chaque groupe a désormais son onglet). */
