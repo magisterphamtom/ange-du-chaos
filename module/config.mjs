@@ -192,7 +192,7 @@ export const ADVERSAIRES = {
   ...Object.fromEntries(["animal_de_monte", "animal_feroce", "bete_de_somme", "centaure", "chasseur_ikshite", "conteur_rhitan", "cristalik",
     "djiina", "egle_messager", "fendyr", "guerrier_demon_tenebreux", "guerrier_hamachii", "guerrier_picte", "guerrier_smaugh", "guerrier_thog",
     "khan_de_tribu_vorpal", "khelash_des_iles", "maitre_d_armes_khelash", "maitre_de_chasse_arikari", "monture_de_guerre", "oiseau_de_proie",
-    "petit_animal", "sorcier_thog", "taride", "tireur_d_elite_fendyr", "traqueur_arikari", "vorpal"].map(k => [k, "bestiaire"]))
+    "petit_animal", "sorcier_thog", "taride", "tireur_d_elite_fendyr", "traqueur_arikari", "vorpal"].map(k => [k, "jeton"]))
 };
 
 /** Retrouve l'adversaire connu d'après le nom d'un acteur (accents et casse ignorés). */
@@ -200,5 +200,6 @@ export function adversaireDe(nom) {
   const n = String(nom ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]+/g, "_");
   const cle = Object.keys(ADVERSAIRES).filter(k => n.includes(k)).sort((x, y) => y.length - x.length)[0];   // la clé la plus précise gagne (khan_de_tribu_vorpal avant vorpal)
   if (!cle) return null;
-  return { cle, illustration: `${ASSETS}/wiki/${ADVERSAIRES[cle]}/${cle}.webp`, filigrane: `${ASSETS}/filigranes/${cle}.webp`, jeton: `${ASSETS}/tokens/${cle}.webp` };
+  const jeton = `${ASSETS}/tokens/${cle}.webp`;
+  return { cle, illustration: ADVERSAIRES[cle] === "jeton" ? jeton : `${ASSETS}/wiki/${ADVERSAIRES[cle]}/${cle}.webp`, filigrane: `${ASSETS}/filigranes/${cle}.webp`, jeton };
 }

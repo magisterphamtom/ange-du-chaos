@@ -1,7 +1,7 @@
 """Fabrique les jetons ronds (anneau brun/rouge comme ceux du livre) à partir d'illustrations carrées.
 Usage : python3 tools/jetons.py <carte.json> <dossier_sources> <dossier_assets>
 carte.json : { "cle": {"fichier": "xxx.jpg", "zoom": 0.8, "dx": 0, "dy": 0}, ... }
-Écrit <assets>/tokens/<cle>.webp et <assets>/wiki/bestiaire/<cle>.webp (400 px)."""
+Écrit <assets>/tokens/<cle>.webp (400 px) : sert de jeton et de portrait."""
 import sys, json, os
 from PIL import Image, ImageDraw
 N = 400
@@ -23,7 +23,6 @@ if __name__ == "__main__":
     carte, src, assets = sys.argv[1:4]
     for cle, c in json.load(open(carte)).items():
         t = jeton(os.path.join(src, c["fichier"]), c.get("zoom", 0.8), c.get("dx", 0), c.get("dy", 0))
-        for sous in ("tokens", "wiki/bestiaire"):
-            os.makedirs(os.path.join(assets, sous), exist_ok=True)
-            t.save(os.path.join(assets, sous, f"{cle}.webp"), "WEBP", quality=90)
+        os.makedirs(os.path.join(assets, "tokens"), exist_ok=True)
+        t.save(os.path.join(assets, "tokens", f"{cle}.webp"), "WEBP", quality=90)
         print(cle)
