@@ -18,6 +18,6 @@ console.log("test-extensions : OK");
 // illustrations : la clé la plus précise gagne
 {
   const { adversaireDe } = await import("../module/config.mjs");
-  const ok = adversaireDe("Khan de tribu vorpal")?.cle === "khan_de_tribu_vorpal" && adversaireDe("Tireur d’élite fendyr")?.cle === "tireur_d_elite_fendyr" && adversaireDe("Fendyr")?.cle === "fendyr" && !adversaireDe("Soldat ténébreux");
+  const ok = adversaireDe("Khan de tribu vorpal")?.cle === "khan_de_tribu_vorpal" && adversaireDe("Tireur d’élite fendyr")?.cle === "tireur_d_elite_fendyr" && adversaireDe("Fendyr")?.cle === "fendyr" && adversaireDe("Soldat ténébreux")?.cle === "soldat_tenebreux" && adversaireDe("Brako, chef de bande")?.cle === "brako_chef_de_bande" && !adversaireDe("Inconnu");
   console.log(ok ? "OK illustrations des adversaires" : "KO illustrations des adversaires"); if (!ok) process.exitCode = 1;
 }
