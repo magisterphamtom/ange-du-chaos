@@ -1,7 +1,7 @@
 # L'Ange du Chaos — état du projet
 
 > **Dépôt public** : Les XII Singes ont autorisé le développement de ce système de jeu (accord de Roxane). Le dépôt ne contient que le moteur ; les illustrations officielles, les PDF et les textes extraits du livre (`assets/`, dont `wiki` et `contenu`) restent hors dépôt (`.gitignore`) tant que l'accord ne les couvre pas explicitement.
-> Foundry visé : v14.369 (compatible v13). Version du système : 0.31.0 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
+> Foundry visé : v14.369 (compatible v13). Version du système : 0.31.1 (fiches, jets, Nexus, combat, contenu du livre, création, icônes, effets des Talents, fiche à l'image de la fiche imprimée, boîtes de dialogue et assistant de création au même style).
 
 ## Fait (lot 1 — squelette)
 - `system.json` avec `documentTypes` (pas de template.json) : acteurs `personnage`, `pnj`, `creature` ; objets `arme`, `armure`, `bouclier`, `equipement`, `drogue`, `sort`, `artmartial`, `talent`, `fortune`, `malediction`, `maison`, `voie`.
@@ -156,3 +156,4 @@ E. Aucune erreur rouge en console pendant ces jets.
 - 0.30.1 : correctif — les onglets (collés hors du bord gauche) étaient coupés par la règle overflow:hidden ajoutée en 0.28.3 ; remise en overflow:visible (la fiche reste bornée par le flex).
 - 0.31.0 : fiches Créature/PNJ à onglets (Profil, Combat, Description, Objets) comme la fiche de personnage ; les sections ne sont plus repliées par défaut puisque chaque groupe a son onglet.
 - Module `ange-du-chaos-monde-des-plans` 0.3.0 : ajout du guide du Monde des Plans (15 journaux : introduction, origines, histoire et géographie de chaque Plan-maître et du Plan primaire, voies communes, mystères, rencontres, scénario Première mission, notes de l'auteur). Fiches de prétirés du PDF exclues (déjà en compendium).
+- 0.31.1 : guides des modules améliorés (outil `tools/guide_ameliorer.py`) : traits d'union perdus restaurés (voulez-vous, peut-être…), césures recollées, pieds de page du livre retirés, longues pages découpées par titre (≈110 pages pour Monde des Plans, 110 pour Sources de sang, 31 Terres de l'Ouest, 19 Cité des nuages), puces et titres d'encadrés stylés (CSS). Modules : monde-des-plans 0.3.1, cite-des-nuages 0.1.1, terres-de-l-ouest 0.3.1, sources-de-sang 0.2.1.

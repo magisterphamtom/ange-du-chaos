@@ -613,3 +613,12 @@
 
 /* ---- Rappel d'états en début de tour ---- */
 .adc-carte-destin.etat .adc-btn-etat { margin: 3px 0 0; padding: 2px 8px; font-size: 0.85em; cursor: pointer; }
+
+/* Guides des modules : titres d'encadrés (fiches de PNJ, lieux) et listes à puces */
+.adc-wiki-sheet .journal-page-content h3.adcencadre {
+  margin: 1.2em 0 0.4em; padding: 4px 12px; font-style: normal; font-variant: small-caps; letter-spacing: 0.08em; font-size: 1.1em;
+  color: #f3ead3; background: rgba(43, 32, 22, 0.88); border-left: 5px solid var(--adc-sang, #7a1f1f); border-radius: 2px;
+}
+.adc-wiki-sheet .journal-page-content h3.adcencadre + p { padding: 6px 12px; background: rgba(255, 250, 235, 0.45); border: 1px solid rgba(90, 70, 45, 0.45); border-top: 0; }
+.adc-wiki-sheet .journal-page-content .adc-puce { margin: 0.2em 0 0.2em 1.4em; text-indent: -0.9em; text-align: left; }
+.adc-wiki-sheet .journal-page-content p { text-align: justify; hyphens: auto; }
