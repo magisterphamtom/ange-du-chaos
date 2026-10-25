@@ -1,12 +1,14 @@
 // Banc d'essai du contenu : mappe contenu.json vers des documents et vérifie les valeurs contre les listes fermées du système.
-// Usage : node tools/test-contenu.mjs [chemin/vers/contenu.json]
+// Usage : node tools/test-contenu.mjs [contenu.json] [extension1/data/contenu.json …]  (les extensions sont fusionnées à la base)
 import fs from "node:fs";
 import { DISPONIBILITES, MAISONS, VOIES, COMPETENCES_ARMES, TYPES_DEGATS, NIVEAUX_SORT, CATEGORIES_ADVERSAIRE } from "../module/config.mjs";
 import { documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "../module/contenu-data.mjs";
 import { deriver } from "../module/calc.mjs";
 const chemin = process.argv[2] ?? "assets/contenu/contenu.json";
 if (!fs.existsSync(chemin)) { console.log("contenu.json absent : test ignoré (pack d'assets privés non installé)."); process.exit(0); }
-const c = JSON.parse(fs.readFileSync(chemin, "utf8")).contenu;
+const extras = process.argv.slice(3).map(f => JSON.parse(fs.readFileSync(f, "utf8")).contenu);
+const { fusionnerContenus } = await import("../module/extensions-regles.mjs");
+const c = fusionnerContenus(JSON.parse(fs.readFileSync(chemin, "utf8")).contenu, extras);
 const items = documentsItems(c), acteurs = documentsActeurs(c);
 let erreurs = 0;
 const ko = (m) => { erreurs++; console.error("KO", m); };
@@ -61,9 +63,10 @@ const mk = (t) => ({ create: async (d) => { const doc = { ...d, id: `${t}${++n}`
   createDocuments: async (l) => { l.forEach(d => crees[t].push({ ...d, id: `${t}${++n}` })); return l; }, deleteDocuments: async () => {} });
 globalThis.Folder = mk("Folder"); globalThis.Item = mk("Item"); globalThis.Actor = mk("Actor");
 globalThis.ui = { notifications: { warn: console.warn, info: (m) => console.log("info:", m) } };
-globalThis.game = { user: { isGM: true }, items: [], actors: [], folders: [],
+globalThis.game = { user: { isGM: true }, modules: new Map(), items: [], actors: [], folders: [],
   settings: { set: async (s, k, v) => { reglages[k] = v; }, get: (s, k) => reglages[k], register() {} } };
 globalThis.fetch = async () => ({ ok: true, json: async () => JSON.parse(fs.readFileSync(chemin, "utf8")) });
+globalThis.__extras = extras;
 const { creerContenu, CONTENU_VERSION } = await import("../module/contenu.mjs");
 const ok = await creerContenu();
 const ids = new Set(crees.Folder.map(f => f.id));
