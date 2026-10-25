@@ -8,7 +8,8 @@ import { signatureExtensions } from "./extensions-regles.mjs";
 
 /** Modules actifs qui déclarent du contenu : [{ id, title, version, contenu, wiki }]. */
 export function extensionsActives() {
-  return [...game.modules].filter(([, m]) => m.active && m.flags?.[SYSTEM_ID]).map(([id, m]) => {
+  // game.modules est une Collection Foundry : son itérateur donne les modules (pas des paires) ; on passe par keys()/get().
+  return [...game.modules.keys()].map(id => [id, game.modules.get(id)]).filter(([, m]) => m?.active && m.flags?.[SYSTEM_ID]).map(([id, m]) => {
     const f = m.flags[SYSTEM_ID] ?? {};
     return { id, title: m.title ?? id, version: m.version ?? "0", contenu: f.contenu ?? null, wiki: f.wiki ?? null };
   }).filter(e => e.contenu || e.wiki);
