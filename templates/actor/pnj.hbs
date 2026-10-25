@@ -66,7 +66,8 @@
     </tbody>
   </table>
 
-  <h2 class="adc-f-titre large">Compétences <a class="adc-f-mini adc-f-gros" data-action="addCompetence" data-tooltip="Ajouter une compétence"><i class="fa-solid fa-plus"></i></a></h2>
+  <div class="adc-f-repli" data-repli="comps">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="comps" data-tooltip="Cliquer pour replier / déplier">Compétences<a class="adc-f-mini adc-f-gros" data-action="addCompetence" data-tooltip="Ajouter une compétence"><i class="fa-solid fa-plus"></i></a> <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   <div class="adc-p2-comps">
     {{#each system.competences}}
     <div class="adc-p2-comp">
@@ -76,19 +77,26 @@
     </div>
     {{else}}<p class="adc-f-vide">Aucune compétence : utilisez le + pour en ajouter.</p>{{/each}}
   </div>
+  </div>
 
-  <h2 class="adc-f-titre large">Description</h2>
+  <div class="adc-f-repli" data-repli="description">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="description" data-tooltip="Cliquer pour replier / déplier">Description <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   {{formInput champs.description value=system.description enriched=enrichi.description toggled=true}}
-  <h2 class="adc-f-titre large">Talents d'adversaire</h2>
+  </div>
+  <div class="adc-f-repli" data-repli="talentsAdv">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="talentsAdv" data-tooltip="Cliquer pour replier / déplier">Talents d'adversaire <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   {{formInput champs.talents value=system.talents enriched=enrichi.talents toggled=true}}
+  </div>
   {{#if estCreature}}
-  <h2 class="adc-f-titre large">Capacités spéciales</h2>
+  <div class="adc-f-repli" data-repli="capacites">
+  <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="capacites" data-tooltip="Cliquer pour replier / déplier">Capacités spéciales <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   {{formInput champs.capacites value=system.capacites enriched=enrichi.capacites toggled=true}}
+  </div>
   {{/if}}
 
   {{#each sectionsListe}}
-  <div class="adc-f-bloc" data-type="{{this.type}}">
-    <h2 class="adc-f-titre large">{{this.titre}}</h2>
+  <div class="adc-f-bloc adc-f-repli" data-repli="sec-{{this.type}}" data-type="{{this.type}}">
+    <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="sec-{{this.type}}" data-tooltip="Cliquer pour replier / déplier">{{this.titre}} <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
     <ul class="adc-f-liste">
       {{#each this.lignes}}{{> adc-ligne-f}}{{else}}<li class="adc-f-vide">Glissez ici : {{../titre}}</li>{{/each}}
     </ul>

@@ -376,3 +376,16 @@ a.adc-f-compnom:hover { text-decoration: underline dotted; text-underline-offset
 .adc-feuille label.adc-p2-puce { display: flex !important; flex-direction: row; width: auto; }
 .adc-feuille input.adc-p2-sous { color: #c9c2d8 !important; font: 11px var(--f-corps, sans-serif) !important; height: 16px; }
 .adc-feuille input.adc-p2-sous::placeholder { color: #8d86a8; }
+
+/* PNJ : version compacte, chiffres non coupés */
+.adc-pnj .adc-p2-vitaux { gap: 6px; margin: 2px 0 8px; }
+.adc-pnj .adc-p2-tuile { padding: 4px 8px 6px; }
+.adc-pnj .adc-p2-val input { height: 46px; font-size: 30px !important; line-height: 46px !important; }
+.adc-pnj .adc-p2-rond { width: 56px; height: 56px; }
+.adc-pnj .adc-p2-rond input { font-size: 26px !important; line-height: 50px !important; height: 100%; }
+.adc-pnj .adc-p2-med b { font-size: 12px; margin-top: 3px; }
+.adc-pnj .adc-p2-med small { font-size: 10px; }
+.adc-pnj .adc-p2-puces { margin: 6px 0 8px; gap: 5px; }
+.adc-pnj .adc-p2-puce input { line-height: 1.2; }
+.adc-pnj .adc-f-titre.large { margin-top: 6px; }
+.adc-pnj .adc-f-repli.replie > :not(h2) { display: none !important; }

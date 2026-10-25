@@ -675,8 +675,11 @@ export class PersonnageSheet extends BaseActorSheet {
 export class PnjSheet extends BaseActorSheet {
   static DEFAULT_OPTIONS = {
     classes: [SYSTEM_ID, "sheet", "actor", "pnj", "feuille"],
-    position: { width: 820, height: 860 }
+    position: { width: 700, height: 640 }
   };
+
+  /** Sections repliées par défaut à la première ouverture. */
+  _replis = new Set(["description", "talentsAdv", "capacites", "sec-arme", "sec-sort", "sec-talent", "sec-equipement"]);
 
   static PARTS = {
     corps: { template: TPL("pnj"), scrollable: [""] }
