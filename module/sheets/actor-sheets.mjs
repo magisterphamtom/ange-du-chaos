@@ -678,8 +678,15 @@ export class PnjSheet extends BaseActorSheet {
     position: { width: 700, height: 640 }
   };
 
-  /** Sections repliées par défaut à la première ouverture. */
-  _replis = new Set(["description", "talentsAdv", "capacites", "sec-arme", "sec-sort", "sec-talent", "sec-equipement"]);
+  static ONGLETS = [
+    { id: "profil", label: "Profil" },
+    { id: "combat", label: "Combat" },
+    { id: "biographie", label: "Description" },
+    { id: "equipement", label: "Objets" }
+  ];
+
+  /** Sections repliées par défaut à la première ouverture (chaque groupe a désormais son onglet). */
+  _replis = new Set();
 
   static PARTS = {
     corps: { template: TPL("pnj"), scrollable: [".adc-f-pages"] }

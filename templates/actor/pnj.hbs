@@ -15,7 +15,13 @@
     </div>
   </div>
 </header>
+<nav class="adc-f-onglets">
+  {{#each onglets}}
+  <a class="adc-tab adc-f-onglet {{#if this.actif}}active{{/if}}" data-action="adcOnglet" data-tab="{{this.id}}"><img src="{{this.icone}}" alt="" onerror="this.remove()"><span>{{this.label}}</span></a>
+  {{/each}}
+</nav>
 <div class="adc-f-pages">
+<section class="adc-onglet tab adc-f-page" data-tab="profil">
   <div class="adc-p2-vitaux">
     <div class="adc-p2-tuile fin"><span class="adc-p2-lib">Endurance</span>
       <span class="adc-p2-val"><input type="number" name="system.endurance.value" value="{{system.endurance.value}}" min="0"><small>/</small><input type="number" name="system.endurance.max" value="{{system.endurance.max}}" min="0"></span>
@@ -42,6 +48,8 @@
     <label class="adc-p2-puce"><span>Réaction</span><input type="checkbox" name="system.reaction" {{checked system.reaction}}></label>
   </div>
 
+</section>
+<section class="adc-onglet tab adc-f-page" data-tab="combat">
   <h2 class="adc-f-titre large">Attaques <a class="adc-f-mini adc-f-gros" data-action="addAttaque" data-tooltip="Ajouter une attaque"><i class="fa-solid fa-plus"></i></a></h2>
   <table class="adc-p2-att">
     <thead><tr><th>Arme</th><th>Score</th><th>Dégâts</th><th>Capacités</th><th></th></tr></thead>
@@ -79,6 +87,8 @@
   </div>
   </div>
 
+</section>
+<section class="adc-onglet tab adc-f-page" data-tab="biographie">
   <div class="adc-f-repli" data-repli="description">
   <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="description" data-tooltip="Cliquer pour replier / déplier">Description <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
   {{formInput champs.description value=system.description enriched=enrichi.description toggled=true}}
@@ -94,6 +104,8 @@
   </div>
   {{/if}}
 
+</section>
+<section class="adc-onglet tab adc-f-page" data-tab="equipement">
   {{#each sectionsListe}}
   <div class="adc-f-bloc adc-f-repli" data-repli="sec-{{this.type}}" data-type="{{this.type}}">
     <h2 class="adc-f-titre large adc-f-replitit" data-action="replier" data-cle="sec-{{this.type}}" data-tooltip="Cliquer pour replier / déplier">{{this.titre}} <i class="fa-solid fa-chevron-down adc-f-chev"></i></h2>
@@ -102,5 +114,6 @@
     </ul>
   </div>
   {{/each}}
+</section>
 </div>
 </div>
