@@ -19,7 +19,7 @@ const RUNE = (r) => `${ASSETS}/runes/${r}.webp`;
 const { DOCUMENT_OWNERSHIP_LEVELS: NIVEAU, JOURNAL_ENTRY_PAGE_FORMATS: FORMAT } = CONST;
 
 export function enregistrerReglagesWiki() {
-  game.settings.register(SYSTEM_ID, "wikiOuverture", {
+  game.settings.register(SYSTEM_ID, "wikiOuverture2", {
     name: "Ouverture du wiki",
     hint: "Ouvre automatiquement l'accueil de votre wiki en entrant dans le monde : le wiki des Joueurs pour les joueurs, le wiki du Meneur de jeu pour le MJ.",
     scope: "client", config: true, type: String, default: "toujours",
@@ -149,7 +149,7 @@ export async function creerWiki() {
 
 /** Ouvre l'accueil du wiki (force = ignore le réglage d'ouverture). */
 export async function ouvrirWiki(force = false, quel = null) {
-  const mode = game.settings.get(SYSTEM_ID, "wikiOuverture");
+  const mode = game.settings.get(SYSTEM_ID, "wikiOuverture2");
   if (!force) {
     if (mode === "jamais") return;
     if (mode === "premiere" && game.settings.get(SYSTEM_ID, "wikiVu") === game.world.id) return;
@@ -192,14 +192,25 @@ export function initialiserWiki() {
     } catch (e) { /* sans effet */ }
   });
 
-  // Ouverture du monde : le MJ crée le wiki si besoin, chacun ouvre l'accueil selon son réglage.
+  // Ouverture du monde : le MJ crée le wiki si besoin, puis chacun ouvre son wiki
+  // (joueur : wiki des Joueurs ; MJ : wiki du Meneur et wiki des Joueurs), selon son réglage.
   Hooks.once("ready", async () => {
     try {
       if (game.user.isGM) {
         const existe = game.journal.some(estWiki);
         if (!existe || game.settings.get(SYSTEM_ID, "wikiVersion") < WIKI_VERSION || game.settings.get(SYSTEM_ID, "wikiExtensions") !== signatureActuelle()) await creerWiki();
       }
-      if (!(await ouvrirWiki()) && !game.user.isGM) {
+      await new Promise(r => setTimeout(r, 1200));          // laisse l'interface finir de s'afficher
+      let ouvert;
+      if (game.user.isGM) {
+        const mode = game.settings.get(SYSTEM_ID, "wikiOuverture2");
+        const deja = mode === "premiere" && game.settings.get(SYSTEM_ID, "wikiVu") === game.world.id;
+        if (mode !== "jamais" && !deja) {
+          ouvert = [await ouvrirWiki(true, "joueurs"), await ouvrirWiki(true, "mj")].some(Boolean);
+          if (mode === "premiere") await game.settings.set(SYSTEM_ID, "wikiVu", game.world.id);
+        }
+      } else ouvert = await ouvrirWiki();
+      if (!ouvert && !game.user.isGM) {
         // Le MJ n'a pas encore créé le wiki : on ouvre l'accueil dès qu'il apparaît.
         const id = Hooks.on("createJournalEntry", (doc) => {
           if (doc.getFlag(SYSTEM_ID, "accueil") === "joueurs") { Hooks.off("createJournalEntry", id); ouvrirWiki(); }
