@@ -2,7 +2,7 @@
   "id": "ange-du-chaos",
   "title": "L'Ange du Chaos",
   "description": "Système de jeu Foundry VTT pour « L'Ange du Chaos », le jeu de rôle des éditions Les XII Singes (d'après les romans de Michel Robert). Code seul : les illustrations et les textes du livre ne sont pas inclus.",
-  "version": "0.29.2",
+  "version": "0.29.3",
   "compatibility": { "minimum": "13", "verified": "14.369" },
   "authors": [{ "name": "magisterphamtom" }],
   "url": "https://github.com/magisterphamtom/ange-du-chaos",

@@ -102,7 +102,7 @@ export function documentsItems(c) {
 
 export function documentsActeurs(c) {
   return (c.adversaires ?? []).map(a => ({
-    doc: "Actor", chemin: [a.section ?? a.plan ?? "Bestiaire"],
+    doc: "Actor", chemin: [a.section ?? a.plan ?? "Bestiaire", ...(a.famille ? [a.famille] : [])],
     data: {
       name: a.nom, type: a.pnj ? "pnj" : "creature",
       system: {

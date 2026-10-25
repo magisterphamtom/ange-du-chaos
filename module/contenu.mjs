@@ -8,7 +8,7 @@ import { SYSTEM_ID, ASSETS } from "./config.mjs";
 import { contenusExtensions } from "./extensions.mjs";
 import { fusionnerContenus } from "./extensions-regles.mjs";
 import { iconeObjet } from "./icones.mjs";
-import { DOSSIER_RACINE, acteursSupplements, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
+import { DOSSIER_RACINE, normNom, acteursSupplements, documentsItems, documentsActeurs, documentsPretires, cheminsDistincts } from "./contenu-data.mjs";
 
 export const CONTENU_VERSION = 1;
 const URL_CONTENU = `${ASSETS}/contenu/contenu.json`;
@@ -27,7 +27,34 @@ async function charger() {
 
 export function enregistrerReglagesContenu() {
   game.settings.register(SYSTEM_ID, "contenuVersion", { scope: "world", config: false, type: Number, default: 0 });
+  game.settings.register(SYSTEM_ID, "acteursRanges", { scope: "world", config: false, type: Number, default: 0 });
   game.settings.register(SYSTEM_ID, "supplementsRetires", { scope: "world", config: false, type: Number, default: 0 });
+}
+
+/** Une fois : range les créatures du livre déjà créées dans leurs sous-dossiers (Animaux, Créatures, Humanoïdes, Ténébreux, Humains). */
+export async function rangerActeurs() {
+  if (!game.user.isGM || game.settings.get(SYSTEM_ID, "acteursRanges") >= 1) return 0;
+  const r = await fetch(URL_CONTENU); const base = r.ok ? await r.json() : null;
+  const liste = (base?.contenu?.adversaires ?? []).filter(a => a.famille);
+  if (!liste.length) return 0;
+  const racine = game.folders.find(f => f.type === "Actor" && estContenu(f) && f.name === DOSSIER_RACINE && !f.folder);
+  if (!racine) return 0;
+  const sous = async (nom, parent) => game.folders.find(f => f.type === "Actor" && estContenu(f) && f.name === nom && f.folder?.id === parent.id)
+    ?? await Folder.create({ name: nom, type: "Actor", folder: parent.id, flags: flags() });
+  const cache = new Map(), maj = [];
+  for (const a of liste) {
+    const acteur = game.actors.find(x => estContenu(x) && normNom(x.name) === normNom(a.nom));
+    if (!acteur) continue;
+    const section = a.section ?? a.plan ?? "Bestiaire";
+    if (!cache.has(section)) cache.set(section, await sous(section, racine));
+    const cleF = `${section}|${a.famille}`;
+    if (!cache.has(cleF)) cache.set(cleF, await sous(a.famille, cache.get(section)));
+    if (acteur.folder?.id !== cache.get(cleF).id) maj.push({ _id: acteur.id, folder: cache.get(cleF).id });
+  }
+  if (maj.length) await Actor.updateDocuments(maj);
+  await game.settings.set(SYSTEM_ID, "acteursRanges", 1);
+  if (maj.length) ui.notifications.info(`L'Ange du Chaos : ${maj.length} fiches rangées par famille (Animaux, Créatures, Humanoïdes, Ténébreux, Humains).`);
+  return maj.length;
 }
 
 /** Une fois : retire du monde les créatures et prétirés des suppléments (ils vivent désormais dans les compendiums des modules). */
@@ -144,6 +171,7 @@ export function initialiserContenu() {
         && !game.items.some(estContenu)) await creerContenu();
     } catch (e) { console.error(`${SYSTEM_ID} | Contenu`, e); }
     try { await retirerSupplements(); } catch (e) { console.error(`${SYSTEM_ID} | Suppléments`, e); }
+    try { await rangerActeurs(); } catch (e) { console.error(`${SYSTEM_ID} | Rangement`, e); }
     try { await corrigerIcones(); } catch (e) { console.error(`${SYSTEM_ID} | Icônes`, e); }
   });
 }
