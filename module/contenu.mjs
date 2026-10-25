@@ -4,7 +4,7 @@
  * Les documents créés portent le drapeau `flags.ange-du-chaos.contenu` : relancer la
  * création les remplace (les modifications faites dessus sont perdues).
  */
-import { SYSTEM_ID, ASSETS } from "./config.mjs";
+import { SYSTEM_ID, ASSETS, ADVERSAIRES, adversaireDe } from "./config.mjs";
 import { contenusExtensions } from "./extensions.mjs";
 import { fusionnerContenus } from "./extensions-regles.mjs";
 import { iconeObjet } from "./icones.mjs";
@@ -27,8 +27,32 @@ async function charger() {
 
 export function enregistrerReglagesContenu() {
   game.settings.register(SYSTEM_ID, "contenuVersion", { scope: "world", config: false, type: Number, default: 0 });
+  game.settings.register(SYSTEM_ID, "illustrationsSig", { scope: "world", config: false, type: String, default: "" });
   game.settings.register(SYSTEM_ID, "acteursRanges", { scope: "world", config: false, type: Number, default: 0 });
   game.settings.register(SYSTEM_ID, "supplementsRetires", { scope: "world", config: false, type: Number, default: 0 });
+}
+
+/** Donne portrait et jeton aux adversaires du livre déjà créés (quand de nouvelles illustrations arrivent). */
+export async function illustrerActeurs() {
+  if (!game.user.isGM) return 0;
+  const sig = Object.keys(ADVERSAIRES).sort().join(",");
+  if (game.settings.get(SYSTEM_ID, "illustrationsSig") === sig) return 0;
+  const maj = [];
+  for (const a of game.actors) {
+    if (!["pnj", "creature"].includes(a.type) || !estContenu(a)) continue;
+    const ill = adversaireDe(a.name);
+    if (!ill) continue;
+    const defaut = !a.img || /^icons\/svg\//.test(a.img);
+    const dejaJeton = a.prototypeToken?.texture?.src === ill.jeton;
+    if (!defaut && dejaJeton) continue;
+    const m = { _id: a.id, "prototypeToken.texture.src": ill.jeton };
+    if (defaut) m.img = ill.illustration;
+    maj.push(m);
+  }
+  if (maj.length) await Actor.updateDocuments(maj);
+  await game.settings.set(SYSTEM_ID, "illustrationsSig", sig);
+  if (maj.length) ui.notifications.info(`L'Ange du Chaos : ${maj.length} adversaires illustrés (portrait et jeton).`);
+  return maj.length;
 }
 
 /** Une fois : range les créatures du livre déjà créées dans leurs sous-dossiers (Animaux, Créatures, Humanoïdes, Ténébreux, Humains). */
@@ -172,6 +196,7 @@ export function initialiserContenu() {
     } catch (e) { console.error(`${SYSTEM_ID} | Contenu`, e); }
     try { await retirerSupplements(); } catch (e) { console.error(`${SYSTEM_ID} | Suppléments`, e); }
     try { await rangerActeurs(); } catch (e) { console.error(`${SYSTEM_ID} | Rangement`, e); }
+    try { await illustrerActeurs(); } catch (e) { console.error(`${SYSTEM_ID} | Illustrations`, e); }
     try { await corrigerIcones(); } catch (e) { console.error(`${SYSTEM_ID} | Icônes`, e); }
   });
 }
