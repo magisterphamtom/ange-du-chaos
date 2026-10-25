@@ -682,7 +682,7 @@ export class PnjSheet extends BaseActorSheet {
   _replis = new Set(["description", "talentsAdv", "capacites", "sec-arme", "sec-sort", "sec-talent", "sec-equipement"]);
 
   static PARTS = {
-    corps: { template: TPL("pnj"), scrollable: [""] }
+    corps: { template: TPL("pnj"), scrollable: [".adc-f-pages"] }
   };
 
   async _prepareContext(options) {
