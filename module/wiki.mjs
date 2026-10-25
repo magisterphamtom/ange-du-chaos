@@ -19,8 +19,8 @@ const { DOCUMENT_OWNERSHIP_LEVELS: NIVEAU, JOURNAL_ENTRY_PAGE_FORMATS: FORMAT } 
 export function enregistrerReglagesWiki() {
   game.settings.register(SYSTEM_ID, "wikiOuverture", {
     name: "Ouverture du wiki",
-    hint: "Ouvre automatiquement l'accueil du wiki (règles du livre de base) en entrant dans le monde.",
-    scope: "client", config: true, type: String, default: "premiere",
+    hint: "Ouvre automatiquement l'accueil de votre wiki en entrant dans le monde : le wiki des Joueurs pour les joueurs, le wiki du Meneur de jeu pour le MJ.",
+    scope: "client", config: true, type: String, default: "toujours",
     choices: { premiere: "Une seule fois par monde", toujours: "À chaque ouverture du monde", jamais: "Jamais" }
   });
   game.settings.register(SYSTEM_ID, "wikiVu", { scope: "client", config: false, type: String, default: "" });
@@ -144,13 +144,14 @@ export async function creerWiki() {
 }
 
 /** Ouvre l'accueil du wiki (force = ignore le réglage d'ouverture). */
-export async function ouvrirWiki(force = false) {
+export async function ouvrirWiki(force = false, quel = null) {
   const mode = game.settings.get(SYSTEM_ID, "wikiOuverture");
   if (!force) {
     if (mode === "jamais") return;
     if (mode === "premiere" && game.settings.get(SYSTEM_ID, "wikiVu") === game.world.id) return;
   }
-  const entree = game.journal.find(j => j.getFlag(SYSTEM_ID, "accueil") === "joueurs");
+  const genre = quel ?? (game.user.isGM ? "mj" : "joueurs");
+  const entree = game.journal.find(j => j.getFlag(SYSTEM_ID, "accueil") === genre);
   if (!entree) return false;
   await entree.sheet.render({ force: true });
   if (!force && mode === "premiere") await game.settings.set(SYSTEM_ID, "wikiVu", game.world.id);
@@ -158,7 +159,7 @@ export async function ouvrirWiki(force = false) {
 }
 
 export function initialiserWiki() {
-  game.adc = Object.assign(game.adc ?? {}, { creerWiki, ouvrirWiki: () => ouvrirWiki(true) });
+  game.adc = Object.assign(game.adc ?? {}, { creerWiki, ouvrirWiki: (quel) => ouvrirWiki(true, quel), ouvrirWikiJoueurs: () => ouvrirWiki(true, "joueurs"), ouvrirWikiMJ: () => ouvrirWiki(true, "mj") });
 
   // Habillage « parchemin » des journaux du wiki.
   Hooks.on("renderJournalEntrySheet", (app) => {
@@ -172,14 +173,18 @@ export function initialiserWiki() {
       if (!el || el.querySelector(".adc-wiki-btn")) return;
       const cible = el.querySelector(".header-actions") ?? el.querySelector(".directory-header");
       if (!cible) return;
-      const b = document.createElement("button");
-      b.type = "button"; b.className = "adc-wiki-btn";
-      b.innerHTML = `<i class="fa-solid fa-book-open"></i> Wiki`;
-      b.addEventListener("click", async () => {
-        const ok = await ouvrirWiki(true);
-        if (ok === false && game.user.isGM) await creerWiki().then(() => ouvrirWiki(true));
-      });
-      cible.append(b);
+      const bouton = (libelle, icone, genre) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "adc-wiki-btn";
+        b.innerHTML = `<i class="fa-solid ${icone}"></i> ${libelle}`;
+        b.addEventListener("click", async () => {
+          const ok = await ouvrirWiki(true, genre);
+          if (ok === false && game.user.isGM) await creerWiki().then(() => ouvrirWiki(true, genre));
+        });
+        cible.append(b);
+      };
+      if (game.user.isGM) { bouton("Wiki Meneur", "fa-book-skull", "mj"); bouton("Wiki Joueurs", "fa-book-open", "joueurs"); }
+      else bouton("Wiki", "fa-book-open", "joueurs");
     } catch (e) { /* sans effet */ }
   });
 
