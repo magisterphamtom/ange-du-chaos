@@ -192,7 +192,10 @@ export const ADVERSAIRES = {
   ...Object.fromEntries(["animal_de_monte", "animal_feroce", "bete_de_somme", "centaure", "chasseur_ikshite", "conteur_rhitan", "cristalik",
     "djiina", "egle_messager", "fendyr", "guerrier_demon_tenebreux", "guerrier_hamachii", "guerrier_picte", "guerrier_smaugh", "guerrier_thog",
     "khan_de_tribu_vorpal", "khelash_des_iles", "maitre_d_armes_khelash", "maitre_de_chasse_arikari", "monture_de_guerre", "oiseau_de_proie",
-    "petit_animal", "sorcier_thog", "taride", "tireur_d_elite_fendyr", "traqueur_arikari", "vorpal"].map(k => [k, "jeton"]))
+    "petit_animal", "sorcier_thog", "taride", "tireur_d_elite_fendyr", "traqueur_arikari", "vorpal",
+    "assassin_type", "bandit", "beret_rouge", "brako_chef_de_bande", "brasseur_d_ecume", "chef_de_bande", "enrage", "frere_grieger",
+    "inquisiteur_de_l_orage", "maitre_assassin", "mercenaire_sentinelle", "paladin_bleu", "reine_de_sang", "samson_grieger", "shenn_gath",
+    "soldat_tenebreux", "sorcier_de_sang_tenebreux", "surineur", "templier_de_l_orage"].map(k => [k, "jeton"]))
 };
 
 /** Retrouve l'adversaire connu d'après le nom d'un acteur (accents et casse ignorés). */
