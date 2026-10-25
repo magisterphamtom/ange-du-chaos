@@ -203,5 +203,5 @@ export function adversaireDe(nom) {
   const cle = Object.keys(ADVERSAIRES).filter(k => n.includes(k)).sort((x, y) => y.length - x.length)[0];   // la clé la plus précise gagne (khan_de_tribu_vorpal avant vorpal)
   if (!cle) return null;
   const jeton = `${ASSETS}/tokens/${cle}.webp`;
-  return { cle, illustration: ADVERSAIRES[cle] === "jeton" ? jeton : `${ASSETS}/wiki/${ADVERSAIRES[cle]}/${cle}.webp`, filigrane: `${ASSETS}/filigranes/${cle}.webp`, jeton };
+  return { cle, illustration: ADVERSAIRES[cle] === "jeton" ? `${ASSETS}/illustrations/${cle}.webp` : `${ASSETS}/wiki/${ADVERSAIRES[cle]}/${cle}.webp`, filigrane: `${ASSETS}/filigranes/${cle}.webp`, jeton };
 }

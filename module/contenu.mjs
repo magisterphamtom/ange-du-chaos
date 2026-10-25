@@ -35,7 +35,7 @@ export function enregistrerReglagesContenu() {
 /** Donne portrait et jeton aux adversaires du livre déjà créés (quand de nouvelles illustrations arrivent). */
 export async function illustrerActeurs() {
   if (!game.user.isGM) return 0;
-  const sig = Object.keys(ADVERSAIRES).sort().join(",");
+  const sig = Object.keys(ADVERSAIRES).sort().join(",") + "|illustrations-entieres";
   if (game.settings.get(SYSTEM_ID, "illustrationsSig") === sig) return 0;
   const maj = [];
   for (const a of game.actors) {
@@ -44,9 +44,10 @@ export async function illustrerActeurs() {
     if (!ill) continue;
     const defaut = !a.img || /^icons\/svg\//.test(a.img);
     const dejaJeton = a.prototypeToken?.texture?.src === ill.jeton;
-    if (!defaut && dejaJeton) continue;
+    const surJeton = a.img === ill.jeton;   // ancien portrait = jeton rond : remplacé par l'illustration entière
+    if (!defaut && !surJeton && dejaJeton) continue;
     const m = { _id: a.id, "prototypeToken.texture.src": ill.jeton };
-    if (defaut) m.img = ill.illustration;
+    if (defaut || surJeton) m.img = ill.illustration;
     maj.push(m);
   }
   if (maj.length) await Actor.updateDocuments(maj);
