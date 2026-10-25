@@ -56,7 +56,7 @@ export function iconeObjet(type, sys = {}, nom = "") {
     case "rune": f = "icones/rune"; break;
     case "gemmelite": f = "icones/gemmelite"; break;
     case "maladie": f = "icones/maladie"; break;
-    case "voie": f = sys.cle ? `voies/${sys.cle}` : "icones/talent"; break;
+    case "voie": f = ["protecteur", "duelliste", "tireur", "assassin", "conspirateur", "sorcier"].includes(sys.cle) ? `icones/voie-${sys.cle}` : sys.cle ? `voies/${sys.cle}` : "icones/talent"; break;
     default: f = "icones/sac";
   }
   return `${BASE}/${f}.webp`;
