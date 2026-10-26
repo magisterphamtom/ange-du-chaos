@@ -40,5 +40,11 @@
   "primaryTokenAttribute": "endurance",
   "secondaryTokenAttribute": "mana",
   "socket": true,
-  "flags": {}
+  "flags": {},
+  "media": [
+    {
+      "type": "cover",
+      "url": "https://raw.githubusercontent.com/magisterphamtom/ange-du-chaos/main/images/banniere.png"
+    }
+  ]
 }
